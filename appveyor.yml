@@ -1,0 +1,43 @@
+version: 0.5.0-{build}
+
+os: Visual Studio 2017
+
+nuget:
+  account_feed: false
+  
+branches:
+  only:
+  - master
+
+pull_requests:
+  do_not_increment_build_number: true
+
+init:
+- git config --global core.autocrlf true
+
+before_build:
+- cmd: dotnet restore
+
+build_script:
+- cmd: dotnet build src/Hangfire.Tags -c Release
+- cmd: dotnet build src/Hangfire.Tags.SqlServer -c Release
+- cmd: dotnet build tests/Hangfire.Tags.Tests -c Release
+
+after_build:
+- cmd: dotnet pack src/Hangfire.Tags -o ../../artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.SqlServer -o ../../artifacts -c Release
+
+test_script:
+- cmd: dotnet test tests/Hangfire.Tags.Tests/Hangfire.Tags.Tests.csproj
+
+artifacts:
+- path: 'artifacts/**/*.nupkg'
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: 
+  skip_symbols: true
+  on:
+    branch: master
+    appveyor_repo_tag: true

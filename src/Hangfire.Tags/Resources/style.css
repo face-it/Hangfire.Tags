@@ -1,0 +1,14 @@
+.tags {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+.tags > .label {
+    margin: 2px;
+    cursor: pointer;
+}
+
+.tags > .label:hover {
+    background-color: #def;
+}

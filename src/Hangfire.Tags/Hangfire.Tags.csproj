@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Erwin Bovendeur</Authors>
+    <Company>faceit B.V.</Company>
+    <Version>0.5.0</Version>
+    <Description>Add tags to Hangfire backgroundjobs</Description>
+    <Copyright />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\script.js" />
+    <None Remove="Resources\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\script.js" />
+    <EmbeddedResource Include="Resources\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.6.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Dashboard\Pages\TagsSearchPage.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TagsSearchPage.cshtml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dashboard\Pages\TagsSearchPage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TagsSearchPage.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>
