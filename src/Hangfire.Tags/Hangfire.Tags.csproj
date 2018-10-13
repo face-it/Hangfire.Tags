@@ -8,6 +8,13 @@
     <Version>0.5.0</Version>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
+    <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>hangfire tags</PackageTags>
+    <PackageReleaseNotes>Initial release with support for adding tags to background jobs. The tags are visible on the job details page. It's possible to select a tag, and get a list of all jobs containing the selected tag.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

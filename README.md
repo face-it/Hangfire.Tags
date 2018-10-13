@@ -1,12 +1,12 @@
 # Hangfire.Tags
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b57hb7438d7dvxa2/branch/master?svg=true&passingText=master%20%u2714)](https://ci.appveyor.com/project/face-it/hangfire-tags/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/Hangfire.Tags.svg)](https://www.nuget.org/packages/Hangfire.Tags/)
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 
 Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to search and group different jobs. 
 
-![dashboard](dashboard.png)
+![sidemenu](Sidemenu.png)
+![dashboard](Dashboard.png)
 
 ## Features
 
@@ -41,7 +41,7 @@ you'll need to call `UseTags()` or `UseTagsWithSql()` on both.
 
 ### Additional options
 
-As usual, you may provide additional options for `UseConsole()` method.
+As usual, you may provide additional options for `UseTags()` method.
 
 Here's what you can configure:
 - **BackgroundColor** – default background color for the tags
@@ -49,7 +49,11 @@ Here's what you can configure:
 
 **NOTE**: After you initially add Hangfire.Tags (or change the options above) you may need to clear browser cache, as generated CSS/JS can be cached by browser.
 
-## Log
+## Providers
+
+In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. At this moment, only a provider for SQL Server is available.
+
+## Tags
 
 Hangfire.Tags provides extension methods on `PerformContext` object, 
 hence you'll need to add it as a job argument. 
@@ -83,7 +87,7 @@ In the Dashboard, whcn clicking on Jobs, you'll see a new menu item, called Tags
 
 ## License
 
-Copyright (c) 2018 Erwin Bovendeur
+Copyright (c) 2018 2Face-IT B.V.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
