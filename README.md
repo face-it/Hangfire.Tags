@@ -84,7 +84,7 @@ public void TaskMethod(PerformContext context)
 
 ## Search tags
 
-In the Dashboard, whcn clicking on Jobs, you'll see a new menu item, called Tags. By default this page will show you all defined tags in the system. Clicking on a tag will show a list of all jobs with that tag attached.
+In the Dashboard, when clicking on Jobs, you'll see a new menu item, called Tags. By default this page will show you all defined tags in the system. Clicking on a tag will show a list of all jobs with that tag attached.
 
 ## License
 

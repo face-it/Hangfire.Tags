@@ -14,10 +14,15 @@ namespace Hangfire.Tags.States
         public void OnCreated(CreatedContext filterContext)
         {
             var mi = filterContext.BackgroundJob.Job.Method;
-            var tags = mi.GetCustomAttributes<TagAttribute>()
+            var attrs = mi.GetCustomAttributes<TagAttribute>()
                 .Union(mi.DeclaringType?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
-                .SelectMany(t => t.Tag).Select(tag => string.Format(tag, filterContext.Job.Args));
+                .SelectMany(t => t.Tag).ToList();
 
+            if (!attrs.Any())
+                return;
+
+            var args = filterContext.Job.Args.ToArray();
+            var tags = attrs.Select(tag => string.Format(tag, args));
             filterContext.BackgroundJob.Id.AddTags(tags);
         }
     }
