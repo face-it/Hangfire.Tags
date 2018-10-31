@@ -33,10 +33,90 @@ namespace Hangfire.Tags.SqlServer
             return new SqlTagsTransaction(_options, transaction);
         }
 
-        public JobList<MatchingJobDto> GetMatchingJobs(string tag, int from, int count)
+        public IEnumerable<TagDto> SearchWeightedTags(string tag, string setKey)
         {
             var monitoringApi = MonitoringApi;
-            return monitoringApi.UseConnection(connection => GetJobs(connection, from, count, tag,
+            return monitoringApi.UseConnection(connection =>
+            {
+                if (string.IsNullOrEmpty(tag))
+                    tag = "[^0-9]"; // Exclude tags:<id> entries
+
+                var sql =
+                    $@"select count(*) as Amount from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%'";
+                var total = connection.ExecuteScalar<int>(sql, new {setKey, tag});
+
+                sql =
+                    $@"select STUFF([Key], 1, 5, '') AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as [Percentage] 
+from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%' group by s.[Key]";
+
+                return connection.Query<TagDto>(
+                    sql,
+                    new { setKey, tag, total },
+                    commandTimeout: (int?)_options.CommandTimeout?.TotalSeconds);
+            });
+        }
+
+        public IEnumerable<string> SearchTags(string tag, string setKey)
+        {
+            var monitoringApi = MonitoringApi;
+            return monitoringApi.UseConnection(connection =>
+            {
+                var sql =
+                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key]='tags' and s.Value like @setKey + ':%' + @tag + '%'";
+
+                return connection.Query<string>(
+                    sql,
+                    new {setKey, tag},
+                    commandTimeout: (int?) _options.CommandTimeout?.TotalSeconds);
+            });
+        }
+
+        public int GetJobCount(string[] tags, string stateName = null)
+        {
+            var monitoringApi = MonitoringApi;
+            return monitoringApi.UseConnection(connection => GetJobCount(connection, tags, stateName));
+        }
+
+        public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
+        {
+            var monitoringApi = MonitoringApi;
+            return monitoringApi.UseConnection(connection =>
+            {
+                var parameters = new Dictionary<string, object>();
+
+                var jobsSql =
+                    $@";with cte as 
+(
+  select j.Id, row_number() over (order by j.Id desc) as row_num
+  from [{_options.SchemaName}].Job j with (nolock, forceseek)";
+
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    parameters["tag" + i] = tags[i];
+                    jobsSql +=
+                        $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+                }
+
+                jobsSql +=
+                    $@")
+select top {maxTags} j.StateName AS [Key], count(*) AS [Value]
+from [{_options.SchemaName}].Job j with (nolock)
+inner join cte on cte.Id = j.Id 
+left join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
+group by j.StateName order by count(*) desc";
+
+                return connection.Query<KeyValuePair<string, int>>(
+                        jobsSql,
+                        parameters,
+                        commandTimeout: (int?) _options.CommandTimeout?.TotalSeconds)
+                    .ToDictionary(d => d.Key, d => d.Value);
+            });
+        }
+
+        public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
+        {
+            var monitoringApi = MonitoringApi;
+            return monitoringApi.UseConnection(connection => GetJobs(connection, from, count, tags, stateName,
                 (sqlJob, job, stateData) =>
                     new MatchingJobDto
                     {
@@ -45,31 +125,77 @@ namespace Hangfire.Tags.SqlServer
                     }));
         }
 
-        private JobList<TDto> GetJobs<TDto>(
-            DbConnection connection,
-            int from,
-            int count,
-            string tag,
-            Func<SqlJob, Job, SafeDictionary<string, string>, TDto> selector)
+        private int GetJobCount(DbConnection connection, string[] tags, string stateName)
         {
+            var parameters = new Dictionary<string, object>
+            {
+                {"stateName", stateName}
+            };
+
             var jobsSql =
                 $@";with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from [{_options.SchemaName}].Job j with (nolock, forceseek)
-  inner join [{_options.SchemaName}].[Set] s on j.Id=s.Value
-  where s.[Key]=@tag
+  from [{_options.SchemaName}].Job j with (nolock, forceseek)";
+
+            for (var i = 0; i < tags.Length; i++)
+            {
+                parameters["tag" + i] = tags[i];
+                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+            }
+
+            jobsSql +=
+                $@"
+  where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
+)
+select count(*)
+from [{_options.SchemaName}].Job j with (nolock)
+inner join cte on cte.Id = j.Id 
+left join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id";
+
+            return connection.ExecuteScalar<int>(
+                jobsSql,
+                parameters,
+                commandTimeout: (int?) _options.CommandTimeout?.TotalSeconds);
+        }
+
+        private JobList<TDto> GetJobs<TDto>(
+            DbConnection connection, int from, int count, string[] tags, string stateName,
+            Func<SqlJob, Job, SafeDictionary<string, string>, TDto> selector)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "start", from + 1 },
+                { "end", from + count },
+                { "stateName", stateName }
+            };
+
+            var jobsSql =
+                $@";with cte as 
+(
+  select j.Id, row_number() over (order by j.Id desc) as row_num
+  from [{_options.SchemaName}].Job j with (nolock, forceseek)";
+
+            for (var i = 0; i < tags.Length; i++)
+            {
+                parameters["tag" + i] = tags[i];
+                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+            }
+
+            jobsSql += 
+$@"
+  where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName)
 )
 select j.*, s.Reason as StateReason, s.Data as StateData
 from [{_options.SchemaName}].Job j with (nolock)
 inner join cte on cte.Id = j.Id 
 left join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
-where cte.row_num between @start and @end
+where cte.row_num between @start and @end 
 order by j.Id desc";
 
             var jobs = connection.Query<SqlJob>(
                     jobsSql,
-                    new {tag, start = from + 1, end = from + count},
+                    parameters,
                     commandTimeout: (int?) _options.CommandTimeout?.TotalSeconds)
                 .ToList();
 

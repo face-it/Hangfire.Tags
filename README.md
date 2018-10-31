@@ -15,6 +15,7 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
  - **Attributes**: supports [Tag("{0}")] syntax for creating a default set of tags when creating a job.
  - **Extensions**: has extension methods on PerformContext, but also on string (for instance for adding tags to a jobid).
  - **Clean up**: uses Hangfire sets, which are cleaned when jobs are removed.
+ - **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
 
 ## Setup
 
@@ -84,7 +85,7 @@ public void TaskMethod(PerformContext context)
 
 ## Search tags
 
-In the Dashboard, whcn clicking on Jobs, you'll see a new menu item, called Tags. By default this page will show you all defined tags in the system. Clicking on a tag will show a list of all jobs with that tag attached.
+In the Dashboard, when clicking on Jobs, you'll see a new menu item, called Tags. By default this page will show you all defined tags in the system. Clicking on a tag will show a list of all jobs with that tag attached.
 
 ## License
 

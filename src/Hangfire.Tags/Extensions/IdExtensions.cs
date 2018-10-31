@@ -4,9 +4,11 @@ namespace Hangfire.Tags
 {
     internal static class IdExtensions
     {
+        internal const string SetKey = "tags";
+
         public static string GetSetKey(this string jobId)
         {
-            return $"tags:{jobId}";
+            return $"{SetKey}:{jobId}";
         }
 
         public static string Clean(this string tag)
