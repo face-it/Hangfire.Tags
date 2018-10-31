@@ -20,10 +20,7 @@ $(function() {
                 tags.append("<span class=\"label label-info\">" + tag + "</span>");
             });
         });
-    }
+    };
 
-    $(".tags").on("click", ".label", function() {
-        var lbl = $(this).text();
-        window.location.href = "/Hangfire/tags/search?tag=" + lbl;
-    });
+    $(".tags a").tagcloud();
 });

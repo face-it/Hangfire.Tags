@@ -1,4 +1,7 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True *@
+@using System
+@using System.Linq
+@using System.Text.RegularExpressions
 @using Hangfire.Dashboard
 @using Hangfire.Dashboard.Pages
 @using Hangfire.Dashboard.Resources
@@ -10,10 +13,17 @@
     int.TryParse(Query("from"), out var from);
     int.TryParse(Query("count"), out var perPage);
 
-    var tag = Query("tag");
+    var tags = new string[0];
+    string state = null;
+
+    var match = Regex.Match(RequestPath, "^/tags/search(/(?<tags>[^/]+))(/(?<state>[^/]+))?");
+    if (match.Success)
+    {
+        tags = match.Groups["tags"].Value.Split(',');
+        state = match.Groups["state"].Value;
+    }
 
     var tagStorage = new TagsStorage(Storage);
-
     var monitor = tagStorage.GetMonitoringApi();
 }
 
@@ -22,38 +32,75 @@
         @Html.JobsSidebar()
     </div>
     <div class="col-md-9">
-        <h1 class="page-header">Tags</h1>
-        
+        @if (tags.Length == 1)
+        {
+            <h1 class="page-header">Tag @tags[0]</h1>
+        }
+        else if (tags.Length > 1)
+        {
+            <h1 class="page-header">Tags @string.Join(", ", tags)</h1>
+        }
+        else
+        {
+            <h1 class="page-header">Tags</h1>
+        }
         <!-- Add search box here -->
+        <div class="js-search">
+
+        </div>
 
         @{
-            if (string.IsNullOrEmpty(tag))
+            if (tags.Length == 0)
             {
                 // Show a page with all tags
-                var allTags = tagStorage.GetAllTags();
+                var allTags = monitor.SearchWeightedTags().ToList();
 
-                <div class="tags">
-                    @foreach (var t in allTags)
-                    {
-                        <span class="label label-info">@t</span>
-                    }
-                </div>
+                if (!allTags.Any())
+                {
+                    <div class="tags">
+                        There are no tags found yet.
+                    </div>
+                }
+                else
+                {
+                    <div class="tags">
+                        @foreach (var t in allTags)
+                        {
+                            var intValue = (int)Math.Round(t.Percentage);
+                            <a href="@Url.To("/tags/search/" + @t.Tag)" rel="@intValue">@t.Tag</a>
+                        }
+                    </div>
+                }
             }
             else
             {
                 // Show a page with a list of matching jobs
 
-                var pager = new Pager(from, perPage, monitor.GetJobCount(tag));
-                var matchingJobs = monitor.GetMatchingJobs(tag, pager.FromRecord, pager.RecordsPerPage);
+                var pager = new Pager(from, perPage, monitor.GetJobCount(tags, state));
+                var matchingJobs = monitor.GetMatchingJobs(tags, pager.FromRecord, pager.RecordsPerPage, state);
 
                 if (pager.TotalPageCount == 0)
                 {
-                     <div class="alert alert-info">
-                         @Strings.SucceededJobsPage_NoJobs
-                     </div>
+                    <div class="alert alert-info">
+                        There are no jobs found for the selected tag(s).
+                    </div>
                 }
                 else
                 {
+                    var matchingStates = monitor.GetJobStateCount(tags);
+                    if (matchingStates.Any())
+                    {
+                        <div class="js-state-list">
+                            <div class="btn-toolbar btn-toolbar-top">
+                                @foreach (var matchingState in matchingStates)
+                                {
+                                    var css = state == matchingState.Key ? "btn-primary" : "";
+                                    <a role="button" href="@Url.To("/tags/search/" + string.Join(",", tags) + "/" + matchingState.Key)" class="js-state-list-command btn btn-sm @css">@matchingState.Key <span class="badge">@matchingState.Value</span></a>
+                                }
+                            </div>
+                        </div>
+                    }
+
                     <div class="js-jobs-list">
                         <div class="btn-toolbar btn-toolbar-top">
                             <button class="js-jobs-list-command btn btn-sm btn-primary"
@@ -70,43 +117,43 @@
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th class="min-width">
-                                        <input type="checkbox" class="js-jobs-list-select-all"/>
-                                    </th>
-                                    <th class="min-width">@Strings.Common_Id</th>
-                                    <th>@Strings.Common_Job</th>
-                                    <th class="align-right">@Strings.Common_State</th>
-                                </tr>
+                                    <tr>
+                                        <th class="min-width">
+                                            <input type="checkbox" class="js-jobs-list-select-all" />
+                                        </th>
+                                        <th class="min-width">@Strings.Common_Id</th>
+                                        <th>@Strings.Common_Job</th>
+                                        <th class="align-right">@Strings.Common_State</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var job in matchingJobs)
-                                {
-                                    <tr class="js-jobs-list-row">
-                                        <td>
-                                            <input type="checkbox" class="js-jobs-list-checkbox" name="jobs[]" value="@job.Key"/>
-                                        </td>
-                                        <td class="min-width">
-                                            @Html.JobIdLink(job.Key)
-                                        </td>
+                                    @foreach (var job in matchingJobs)
+                                    {
+                                        <tr class="js-jobs-list-row">
+                                            <td>
+                                                <input type="checkbox" class="js-jobs-list-checkbox" name="jobs[]" value="@job.Key" />
+                                            </td>
+                                            <td class="min-width">
+                                                @Html.JobIdLink(job.Key)
+                                            </td>
 
-                                        @if (job.Value == null)
-                                        {
-                                            <td colspan="3">
-                                                <em>@Strings.Common_JobExpired</em>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td class="word-break">
-                                                @Html.JobNameLink(job.Key, job.Value.Job)
-                                            </td>
-                                            <td class="min-width align-right">
-                                                @job.Value.State
-                                            </td>
-                                        }
-                                    </tr>
-                                }
+                                            @if (job.Value == null)
+                                            {
+                                                <td colspan="3">
+                                                    <em>@Strings.Common_JobExpired</em>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td class="word-break">
+                                                    @Html.JobNameLink(job.Key, job.Value.Job)
+                                                </td>
+                                                <td class="min-width align-right">
+                                                    @job.Value.State
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
                         </div>
