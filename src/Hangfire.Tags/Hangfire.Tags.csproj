@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit B.V.</Company>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -18,8 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\jquery.tagcloud.js" />
     <None Remove="Resources\script.js" />
     <None Remove="Resources\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jquery.tagcloud.js" />
   </ItemGroup>
 
   <ItemGroup>

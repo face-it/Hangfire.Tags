@@ -1,4 +1,5 @@
-﻿using Hangfire.Storage.Monitoring;
+﻿using System.Collections.Generic;
+using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.Dashboard.Monitoring;
 
 namespace Hangfire.Tags.Storage
@@ -7,8 +8,12 @@ namespace Hangfire.Tags.Storage
     {
         long GetTagsCount();
 
-        long GetJobCount(string tag);
+        long GetJobCount(string[] tags, string stateName = null);
 
-        JobList<MatchingJobDto> GetMatchingJobs(string tag, int from, int count);
+        IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50);
+
+        IEnumerable<TagDto> SearchWeightedTags(string tag = null);
+
+        JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null);
     }
 }

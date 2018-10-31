@@ -32,14 +32,24 @@ namespace Hangfire.Tags.Storage
             return _connection.GetSetCount("tags");
         }
 
-        public long GetJobCount(string tag)
+        public long GetJobCount(string[] tags, string stateName = null)
         {
-            return _connection.GetSetCount(tag.GetSetKey());
+            return TagsOptions.Options.Storage.GetJobCount(tags.Select(t => t.GetSetKey()).ToArray(), stateName);
         }
 
-        public JobList<MatchingJobDto> GetMatchingJobs(string tag, int from, int count)
+        public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
         {
-            return TagsOptions.Options.Storage.GetMatchingJobs(tag.GetSetKey(), from, count);
+            return TagsOptions.Options.Storage.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags);
+        }
+
+        public IEnumerable<TagDto> SearchWeightedTags(string tag = null)
+        {
+            return TagsOptions.Options.Storage.SearchWeightedTags(tag);
+        }
+
+        public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
+        {
+            return TagsOptions.Options.Storage.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count, stateName);
         }
 
         public ITagsMonitoringApi GetMonitoringApi()

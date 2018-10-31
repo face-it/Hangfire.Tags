@@ -5,9 +5,13 @@ VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags", "src\Hangfire.Tags\Hangfire.Tags.csproj", "{A9FA3828-3FEE-4086-B378-E1BFD9EF8104}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.Tests", "tests\Hangfire.Tags.Tests\Hangfire.Tags.Tests.csproj", "{067FBC5B-67DD-4DC1-9C79-99625CC63B09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.Tests", "tests\Hangfire.Tags.Tests\Hangfire.Tags.Tests.csproj", "{067FBC5B-67DD-4DC1-9C79-99625CC63B09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.SqlServer", "src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj", "{7E6A4EFD-5490-44FF-8B92-AB6280B23EC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.SqlServer", "src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj", "{7E6A4EFD-5490-44FF-8B92-AB6280B23EC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{4E9A7A9B-8F5E-402E-AA3C-5B1A3C1C3F06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.MvcApplication", "samples\Hangfire.MvcApplication\Hangfire.MvcApplication.csproj", "{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +31,16 @@ Global
 		{7E6A4EFD-5490-44FF-8B92-AB6280B23EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E6A4EFD-5490-44FF-8B92-AB6280B23EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E6A4EFD-5490-44FF-8B92-AB6280B23EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780} = {4E9A7A9B-8F5E-402E-AA3C-5B1A3C1C3F06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22FEDCF4-B618-487D-A59E-8A483ABE8CF2}

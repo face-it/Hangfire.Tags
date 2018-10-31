@@ -3,6 +3,7 @@ using Hangfire.Dashboard;
 using Hangfire.Tags.Dashboard;
 using Hangfire.Tags.Dashboard.Pages;
 using Hangfire.Tags.States;
+using Hangfire.Tags.Storage;
 using Hangfire.Tags.Support;
 
 namespace Hangfire.Tags
@@ -32,15 +33,24 @@ namespace Hangfire.Tags
             GlobalJobFilters.Filters.Add(new TagsCleanupStateFilter(), int.MaxValue);
             GlobalJobFilters.Filters.Add(new CreateJobFilter(), int.MaxValue);
 
-            DashboardRoutes.Routes.AddRazorPage("/tags/search", x => new TagsSearchPage());
+            DashboardRoutes.Routes.AddRazorPage("/tags/search(/.+)?", x => new TagsSearchPage());
             DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(options));
             DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-].+)", new JobTagsDispatcher(options));
 
-            JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search")) {Active = page.RequestPath.StartsWith("/tags/search") });
+            JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
+            {
+                Active = page.RequestPath.StartsWith("/tags/search"),
+                Metric = new DashboardMetric("tags:count", razorPage =>
+                {
+                    var tagStorage = new TagsStorage(razorPage.Storage);
+                    return new Metric(tagStorage.GetTagsCount());
+                })
+            });
 
             var assembly = typeof(GlobalConfigurationExtensions).Assembly;
 
             var jsPath = DashboardRoutes.Routes.Contains("/js[0-9]+") ? "/js[0-9]+" : "/js[0-9]{3}";
+            DashboardRoutes.Routes.Append(jsPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.jquery.tagcloud.js"));
             DashboardRoutes.Routes.Append(jsPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.script.js"));
 
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
