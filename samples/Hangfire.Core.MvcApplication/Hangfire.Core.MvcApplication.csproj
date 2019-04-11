@@ -7,7 +7,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Hangfire" Version="1.6.22" />
+    <PackageReference Include="Hangfire" Version="1.7.0" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.3.4" />
     <PackageReference Include="Hangfire.MemoryStorage.Core" Version="1.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
