@@ -17,7 +17,7 @@ namespace Hangfire.MvcApplication
 
         [Tag("fail")]
         [AutomaticRetry(Attempts = 0)] // Disable retry
-        public void FailedTask(PerformContext context)
+        public void FailedTask(PerformContext context, IJobCancellationToken token)
         {
             context.AddTags("throw");
             throw new Exception("Fail please!");

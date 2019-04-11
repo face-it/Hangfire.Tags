@@ -17,10 +17,10 @@ namespace Hangfire.MvcApplication
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
-            var recurringJobs = new RecurringJobManager();
+            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
 
-            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null),  Cron.Minutely);
-            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *", TimeZoneInfo.Local);
+            var recurringJobs = new RecurringJobManager();
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null, null)), "*/2 * * * *", TimeZoneInfo.Local);
         }
 
         private static void ThrowException()

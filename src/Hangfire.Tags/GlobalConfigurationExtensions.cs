@@ -24,7 +24,12 @@ namespace Hangfire.Tags
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            TagsOptions.Options = options ?? new TagsOptions();
+            TagsOptions.Options = options ?? new TagsOptions {Storage = JobStorage.Current as ITagsServiceStorage};
+
+            if (TagsOptions.Options.Storage == null)
+            {
+                throw new ApplicationException("The specified storage is not suitable for use with tags");
+            }
 
             if (DashboardRoutes.Routes.FindDispatcher("/tags/(.*)") != null)
                 throw new InvalidOperationException("Tags are already initialized");
