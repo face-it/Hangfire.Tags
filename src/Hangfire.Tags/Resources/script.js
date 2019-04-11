@@ -14,9 +14,9 @@ $(function() {
 
         $("h1.page-header").after(tags);
 
-        $.post("/hangfire/tags/" + id, null, function (data) {
+        $.post("../../tags/" + id, null, function (data) {
             tags.empty();
-            data.forEach(function(tag) {
+            data.forEach(function (tag) {
                 tags.append("<span class=\"label label-info\">" + tag + "</span>");
             });
         });
