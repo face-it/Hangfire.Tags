@@ -24,7 +24,12 @@ namespace Hangfire.Tags
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            TagsOptions.Options = options ?? new TagsOptions();
+            TagsOptions.Options = options ?? new TagsOptions {Storage = JobStorage.Current as ITagsServiceStorage};
+
+            if (TagsOptions.Options.Storage == null)
+            {
+                throw new ApplicationException("The specified storage is not suitable for use with tags");
+            }
 
             if (DashboardRoutes.Routes.FindDispatcher("/tags/(.*)") != null)
                 throw new InvalidOperationException("Tags are already initialized");
@@ -34,8 +39,8 @@ namespace Hangfire.Tags
             GlobalJobFilters.Filters.Add(new CreateJobFilter(), int.MaxValue);
 
             DashboardRoutes.Routes.AddRazorPage("/tags/search(/.+)?", x => new TagsSearchPage());
-            DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(options));
-            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-].+)", new JobTagsDispatcher(options));
+            DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(TagsOptions.Options));
+            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
 
             JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
             {
@@ -55,7 +60,7 @@ namespace Hangfire.Tags
 
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style.css"));
-            DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(options));
+            DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(TagsOptions.Options));
 
             return configuration;
         }
