@@ -1,4 +1,6 @@
 ﻿using System.Web.Mvc;
+using Hangfire.Server;
+using Hangfire.Tags.Attributes;
 
 namespace Hangfire.MvcApplication.Controllers
 {
@@ -17,10 +19,16 @@ namespace Hangfire.MvcApplication.Controllers
         [HttpPost]
         public ActionResult Create()
         {
-            BackgroundJob.Enqueue(() => TextBuffer.WriteLine("Background Job completed successfully!"));
+            BackgroundJob.Enqueue(() => Job("Home", null));
             TextBuffer.WriteLine("Background job has been created.");
 
             return RedirectToAction("Index");
+        }
+
+        [Tag("job", "{0}", "{1}")]
+        public void Job(string name, PerformContext ctx)
+        {
+            TextBuffer.WriteLine("Background Job completed succesfully!");
         }
     }
 }

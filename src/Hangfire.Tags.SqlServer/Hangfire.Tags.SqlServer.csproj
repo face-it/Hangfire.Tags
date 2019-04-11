@@ -18,8 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.6.20" />
+    <None Remove="Hangfire.Tags.SqlServer.csproj.DotSettings" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.60.6" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.0" />
   </ItemGroup>
 
   <ItemGroup>

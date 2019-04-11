@@ -21,6 +21,7 @@ namespace Hangfire.Tags
 
             return jobid;
         }
+
         public static PerformContext AddTags(this PerformContext context, IEnumerable<string> tags)
         {
             return context.AddTags(tags.ToArray());

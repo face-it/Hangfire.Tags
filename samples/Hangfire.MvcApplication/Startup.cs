@@ -1,4 +1,5 @@
 ﻿using System;
+using Hangfire.Common;
 using Hangfire.Tags.SqlServer;
 using Microsoft.Owin;
 using Owin;
@@ -15,9 +16,11 @@ namespace Hangfire.MvcApplication
 
             app.UseHangfireDashboard();
             app.UseHangfireServer();
-            
-            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null),  Cron.Minutely);
-            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), Cron.MinuteInterval(2));
+
+            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
+
+            var recurringJobs = new RecurringJobManager();
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null, null)), "*/2 * * * *", TimeZoneInfo.Local);
         }
 
         private static void ThrowException()

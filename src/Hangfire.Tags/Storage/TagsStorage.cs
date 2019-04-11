@@ -34,22 +34,25 @@ namespace Hangfire.Tags.Storage
 
         public long GetJobCount(string[] tags, string stateName = null)
         {
-            return TagsOptions.Options.Storage.GetJobCount(tags.Select(t => t.GetSetKey()).ToArray(), stateName);
+            return TagsOptions.Options.Storage?.GetJobCount(tags.Select(t => t.GetSetKey()).ToArray(), stateName) ?? 0;
         }
 
         public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
         {
-            return TagsOptions.Options.Storage.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags);
+            return TagsOptions.Options.Storage?.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags) ??
+                   new Dictionary<string, int>();
         }
 
         public IEnumerable<TagDto> SearchWeightedTags(string tag = null)
         {
-            return TagsOptions.Options.Storage.SearchWeightedTags(tag);
+            return TagsOptions.Options.Storage?.SearchWeightedTags(tag) ?? Enumerable.Empty<TagDto>();
         }
 
         public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
         {
-            return TagsOptions.Options.Storage.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count, stateName);
+            return TagsOptions.Options.Storage?.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count,
+                       stateName) ??
+                   new JobList<MatchingJobDto>(Enumerable.Empty<KeyValuePair<string, MatchingJobDto>>());
         }
 
         public ITagsMonitoringApi GetMonitoringApi()
