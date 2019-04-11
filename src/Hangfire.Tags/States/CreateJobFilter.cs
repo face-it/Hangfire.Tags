@@ -22,7 +22,7 @@ namespace Hangfire.Tags.States
                 return;
 
             var args = filterContext.Job.Args.ToArray();
-            var tags = attrs.Select(tag => string.Format(tag, args));
+            var tags = attrs.Select(tag => string.Format(tag, args)).Where(a => !string.IsNullOrEmpty(a));
             filterContext.BackgroundJob.Id.AddTags(tags);
         }
     }
