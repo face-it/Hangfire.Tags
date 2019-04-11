@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.SqlClient;
 using System.Reflection;
 using Hangfire.SqlServer;
@@ -16,6 +16,8 @@ namespace Hangfire.Tags.SqlServer
         private static MethodInfo _acquireSetLock;
         private static MethodInfo _queueCommand;
 
+        private static MethodInfo _addCommand;
+
         public SqlTagsTransaction(SqlServerStorageOptions options, IWriteOnlyTransaction transaction)
         {
             if (transaction.GetType().Name != "SqlServerWriteOnlyTransaction")
@@ -31,6 +33,7 @@ namespace Hangfire.Tags.SqlServer
             {
                 _acquireSetLock = null;
                 _queueCommand = null;
+                _addCommand = null;
 
                 _type = transaction.GetType();
             }
@@ -46,8 +49,15 @@ namespace Hangfire.Tags.SqlServer
                 _queueCommand = transaction.GetType().GetTypeInfo().GetMethod(nameof(QueueCommand),
                     BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (_queueCommand == null)
-                throw new ArgumentException("The function QueueCommand cannot be found.");
+            if (_queueCommand == null && _addCommand == null)
+            {
+                _addCommand = transaction.GetType().GetTypeInfo().GetMethod(nameof(AddCommand),
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                _addCommand = _addCommand?.MakeGenericMethod(typeof(string));
+            }
+
+            if (_queueCommand == null && _addCommand == null)
+                throw new ArgumentException("The functions QueueCommand and AddCommand cannot be found.");
         }
 
         private void AcquireSetLock()
@@ -57,7 +67,13 @@ namespace Hangfire.Tags.SqlServer
 
         private void QueueCommand(string commandText, params SqlParameter[] parameters)
         {
-            _queueCommand.Invoke(_transaction, new object[] {commandText, parameters});
+            _queueCommand.Invoke(_transaction, new object[] { commandText, parameters });
+        }
+
+        private void AddCommand(string commandText, string key, params SqlParameter[] parameters)
+        {
+            object _setCommands = _transaction.GetType().GetTypeInfo().GetField("_setCommands", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_transaction);
+            _addCommand.Invoke(_transaction, new object[] { _setCommands, key, commandText, parameters });
         }
 
         public void ExpireSetValue(string key, string value, TimeSpan expireIn)
@@ -68,10 +84,22 @@ namespace Hangfire.Tags.SqlServer
 update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key and [Value] = @value";
 
             AcquireSetLock();
-            QueueCommand(query,
-                new SqlParameter("@key", key),
-                new SqlParameter("@value", value),
-                new SqlParameter("@expireAt", DateTime.UtcNow.Add(expireIn)));
+            if (_queueCommand == null)
+            {
+                AddCommand(query,
+                    key,
+                    new SqlParameter("@key", key),
+                    new SqlParameter("@value", value),
+                    new SqlParameter("@expireAt", DateTime.UtcNow.Add(expireIn)));
+            }
+            else
+            {
+                QueueCommand(query,
+                    new SqlParameter("@key", key),
+                    new SqlParameter("@value", value),
+                    new SqlParameter("@expireAt", DateTime.UtcNow.Add(expireIn)));
+            }
+
         }
 
         public void PersistSetValue(string key, string value)
@@ -82,9 +110,19 @@ update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key
 update [{_options.SchemaName}].[Set] set ExpireAt = null where [Key] = @key and [Value] = @value";
 
             AcquireSetLock();
-            QueueCommand(query, 
+            if (_queueCommand == null)
+            {
+                AddCommand(query,
+                key,
                 new SqlParameter("@key", key),
                 new SqlParameter("@value", value));
+            }
+            else
+            {
+                QueueCommand(query,
+                    new SqlParameter("@key", key),
+                    new SqlParameter("@value", value));
+            }
         }
     }
 }
