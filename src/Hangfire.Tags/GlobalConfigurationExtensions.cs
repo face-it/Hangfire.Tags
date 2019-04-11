@@ -35,7 +35,7 @@ namespace Hangfire.Tags
 
             DashboardRoutes.Routes.AddRazorPage("/tags/search(/.+)?", x => new TagsSearchPage());
             DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(TagsOptions.Options));
-            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-].+)", new JobTagsDispatcher(TagsOptions.Options));
+            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
 
             JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
             {
