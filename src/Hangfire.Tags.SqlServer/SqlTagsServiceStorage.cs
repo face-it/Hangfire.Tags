@@ -122,7 +122,15 @@ group by j.StateName order by count(*) desc";
                     {
                         Job = job,
                         State = sqlJob.StateName,
+                        CreatedAt = sqlJob.CreatedAt,
+                        ResultAt = GetStateDate(stateData, sqlJob.StateName)
                     }));
+        }
+
+        private DateTime? GetStateDate(SafeDictionary<string, string> stateData, string stateName)
+        {
+            var stateDateName = stateName == "Processing" ? "StartedAt" : $"{stateName}At";
+            return DateTime.TryParse(stateData?[stateDateName], out var result) ? result.ToUniversalTime() : (DateTime?) null;
         }
 
         private int GetJobCount(DbConnection connection, string[] tags, string stateName)

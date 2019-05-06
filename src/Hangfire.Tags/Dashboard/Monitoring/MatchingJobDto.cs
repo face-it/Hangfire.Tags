@@ -7,6 +7,7 @@ namespace Hangfire.Tags.Dashboard.Monitoring
     {
         public Job Job { get; set; }
         public string State { get; set; }
-        public DateTime? EnqueuedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? ResultAt {get; set;}
     }
 }
