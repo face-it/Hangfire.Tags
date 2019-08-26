@@ -20,6 +20,9 @@ namespace Hangfire.Tags.SqlServer
             sqlOptions = sqlOptions ?? new SqlServerStorageOptions();
 
             options.Storage = new SqlTagsServiceStorage(sqlOptions);
+
+            SqlTagsServiceStorage.Current = options.Storage;
+
             var config = configuration.UseTags(options);
             return config;
         }
