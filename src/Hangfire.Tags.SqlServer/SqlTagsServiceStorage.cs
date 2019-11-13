@@ -122,7 +122,15 @@ group by j.StateName order by count(*) desc";
                     {
                         Job = job,
                         State = sqlJob.StateName,
+                        CreatedAt = sqlJob.CreatedAt,
+                        ResultAt = GetStateDate(stateData, sqlJob.StateName)
                     }));
+        }
+
+        private DateTime? GetStateDate(SafeDictionary<string, string> stateData, string stateName)
+        {
+            var stateDateName = stateName == "Processing" ? "StartedAt" : $"{stateName}At";
+            return DateTime.TryParse(stateData?[stateDateName], out var result) ? result.ToUniversalTime() : (DateTime?) null;
         }
 
         private int GetJobCount(DbConnection connection, string[] tags, string stateName)
@@ -204,12 +212,12 @@ order by j.Id desc";
 
         private static Job DeserializeJob(string invocationData, string arguments)
         {
-            var data = JobHelper.FromJson<InvocationData>(invocationData);
+            var data = SerializationHelper.Deserialize<InvocationData>(invocationData);
             data.Arguments = arguments;
 
             try
             {
-                return data.Deserialize();
+                return data.DeserializeJob();
             }
             catch (JobLoadException)
             {
@@ -230,7 +238,7 @@ order by j.Id desc";
 
                 if (job.InvocationData != null)
                 {
-                    var deserializedData = JobHelper.FromJson<Dictionary<string, string>>(job.StateData);
+                    var deserializedData = SerializationHelper.Deserialize<Dictionary<string, string>>(job.StateData);
                     var stateData = deserializedData != null
                         ? new SafeDictionary<string, string>(deserializedData, StringComparer.OrdinalIgnoreCase)
                         : null;

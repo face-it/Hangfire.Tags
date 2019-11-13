@@ -1,5 +1,4 @@
 ﻿using System;
-using Hangfire.Common;
 using Hangfire.Logging;
 using Newtonsoft.Json;
 
@@ -20,8 +19,7 @@ namespace Hangfire.MvcApplication
                 {
                     TypeNameHandling = TypeNameHandling.Objects
                 };
-
-                JobHelper.SetSerializerSettings(settings);
+                GlobalConfiguration.Configuration.UseSerializerSettings(settings);
 
                 if (messageFunc == null)
                 {
