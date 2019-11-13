@@ -102,7 +102,7 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
 select top {maxTags} j.StateName AS [Key], count(*) AS [Value]
 from [{_options.SchemaName}].Job j with (nolock)
 inner join cte on cte.Id = j.Id 
-left join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
+inner join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
 group by j.StateName order by count(*) desc";
 
                 return connection.Query<KeyValuePair<string, int>>(
