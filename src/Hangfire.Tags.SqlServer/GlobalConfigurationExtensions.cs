@@ -1,4 +1,5 @@
 ﻿using Hangfire.SqlServer;
+using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.SqlServer
 {
@@ -20,6 +21,9 @@ namespace Hangfire.Tags.SqlServer
             sqlOptions = sqlOptions ?? new SqlServerStorageOptions();
 
             options.Storage = new SqlTagsServiceStorage(sqlOptions);
+
+            TagsServiceStorage.Current = options.Storage;
+
             var config = configuration.UseTags(options);
             return config;
         }
