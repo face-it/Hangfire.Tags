@@ -62,7 +62,7 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key]='tags' and s.Value like @setKey + ':%' + @tag + '%'";
+                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%'";
 
                 return connection.Query<string>(
                     sql,
@@ -102,7 +102,7 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
 select top {maxTags} j.StateName AS [Key], count(*) AS [Value]
 from [{_options.SchemaName}].Job j with (nolock)
 inner join cte on cte.Id = j.Id 
-left join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
+inner join [{_options.SchemaName}].State s with (nolock) on j.StateId = s.Id
 group by j.StateName order by count(*) desc";
 
                 return connection.Query<KeyValuePair<string, int>>(
@@ -265,7 +265,7 @@ order by j.Id desc";
 
             public new TValue this[TKey i]
             {
-                get => ContainsKey(i) ? base[i] : default(TValue);
+                get => ContainsKey(i) ? base[i] : default;
                 set => base[i] = value;
             }
         }
