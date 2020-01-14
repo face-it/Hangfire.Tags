@@ -60,9 +60,10 @@ namespace Hangfire.Tags.SqlServer
                 throw new ArgumentException("The functions QueueCommand and AddCommand cannot be found.");
         }
 
-        private void AcquireSetLock()
+        private void AcquireSetLock(string key)
         {
-            _acquireSetLock.Invoke(_transaction, null);
+            object[] parameters = _acquireSetLock.GetParameters().Length > 0 ? new object[] { key } : null;
+            _acquireSetLock.Invoke(_transaction, parameters);
         }
 
         private void QueueCommand(string commandText, params SqlParameter[] parameters)
@@ -83,7 +84,7 @@ namespace Hangfire.Tags.SqlServer
             var query = $@"
 update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key and [Value] = @value";
 
-            AcquireSetLock();
+            AcquireSetLock(key);
             if (_queueCommand == null)
             {
                 AddCommand(query,
@@ -109,7 +110,7 @@ update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key
             string query = $@"
 update [{_options.SchemaName}].[Set] set ExpireAt = null where [Key] = @key and [Value] = @value";
 
-            AcquireSetLock();
+            AcquireSetLock(key);
             if (_queueCommand == null)
             {
                 AddCommand(query,
