@@ -14,8 +14,6 @@ namespace Hangfire.Tags.SqlServer
 {
     public class SqlTagsServiceStorage : ITagsServiceStorage
     {
-        public static ITagsServiceStorage Current = null;
-
         private readonly SqlServerStorageOptions _options;
 
         private SqlTagsMonitoringApi MonitoringApi => new SqlTagsMonitoringApi(JobStorage.Current.GetMonitoringApi());
@@ -58,17 +56,17 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
             });
         }
 
-        public IEnumerable<string> SearchTags(string tag)
+        public IEnumerable<string> SearchTags(string tag, string setKey)
         {
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key]='tags' and s.Value like '%' + @tag + '%'";
+                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%'";
 
                 return connection.Query<string>(
                     sql,
-                    new {tag},
+                    new {setKey, tag},
                     commandTimeout: (int?) _options.CommandTimeout?.TotalSeconds);
             });
         }
@@ -267,7 +265,7 @@ order by j.Id desc";
 
             public new TValue this[TKey i]
             {
-                get => ContainsKey(i) ? base[i] : default(TValue);
+                get => ContainsKey(i) ? base[i] : default;
                 set => base[i] = value;
             }
         }

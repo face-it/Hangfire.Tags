@@ -21,8 +21,9 @@ namespace Hangfire.Tags.Storage
         /// Searches for tags matching the specified tag.
         /// </summary>
         /// <param name="tag">A search string containing the partial or full tag.</param>
+        /// <param name="setKey">The keyprefix used for the keys in the set.</param>
         /// <returns>A list of tags that match the specified name.</returns>
-        IEnumerable<string> SearchTags(string tag);
+        IEnumerable<string> SearchTags(string tag, string setKey = IdExtensions.SetKey);
 
         /// <summary>
         /// Get the amount of matching jobs using the specified tags. The tags should be a full tag, not a partial tag name.
