@@ -81,8 +81,8 @@ namespace Hangfire.Core.MvcApplication
             var recurringJobs = new RecurringJobManager();
 
             RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
-            //            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), Cron.MinuteInterval(2));
-            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), Cron.MinuteInterval(2), TimeZoneInfo.Local);
+            //            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), "*/2 * * * *");
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *", TimeZoneInfo.Local);
         }
     }
 }
