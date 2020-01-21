@@ -212,8 +212,9 @@ order by j.Id desc";
 
         private static Job DeserializeJob(string invocationData, string arguments)
         {
-            var data = SerializationHelper.Deserialize<InvocationData>(invocationData);
-            data.Arguments = arguments;
+            var data = InvocationData.DeserializePayload(invocationData);
+            if (!string.IsNullOrEmpty(arguments))
+                data.Arguments = arguments;
 
             try
             {
