@@ -8,10 +8,6 @@ namespace Hangfire.Tags.States
     {
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            var jobDetails = context.Storage.GetMonitoringApi().JobDetails(context.BackgroundJob.Id);
-            if (jobDetails == null)
-                return; // Should never happen, we're updating this job right now!
-
             var expireTransaction = new TagExpirationTransaction(context.Storage, (JobStorageTransaction) transaction);
             var jobid = context.BackgroundJob.Id;
 
