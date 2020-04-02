@@ -38,17 +38,17 @@ namespace Hangfire.Core.MvcApplication
             services.AddHangfire(config =>
             {
                 config.UseMemoryStorage();
-                //                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
-                //                {
-                //                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
-                //                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
-                //                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                //                });
+//                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+//                {
+//                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
+//                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
+//                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+//                });
 
-                //                config.UseTagsWithPostgreSql();
+//                config.UseTagsWithPostgreSql();
 
                 config.UseTags();
-                //                config.UseNLogLogProvider();
+//                config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
             });
 
