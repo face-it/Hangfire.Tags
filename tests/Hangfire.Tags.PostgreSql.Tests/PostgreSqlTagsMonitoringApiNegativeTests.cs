@@ -33,7 +33,7 @@ namespace Hangfire.Tags.PostgreSql.Tests
             Action act = () => new PostgreSqlTagsMonitoringApi(fakeImplementation);
 
             // Assert
-            act.Should().Throw<Exception>("Api doesn't have UseConnection method").WithMessage("The function UseConnection cannot be found.");
+            act.Should().Throw<ArgumentException>("Api doesn't have UseConnection method").WithMessage("The function UseConnection cannot be found.");
         }
 
         private class PostgreSqlMonitoringApi : IMonitoringApi

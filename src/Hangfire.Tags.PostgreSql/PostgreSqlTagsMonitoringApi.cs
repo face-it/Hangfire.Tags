@@ -21,6 +21,13 @@ namespace Hangfire.Tags.PostgreSql
             }
 
             _monitoringApi = monitoringApi;
+            // Other transaction type, clear cached methods
+            if (_type != monitoringApi.GetType())
+            {
+                _useConnection = null;
+
+                _type = monitoringApi.GetType();
+            }
 
             if (_useConnection == null)
                 _useConnection = monitoringApi.GetType().GetTypeInfo().GetMethod(nameof(UseConnection),
