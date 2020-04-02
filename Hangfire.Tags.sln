@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags", "src\Hangfire.Tags\Hangfire.Tags.csproj", "{A9FA3828-3FEE-4086-B378-E1BFD9EF8104}"
 EndProject
@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.MvcApplication", "samples\Hangfire.MvcApplication\Hangfire.MvcApplication.csproj", "{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Core.MvcApplication", "samples\Hangfire.Core.MvcApplication\Hangfire.Core.MvcApplication.csproj", "{B11DCB78-8FE2-4659-A45F-815A671DE280}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.PostgreSql", "src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj", "{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.PostgreSql.Tests", "tests\Hangfire.Tags.PostgreSql.Tests\Hangfire.Tags.PostgreSql.Tests.csproj", "{4E4A0F27-5630-4734-A1E7-63D379D339FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{B11DCB78-8FE2-4659-A45F-815A671DE280}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B11DCB78-8FE2-4659-A45F-815A671DE280}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B11DCB78-8FE2-4659-A45F-815A671DE280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
