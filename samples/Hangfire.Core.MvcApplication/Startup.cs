@@ -45,6 +45,8 @@ namespace Hangfire.Core.MvcApplication
 //                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
 //                });
 
+//                config.UseTagsWithPostgreSql();
+
                 config.UseTags();
 //                config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
