@@ -11,54 +11,59 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 
 ## Features
 
- - **100% Safe**: no Hangfire-managed data is ever updated, hence there's no risk to corrupt it.
- - **Attributes**: supports [Tag("{0}")] syntax for creating a default set of tags when creating a job.
- - **Extensions**: has extension methods on PerformContext, but also on string (for instance for adding tags to a jobid).
- - **Clean up**: uses Hangfire sets, which are cleaned when jobs are removed.
- - **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
+- **100% Safe**: no Hangfire-managed data is ever updated, hence there's no risk to corrupt it.
+- **Attributes**: supports [Tag("{0}")] syntax for creating a default set of tags when creating a job.
+- **Extensions**: has extension methods on PerformContext, but also on string (for instance for adding tags to a jobid).
+- **Clean up**: uses Hangfire sets, which are cleaned when jobs are removed.
+- **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
 
 ## Setup
 
 In .NET Core's Startup.cs:
+
 ```c#
 public void ConfigureServices(IServiceCollection services)
 {
     services.AddHangfire(config =>
     {
         config.UseSqlServerStorage("connectionSting");
+        // config.UseTagsWithPostgreSql();
         config.UseTagsWithSql();
     });
 }
 ```
 
 Otherwise,
+
 ```c#
 GlobalConfiguration.Configuration
     .UseSqlServerStorage("connectionSting")
+    //.UseTagsWithPostgreSql()
     .UseTagsWithSql();
 ```
 
-**NOTE**: If you have Dashboard and Server running separately, 
-you'll need to call `UseTags()` or `UseTagsWithSql()` on both.
+**NOTE**: If you have Dashboard and Server running separately,
+you'll need to call `UseTags()` or `UseTagsWithSql()` or `UseTagsWithPostgreSql()` on both.
 
 ### Additional options
 
 As usual, you may provide additional options for `UseTags()` method.
 
 Here's what you can configure:
-- **BackgroundColor** – default background color for the tags
-- **TextColor** – default text color of the tags
+
+- **BackgroundColor** - default background color for the tags
+- **TextColor** - default text color of the tags
 
 **NOTE**: After you initially add Hangfire.Tags (or change the options above) you may need to clear browser cache, as generated CSS/JS can be cached by browser.
 
 ## Providers
 
-In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. At this moment, only a provider for SQL Server is available.
+In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. Right now, there are two providers. A provider for SQL server, and thanks to Yong Liu, a provider for PostgreSQL is available.
 
 ## Tags
 
-Hangfire.Tags provides extension methods on `PerformContext` object, 
-hence you'll need to add it as a job argument. 
+Hangfire.Tags provides extension methods on `PerformContext` object,
+hence you'll need to add it as a job argument.
 
 **NOTE**: Like `IJobCancellationToken`, `PerformContext` is a special argument type which Hangfire will substitute automatically. You should pass `null` when enqueuing a job.
 
