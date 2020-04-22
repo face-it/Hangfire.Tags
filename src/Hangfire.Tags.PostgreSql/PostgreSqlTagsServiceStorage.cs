@@ -44,9 +44,10 @@ namespace Hangfire.Tags.PostgreSql
                     $@"select Overlay(Key placing '' from 1 for 5) AS Tag, COUNT(*) AS Amount, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as Percentage
 from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by s.Key";
 
-                return connection.Query<TagDto>(
+                var weightedTags = connection.Query<TagDto>(
                     sql,
                     new { setKey, tag, total });
+                return weightedTags;
             });
         }
 
@@ -56,7 +57,7 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select Value from {_options.SchemaName}.Set s where s.Key like @setKey + ':%' + @tag + '%'";
+                    $@"select Value from {_options.SchemaName}.Set s where s.Key like (@setKey || ':%' || @tag || '%')";
 
                 return connection.Query<string>(
                     sql,

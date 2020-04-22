@@ -7,7 +7,7 @@ namespace Hangfire.Tags.Storage
     /// <summary>
     /// Abstraction over Hangfire's storage API
     /// </summary>
-    internal interface ITagsStorage : IDisposable
+    public interface ITagsStorage : IDisposable
     {
         /// <summary>
         /// Retrieves the monitoring api for tags

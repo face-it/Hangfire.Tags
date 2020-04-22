@@ -22,6 +22,7 @@ namespace Hangfire.Tags.Storage
         public void Dispose()
         {
             _transaction.Dispose();
+            _tagsStorage.Dispose();
         }
 
         public void Expire(string jobid, TimeSpan expireIn)
