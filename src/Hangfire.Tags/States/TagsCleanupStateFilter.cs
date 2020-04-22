@@ -8,15 +8,17 @@ namespace Hangfire.Tags.States
     {
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            var expireTransaction = new TagExpirationTransaction(context.Storage, (JobStorageTransaction) transaction);
-            var jobid = context.BackgroundJob.Id;
+            using (var expireTransaction = new TagExpirationTransaction(context.Storage, (JobStorageTransaction)transaction))
+            {
+                var jobid = context.BackgroundJob.Id;
 
-            if (context.NewState.IsFinal)
-                // Final state, so set the tags expiration
-                expireTransaction.Expire(jobid, context.JobExpirationTimeout);
-            else
-                // Only remove tags if the job is going to be removed
-                expireTransaction.Persist(jobid);
+                if (context.NewState.IsFinal)
+                    // Final state, so set the tags expiration
+                    expireTransaction.Expire(jobid, context.JobExpirationTimeout);
+                else
+                    // Only remove tags if the job is going to be removed
+                    expireTransaction.Persist(jobid);
+            }
         }
 
         public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)

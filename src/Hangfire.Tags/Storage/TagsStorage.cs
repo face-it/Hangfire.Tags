@@ -7,7 +7,7 @@ using Hangfire.Tags.Dashboard.Monitoring;
 
 namespace Hangfire.Tags.Storage
 {
-    internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
+    internal class TagsStorage : ITagsStorage, ITagsMonitoringApi, IDisposable
     {
         private readonly JobStorageConnection _connection;
 

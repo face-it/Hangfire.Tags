@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using Hangfire.Client;
 using Hangfire.Tags.Attributes;
@@ -13,7 +14,9 @@ namespace Hangfire.Tags.States
 
         public void OnCreated(CreatedContext filterContext)
         {
-            var mi = filterContext.BackgroundJob.Job.Method;
+            // BackgroundJob is Nullable from CreatedContext
+            var mi = filterContext?.BackgroundJob?.Job.Method ?? throw new ArgumentException("Background Job cannot be null", nameof(filterContext));
+
             var attrs = mi.GetCustomAttributes<TagAttribute>()
                 .Union(mi.DeclaringType?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
                 .SelectMany(t => t.Tag).ToList();

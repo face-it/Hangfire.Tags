@@ -5,8 +5,8 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.5.0</Version>
-    <Description>Support for SQL Server for Hangfire.Tags. This seperate library is required in order to search for tags, and proper cleanup.</Description>
+    <Version>1.5.1</Version>
+    <Description>Support for SQL Server for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>

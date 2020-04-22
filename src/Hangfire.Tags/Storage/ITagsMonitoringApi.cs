@@ -4,7 +4,7 @@ using Hangfire.Tags.Dashboard.Monitoring;
 
 namespace Hangfire.Tags.Storage
 {
-    internal interface ITagsMonitoringApi
+    public interface ITagsMonitoringApi
     {
         long GetTagsCount();
 
