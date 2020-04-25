@@ -46,8 +46,11 @@ namespace Hangfire.Core.MvcApplication
 //                });
 
 //                config.UseTagsWithPostgreSql();
-
-                config.UseTags();
+//                var options = new TagsOptions()
+//                {
+//                    TagsListStyle = TagsListStyle.Dropdown
+//                };
+//                config.UseTagsWithSql(options);
 //                config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
             });
