@@ -60,10 +60,5 @@ namespace Hangfire.Tags
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(TagsOptions.Options));
             return configuration;
         }
-
-        public static IServiceProvider AddTags(this IServiceProvider serviceCollection)
-        {
-            return serviceCollection;
-        }
     }
 }
