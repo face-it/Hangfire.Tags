@@ -9,6 +9,10 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 ![sidemenu](Sidemenu.png)
 ![dashboard](Dashboard.png)
 
+## Contributers
+
+- **[Yong Liu](https://github.com/yongliu-mdsol)**: Special thanks for all the pull requests you've created. Thank you so much!
+
 ## Features
 
 - **100% Safe**: no Hangfire-managed data is ever updated, hence there's no risk to corrupt it.
@@ -16,6 +20,7 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 - **Extensions**: has extension methods on PerformContext, but also on string (for instance for adding tags to a jobid).
 - **Clean up**: uses Hangfire sets, which are cleaned when jobs are removed.
 - **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
+- **Searching**: allows you to search for tags
 
 ## Setup
 
@@ -53,6 +58,7 @@ Here's what you can configure:
 
 - **BackgroundColor** - default background color for the tags
 - **TextColor** - default text color of the tags
+- **Tags interface** - you can specify an autocomplete tags search (Yong Liu).
 
 **NOTE**: After you initially add Hangfire.Tags (or change the options above) you may need to clear browser cache, as generated CSS/JS can be cached by browser.
 
@@ -91,6 +97,19 @@ public void TaskMethod(PerformContext context)
 ## Search tags
 
 In the Dashboard, when clicking on Jobs, you'll see a new menu item, called Tags. By default this page will show you all defined tags in the system. Clicking on a tag will show a list of all jobs with that tag attached.
+
+The default view for showing the tags is a so called tagcloud. If you prefer an autocomplete dropdown list, you can specify that using the options:
+
+```c#
+var options = new TagsOptions()
+{
+   TagsListStyle = TagsListStyle.Dropdown
+};
+config.UseTagsWithSql(options);
+```
+
+The result will look like this:
+![tagsearch](Tagsearch.png)
 
 ## License
 
