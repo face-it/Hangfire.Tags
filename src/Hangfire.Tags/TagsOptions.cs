@@ -2,6 +2,13 @@
 
 namespace Hangfire.Tags
 {
+    public enum TagsListStyle
+    {
+        LinkButton,
+
+        Dropdown
+    }
+
     /// <summary>
     /// Configuration options for tags
     /// </summary>
@@ -14,5 +21,7 @@ namespace Hangfire.Tags
         public string TagColor { get; set; }
 
         public string TextColor { get; set; }
+
+        public TagsListStyle TagsListStyle { get; set; } = TagsListStyle.LinkButton; // default
     }
 }
