@@ -24,7 +24,7 @@ namespace Hangfire.Tags
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            TagsOptions.Options = options ?? new TagsOptions {Storage = JobStorage.Current as ITagsServiceStorage};
+            TagsOptions.Options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
 
             if (TagsOptions.Options.Storage == null)
             {
@@ -42,14 +42,11 @@ namespace Hangfire.Tags
             DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(TagsOptions.Options));
             DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
 
+            DashboardMetrics.AddMetric(TagDashboardMetrics.TagsCount);
             JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
             {
                 Active = page.RequestPath.StartsWith("/tags/search"),
-                Metric = new DashboardMetric("tags:count", razorPage =>
-                {
-                    var tagStorage = new TagsStorage(razorPage.Storage);
-                    return new Metric(tagStorage.GetTagsCount());
-                })
+                Metric = TagDashboardMetrics.TagsCount,
             });
 
             var assembly = typeof(GlobalConfigurationExtensions).Assembly;
@@ -61,8 +58,12 @@ namespace Hangfire.Tags
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style.css"));
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(TagsOptions.Options));
-
             return configuration;
+        }
+
+        public static IServiceProvider AddTags(this IServiceProvider serviceCollection)
+        {
+            return serviceCollection;
         }
     }
 }
