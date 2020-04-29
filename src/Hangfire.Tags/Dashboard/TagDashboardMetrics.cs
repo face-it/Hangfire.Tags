@@ -7,7 +7,7 @@ namespace Hangfire.Tags.Dashboard
     {
         public readonly static DashboardMetric TagsCount = new DashboardMetric("tags:count", razorPage =>
             {
-                long count = 0;
+                long count;
                 using (var tagStorage = new TagsStorage(razorPage.Storage))
                 {
                     count = tagStorage.GetTagsCount();
