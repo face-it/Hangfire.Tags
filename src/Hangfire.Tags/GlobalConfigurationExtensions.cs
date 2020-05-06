@@ -38,7 +38,8 @@ namespace Hangfire.Tags
             GlobalJobFilters.Filters.Add(new TagsCleanupStateFilter(), int.MaxValue);
             GlobalJobFilters.Filters.Add(new CreateJobFilter(), int.MaxValue);
 
-            DashboardRoutes.Routes.AddRazorPage("/tags/search(/.+)?", x => new TagsSearchPage());
+            DashboardRoutes.Routes.AddRazorPage("/tags/search", x => new TagsSearchPage());
+            DashboardRoutes.Routes.AddRazorPage("/tags/search/.+", x => new TagsJobsPage());
             DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(TagsOptions.Options));
             DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
 

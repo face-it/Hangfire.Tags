@@ -27,12 +27,6 @@ namespace Hangfire.Tags.Dashboard.Pages
     using System.Text;
     
     #line 4 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-    using System.Text.RegularExpressions;
-    
-    #line default
-    #line hidden
-    
-    #line 5 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
     using Hangfire.Dashboard;
     
     #line default
@@ -44,19 +38,19 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line default
     #line hidden
     
-    #line 7 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-    using Hangfire.Dashboard.Resources;
-    
-    #line default
-    #line hidden
-    
-    #line 9 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    #line 8 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
     using Hangfire.Tags;
     
     #line default
     #line hidden
     
-    #line 8 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    #line 5 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    using Hangfire.Tags.Dashboard.Monitoring;
+    
+    #line default
+    #line hidden
+    
+    #line 7 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
     using Hangfire.Tags.Storage;
     
     #line default
@@ -82,171 +76,96 @@ WriteLiteral("\r\n");
 
 
 
-
             
-            #line 11 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 10 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
   
     Layout = new LayoutPage("Tags");
 
-    int.TryParse(Query("from"), out var from);
-    int.TryParse(Query("count"), out var perPage);
-
-    var tags = new string[0];
-    string state = null;
-
-    var match = Regex.Match(RequestPath, "^/tags/search(/(?<tags>[^/]+))(/(?<state>[^/]+))?");
-    if (match.Success)
-    {
-        tags = match.Groups["tags"].Value.Split(',');
-        state = match.Groups["state"].Value;
-    }
-
-    var tagStorage = new TagsStorage(Storage);
     var options = TagsOptions.Options;
     var tagsListStyle = options.TagsListStyle;
-    var monitor = tagStorage.GetMonitoringApi();
+
+    var allTags = new List<TagDto>();
+
+    using (var tagStorage = new TagsStorage(Storage))
+    {
+        var monitor = tagStorage.GetMonitoringApi();
+        // Show a page with all tags
+        allTags = monitor.SearchWeightedTags().ToList();
+    }
+
 
 
             
             #line default
             #line hidden
-WriteLiteral("    <script>\r\n        function go(tag) {\r\n            var baseUrl = \"");
+WriteLiteral("<script>\r\n        function go(tag) {\r\n            var baseUrl = \"");
 
 
             
-            #line 34 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 28 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
                       Write(Url.To("/tags/search/"));
 
             
             #line default
             #line hidden
-WriteLiteral("\";\r\n            window.location = baseUrl + tag; \r\n        }\r\n    </script>\r\n<div" +
-" class=\"row\">\r\n    <div class=\"col-md-3\">\r\n        ");
+WriteLiteral("\";\r\n            window.location = baseUrl + tag;\r\n        }\r\n</script>\r\n<div clas" +
+"s=\"row\">\r\n    <div class=\"col-md-3\">\r\n        ");
 
 
             
-            #line 40 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 34 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
    Write(Html.JobsSidebar());
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n    </div>\r\n    <div class=\"col-md-9\">\r\n");
+WriteLiteral("\r\n    </div>\r\n    <div class=\"col-md-9\">\r\n\r\n        <h1 class=\"page-header\">Tags " +
+"search</h1>\r\n\r\n");
 
 
             
-            #line 43 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-         if (tags.Length == 1)
-        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            <h1 class=\"page-header\">Tag ");
-
-
-            
-            #line 45 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                   Write(tags[0]);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</h1>\r\n");
-
-
-            
-            #line 46 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-        }
-        else if (tags.Length > 1)
-        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            <h1 class=\"page-header\">Tags ");
-
-
-            
-            #line 49 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                    Write(string.Join(", ", tags));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</h1>\r\n");
-
-
-            
-            #line 50 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-        }
-        else
-        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            <h1 class=\"page-header\">Tags</h1>\r\n");
-
-
-            
-            #line 54 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-        }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("        \r\n");
-
-
-            
-            #line 56 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 40 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
           
-            // TODO: Split views into partial views
-            if (tags.Length == 0)
+
+            if (!allTags.Any())
             {
-                // Show a page with all tags
-                var allTags = monitor.SearchWeightedTags().ToList();
-
-                if (!allTags.Any())
-                {
 
             
             #line default
             #line hidden
-WriteLiteral("                    <div class=\"tags\">\r\n                        There are no tags" +
-" found yet.\r\n                    </div>\r\n");
+WriteLiteral("                <div class=\"tags\">\r\n                    There are no tags found y" +
+"et.\r\n                </div>\r\n");
 
 
             
-            #line 68 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                }
-                else
-                {
+            #line 47 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            }
+            else
+            {
 
             
             #line default
             #line hidden
-WriteLiteral("                    <div class=\"tags row\">\r\n\r\n");
+WriteLiteral("                <div class=\"tags row\">\r\n\r\n");
 
 
             
-            #line 73 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                         if (tagsListStyle == TagsListStyle.LinkButton)
+            #line 52 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                     if (tagsListStyle == TagsListStyle.LinkButton)
+                    {
+                        foreach (var t in allTags)
                         {
-                            foreach (var t in allTags)
-                            {
-                                var intValue = (int)Math.Round(t.Percentage);
+                            var intValue = (int)Math.Round(t.Percentage);
 
             
             #line default
             #line hidden
-WriteLiteral("                                <a href=\"");
+WriteLiteral("                            <a href=\"");
 
 
             
-            #line 78 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                    Write(Url.To("/tags/search/" + @t.Tag));
+            #line 57 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                                Write(Url.To("/tags/search/" + @t.Tag));
 
             
             #line default
@@ -255,8 +174,8 @@ WriteLiteral("\" rel=\"");
 
 
             
-            #line 78 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                            Write(intValue);
+            #line 57 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                                                                        Write(intValue);
 
             
             #line default
@@ -265,8 +184,8 @@ WriteLiteral("\">");
 
 
             
-            #line 78 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                       Write(t.Tag);
+            #line 57 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                                                                                   Write(t.Tag);
 
             
             #line default
@@ -275,33 +194,33 @@ WriteLiteral("</a>\r\n");
 
 
             
-            #line 79 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                            }
+            #line 58 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
                         }
-                        else if (tagsListStyle == TagsListStyle.Dropdown)
-                        {
+                    }
+                    else if (tagsListStyle == TagsListStyle.Dropdown)
+                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                            <div class=\"col-md-12\">\r\n                            " +
-"    <datalist id=\"hangfireTagsList\">\r\n");
+WriteLiteral("                        <div class=\"col-md-12\">\r\n                            <dat" +
+"alist id=\"hangfireTagsList\">\r\n");
 
 
             
-            #line 85 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                     foreach (var t in allTags)
-                                    {
+            #line 64 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                                 foreach (var t in allTags)
+                                {
 
             
             #line default
             #line hidden
-WriteLiteral("                                        <option value=\"");
+WriteLiteral("                                    <option value=\"");
 
 
             
-            #line 87 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                  Write(t.Tag);
+            #line 66 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                                              Write(t.Tag);
 
             
             #line default
@@ -310,414 +229,50 @@ WriteLiteral("\"></option>\r\n");
 
 
             
-            #line 88 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"                                </datalist>
-                                <div class=""col-md-10"">
-                                    <input class=""form-control"" id=""selectedTag"" list=""hangfireTagsList"" autocomplete=""off"" placeholder=""Select a tag"" />
-                                </div>
-                                <div class=""col-md-2"">
-                                    <button id=""btn_go""class=""btn"" onclick=""go(document.getElementById('selectedTag').value)"">Go</button>
-                                </div>
-                            </div>
-");
-
-
-            
-            #line 97 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                        }
-                        else
-                        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                            <b>Not supported Tags List Style. Check TagsOptions</" +
-"b>\r\n");
-
-
-            
-            #line 101 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                        }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                    </div>\r\n");
-
-
-            
-            #line 103 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                }
-            }
-            else
-            {
-                // Show a page with a list of matching jobs
-
-                var pager = new Pager(from, perPage, monitor.GetJobCount(tags, state));
-                var matchingJobs = monitor.GetMatchingJobs(tags, pager.FromRecord, pager.RecordsPerPage, state);
-
-                if (pager.TotalPageCount == 0)
-                {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                    <div class=\"alert alert-info\">\r\n                        There" +
-" are no jobs found for the selected tag(s).\r\n                    </div>\r\n");
-
-
-            
-            #line 117 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                }
-                else
-                {
-                    var matchingStates = monitor.GetJobStateCount(tags);
-                    if (matchingStates.Any())
-                    {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                        <div class=\"js-state-list\">\r\n                            " +
-"<div class=\"btn-toolbar btn-toolbar-top\">\r\n");
-
-
-            
-            #line 125 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                 foreach (var matchingState in matchingStates)
-                                {
-                                    var css = state == matchingState.Key ? "btn-primary" : "";
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                    <a role=\"button\" href=\"");
-
-
-            
-            #line 128 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                      Write(Url.To("/tags/search/" + string.Join(",", tags) + "/" + matchingState.Key));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" class=\"js-state-list-command btn btn-sm ");
-
-
-            
-            #line 128 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                                                                                                           Write(css);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\">");
-
-
-            
-            #line 128 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                                                                                                                 Write(matchingState.Key);
-
-            
-            #line default
-            #line hidden
-WriteLiteral(" <span class=\"badge\">");
-
-
-            
-            #line 128 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                                                                                                                                                        Write(matchingState.Value);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</span></a>\r\n");
-
-
-            
-            #line 129 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 67 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
                                 }
 
             
             #line default
             #line hidden
-WriteLiteral("                            </div>\r\n                        </div>\r\n");
+WriteLiteral(@"                            </datalist>
+                            <div class=""col-md-10"">
+                                <input class=""form-control"" id=""selectedTag"" list=""hangfireTagsList"" autocomplete=""off"" placeholder=""Select a tag"" />
+                            </div>
+                            <div class=""col-md-2"">
+                                <button id=""btn_go"" class=""btn"" onclick=""go(document.getElementById('selectedTag').value)"">Go</button>
+                            </div>
+                        </div>
+");
 
 
             
-            #line 132 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 76 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+                    }
+                    else
+                    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                        <b>Not supported Tags List Style. Check TagsOptions</b>\r\n" +
+"");
+
+
+            
+            #line 80 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
                     }
 
-
             
             #line default
             #line hidden
-WriteLiteral("                    <div class=\"js-jobs-list\">\r\n                        <div clas" +
-"s=\"btn-toolbar btn-toolbar-top\">\r\n                            <button class=\"js-" +
-"jobs-list-command btn btn-sm btn-primary\"\r\n                                    d" +
-"ata-url=\"");
+WriteLiteral("                </div>\r\n");
 
 
             
-            #line 137 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                         Write(Url.To("/jobs/enqueued/requeue"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\"\r\n                                    data-loading-text=\"");
-
-
-            
-            #line 138 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                  Write(Strings.Common_Enqueueing);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\"\r\n                                    disabled=\"disabled\">\r\n                    " +
-"            <span class=\"glyphicon glyphicon-repeat\"></span>\r\n                  " +
-"              ");
-
-
-            
-            #line 141 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                           Write(Strings.Common_RequeueJobs);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                            </button>\r\n\r\n                            ");
-
-
-            
-            #line 144 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                       Write(Html.PerPageSelector(pager));
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"
-                        </div>
-
-                        <div class=""table-responsive"">
-                            <table class=""table"">
-                                <thead>
-                                    <tr>
-                                        <th class=""min-width"">
-                                            <input type=""checkbox"" class=""js-jobs-list-select-all"" />
-                                        </th>
-                                        <th class=""min-width"">");
-
-
-            
-            #line 154 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                         Write(Strings.Common_Id);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</th>\r\n                                        <th>");
-
-
-            
-            #line 155 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                       Write(Strings.Common_Job);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</th>\r\n                                        <th class=\"min-width\">");
-
-
-            
-            #line 156 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                         Write(Strings.Common_State);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</th>\r\n                                        <th class=\"align-right\">");
-
-
-            
-            #line 157 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                           Write(Strings.RecurringJobsPage_Table_LastExecution);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</th>\r\n                                    </tr>\r\n                               " +
-" </thead>\r\n                                <tbody>\r\n");
-
-
-            
-            #line 161 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                     foreach (var job in matchingJobs)
-                                    {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                        <tr class=\"js-jobs-list-row\">\r\n          " +
-"                                  <td>\r\n                                        " +
-"        <input type=\"checkbox\" class=\"js-jobs-list-checkbox\" name=\"jobs[]\" value" +
-"=\"");
-
-
-            
-            #line 165 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                                                     Write(job.Key);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" />\r\n                                            </td>\r\n                        " +
-"                    <td class=\"min-width\">\r\n                                    " +
-"            ");
-
-
-            
-            #line 168 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                           Write(Html.JobIdLink(job.Key));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                                            </td>\r\n\r\n");
-
-
-            
-            #line 171 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                             if (job.Value == null)
-                                            {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                                <td colspan=\"3\">\r\n               " +
-"                                     <em>");
-
-
-            
-            #line 174 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                   Write(Strings.Common_JobExpired);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</em>\r\n                                                </td>\r\n");
-
-
-            
-            #line 176 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                            }
-                                            else
-                                            {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                                <td class=\"word-break\">\r\n        " +
-"                                            ");
-
-
-            
-            #line 180 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                               Write(Html.JobNameLink(job.Key, job.Value.Job));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                                                </td>\r\n");
-
-
-
-WriteLiteral("                                                <td class=\"min-width\">\r\n         " +
-"                                           ");
-
-
-            
-            #line 183 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                               Write(job.Value.State);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                                                </td>\r\n");
-
-
-
-WriteLiteral("                                                <td class=\"min-width align-right\"" +
-">\r\n");
-
-
-            
-            #line 186 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                     if (job.Value.ResultAt.HasValue)
-                                                    {
-                                                        
-            
-            #line default
-            #line hidden
-            
-            #line 188 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                   Write(Html.RelativeTime(job.Value.ResultAt.Value));
-
-            
-            #line default
-            #line hidden
-            
-            #line 188 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                                    
-                                                    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                                </td>\r\n");
-
-
-            
-            #line 191 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                            }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                        </tr>\r\n");
-
-
-            
-            #line 193 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                </tbody>\r\n                            </table>\r\n " +
-"                       </div>\r\n\r\n                        ");
-
-
-            
-            #line 198 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                   Write(Html.Paginator(pager));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                    </div>\r\n");
-
-
-            
-            #line 200 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                }
+            #line 82 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
             }
+
         
 
             

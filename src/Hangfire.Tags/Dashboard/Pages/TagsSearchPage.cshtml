@@ -1,204 +1,86 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True *@
 @using System
 @using System.Linq
-@using System.Text.RegularExpressions
 @using Hangfire.Dashboard
+@using Hangfire.Tags.Dashboard.Monitoring;
 @using Hangfire.Dashboard.Pages
-@using Hangfire.Dashboard.Resources
 @using Hangfire.Tags.Storage
 @using Hangfire.Tags;
 @inherits RazorPage
 @{
     Layout = new LayoutPage("Tags");
 
-    int.TryParse(Query("from"), out var from);
-    int.TryParse(Query("count"), out var perPage);
-
-    var tags = new string[0];
-    string state = null;
-
-    var match = Regex.Match(RequestPath, "^/tags/search(/(?<tags>[^/]+))(/(?<state>[^/]+))?");
-    if (match.Success)
-    {
-        tags = match.Groups["tags"].Value.Split(',');
-        state = match.Groups["state"].Value;
-    }
-
-    var tagStorage = new TagsStorage(Storage);
     var options = TagsOptions.Options;
     var tagsListStyle = options.TagsListStyle;
-    var monitor = tagStorage.GetMonitoringApi();
+
+    var allTags = new List<TagDto>();
+
+    using (var tagStorage = new TagsStorage(Storage))
+    {
+        var monitor = tagStorage.GetMonitoringApi();
+        // Show a page with all tags
+        allTags = monitor.SearchWeightedTags().ToList();
+    }
+
 }
-    <script>
+<script>
         function go(tag) {
             var baseUrl = "@Url.To("/tags/search/")";
-            window.location = baseUrl + tag; 
+            window.location = baseUrl + tag;
         }
-    </script>
+</script>
 <div class="row">
     <div class="col-md-3">
         @Html.JobsSidebar()
     </div>
     <div class="col-md-9">
-        @if (tags.Length == 1)
-        {
-            <h1 class="page-header">Tag @tags[0]</h1>
-        }
-        else if (tags.Length > 1)
-        {
-            <h1 class="page-header">Tags @string.Join(", ", tags)</h1>
-        }
-        else
-        {
-            <h1 class="page-header">Tags</h1>
-        }
-        
+
+        <h1 class="page-header">Tags search</h1>
+
         @{
-            // TODO: Split views into partial views
-            if (tags.Length == 0)
+
+            if (!allTags.Any())
             {
-                // Show a page with all tags
-                var allTags = monitor.SearchWeightedTags().ToList();
-
-                if (!allTags.Any())
-                {
-                    <div class="tags">
-                        There are no tags found yet.
-                    </div>
-                }
-                else
-                {
-                    <div class="tags row">
-
-                        @if (tagsListStyle == TagsListStyle.LinkButton)
-                        {
-                            foreach (var t in allTags)
-                            {
-                                var intValue = (int)Math.Round(t.Percentage);
-                                <a href="@Url.To("/tags/search/" + @t.Tag)" rel="@intValue">@t.Tag</a>
-                            }
-                        }
-                        else if (tagsListStyle == TagsListStyle.Dropdown)
-                        {
-                            <div class="col-md-12">
-                                <datalist id="hangfireTagsList">
-                                    @foreach (var t in allTags)
-                                    {
-                                        <option value="@t.Tag"></option>
-                                    }
-                                </datalist>
-                                <div class="col-md-10">
-                                    <input class="form-control" id="selectedTag" list="hangfireTagsList" autocomplete="off" placeholder="Select a tag" />
-                                </div>
-                                <div class="col-md-2">
-                                    <button id="btn_go"class="btn" onclick="go(document.getElementById('selectedTag').value)">Go</button>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <b>Not supported Tags List Style. Check TagsOptions</b>
-                        }
-                    </div>
-                }
+                <div class="tags">
+                    There are no tags found yet.
+                </div>
             }
             else
             {
-                // Show a page with a list of matching jobs
+                <div class="tags row">
 
-                var pager = new Pager(from, perPage, monitor.GetJobCount(tags, state));
-                var matchingJobs = monitor.GetMatchingJobs(tags, pager.FromRecord, pager.RecordsPerPage, state);
-
-                if (pager.TotalPageCount == 0)
-                {
-                    <div class="alert alert-info">
-                        There are no jobs found for the selected tag(s).
-                    </div>
-                }
-                else
-                {
-                    var matchingStates = monitor.GetJobStateCount(tags);
-                    if (matchingStates.Any())
+                    @if (tagsListStyle == TagsListStyle.LinkButton)
                     {
-                        <div class="js-state-list">
-                            <div class="btn-toolbar btn-toolbar-top">
-                                @foreach (var matchingState in matchingStates)
+                        foreach (var t in allTags)
+                        {
+                            var intValue = (int)Math.Round(t.Percentage);
+                            <a href="@Url.To("/tags/search/" + @t.Tag)" rel="@intValue">@t.Tag</a>
+                        }
+                    }
+                    else if (tagsListStyle == TagsListStyle.Dropdown)
+                    {
+                        <div class="col-md-12">
+                            <datalist id="hangfireTagsList">
+                                @foreach (var t in allTags)
                                 {
-                                    var css = state == matchingState.Key ? "btn-primary" : "";
-                                    <a role="button" href="@Url.To("/tags/search/" + string.Join(",", tags) + "/" + matchingState.Key)" class="js-state-list-command btn btn-sm @css">@matchingState.Key <span class="badge">@matchingState.Value</span></a>
+                                    <option value="@t.Tag"></option>
                                 }
+                            </datalist>
+                            <div class="col-md-10">
+                                <input class="form-control" id="selectedTag" list="hangfireTagsList" autocomplete="off" placeholder="Select a tag" />
+                            </div>
+                            <div class="col-md-2">
+                                <button id="btn_go" class="btn" onclick="go(document.getElementById('selectedTag').value)">Go</button>
                             </div>
                         </div>
                     }
-
-                    <div class="js-jobs-list">
-                        <div class="btn-toolbar btn-toolbar-top">
-                            <button class="js-jobs-list-command btn btn-sm btn-primary"
-                                    data-url="@Url.To("/jobs/enqueued/requeue")"
-                                    data-loading-text="@Strings.Common_Enqueueing"
-                                    disabled="disabled">
-                                <span class="glyphicon glyphicon-repeat"></span>
-                                @Strings.Common_RequeueJobs
-                            </button>
-
-                            @Html.PerPageSelector(pager)
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th class="min-width">
-                                            <input type="checkbox" class="js-jobs-list-select-all" />
-                                        </th>
-                                        <th class="min-width">@Strings.Common_Id</th>
-                                        <th>@Strings.Common_Job</th>
-                                        <th class="min-width">@Strings.Common_State</th>
-                                        <th class="align-right">@Strings.RecurringJobsPage_Table_LastExecution</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var job in matchingJobs)
-                                    {
-                                        <tr class="js-jobs-list-row">
-                                            <td>
-                                                <input type="checkbox" class="js-jobs-list-checkbox" name="jobs[]" value="@job.Key" />
-                                            </td>
-                                            <td class="min-width">
-                                                @Html.JobIdLink(job.Key)
-                                            </td>
-
-                                            @if (job.Value == null)
-                                            {
-                                                <td colspan="3">
-                                                    <em>@Strings.Common_JobExpired</em>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="word-break">
-                                                    @Html.JobNameLink(job.Key, job.Value.Job)
-                                                </td>
-                                                <td class="min-width">
-                                                    @job.Value.State
-                                                </td>
-                                                <td class="min-width align-right">
-                                                    @if (job.Value.ResultAt.HasValue)
-                                                    {
-                                                        @Html.RelativeTime(job.Value.ResultAt.Value)
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        @Html.Paginator(pager)
-                    </div>
-                }
+                    else
+                    {
+                        <b>Not supported Tags List Style. Check TagsOptions</b>
+                    }
+                </div>
             }
+
         }
     </div>
 </div>

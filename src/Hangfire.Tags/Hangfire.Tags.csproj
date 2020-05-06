@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.6.1</Version>
+    <Version>1.6.2</Version>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -39,6 +39,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Dashboard\Pages\TagsJobsPage.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TagsJobsPage.cshtml</DependentUpon>
+    </Compile>
     <Compile Update="Dashboard\Pages\TagsSearchPage.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -47,6 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Dashboard\Pages\TagsJobsPage.cshtml">
+      <LastGenOutput>TagsJobsPage.generated.cs</LastGenOutput>
+      <Generator>RazorGenerator</Generator>
+    </None>
     <None Update="Dashboard\Pages\TagsSearchPage.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>TagsSearchPage.generated.cs</LastGenOutput>
