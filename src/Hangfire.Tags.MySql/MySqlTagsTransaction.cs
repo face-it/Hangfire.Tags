@@ -42,7 +42,7 @@ namespace Hangfire.Tags.MySql
             if (key == null) throw new ArgumentNullException(nameof(key));
 
             var query = $@"
-update {_options.SchemaName}.Set set ExpireAt = @expireAt where Key = @key and Value = @value";
+update `{_options.TablesPrefix}Set` set ExpireAt = @expireAt where Key = @key and Value = @value";
 
             QueueCommand((connection) => connection.Execute(
                     query,
@@ -59,7 +59,7 @@ update {_options.SchemaName}.Set set ExpireAt = @expireAt where Key = @key and V
             if (key == null) throw new ArgumentNullException(nameof(key));
 
             string query = $@"
-update {_options.SchemaName}.Set set ExpireAt = null where Key = @key and Value = @value";
+update `{_options.TablesPrefix}Set` set ExpireAt = null where Key = @key and Value = @value";
 
             QueueCommand((connection) => connection.Execute(query,
                  new { key, value }));

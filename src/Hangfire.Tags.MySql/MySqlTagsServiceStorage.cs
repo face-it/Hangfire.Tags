@@ -38,12 +38,12 @@ namespace Hangfire.Tags.MySql
                     tag = "[^0-9]"; // Exclude tags:<id> entries
 
                 var sql =
-                    $@"select count(*) as Amount from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) ";
+                    $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%'";
                 var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
 
                 sql =
-                    $@"select Overlay(Key placing '' from 1 for 5) AS Tag, COUNT(*) AS Amount, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as Percentage
-from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by s.Key";
+                    $@"select INSERT(`Key`, 1, 5, '') AS `Tag`, COUNT(*) AS `Amount`, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as `Percentage` 
+from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%' group by s.Key";
 
                 var weightedTags = connection.Query<TagDto>(
                     sql,
@@ -58,7 +58,7 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select Value from {_options.SchemaName}.Set s where s.Key like (@setKey || ':%' || @tag || '%')";
+                    $@"select `Value` from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%'";
 
                 return connection.Query<string>(
                     sql,
@@ -80,26 +80,28 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
                 var parameters = new Dictionary<string, object>();
 
                 var jobsSql =
-                    $@";with cte as
+                    $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from {_options.SchemaName}.Job j";
+  from `{_options.TablesPrefix}Job` j";
 
                 for (var i = 0; i < tags.Length; i++)
                 {
                     parameters["tag" + i] = tags[i];
                     jobsSql +=
-                        $"  inner join {_options.SchemaName}.Set s{i} on j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
+                        $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
                 }
 
                 jobsSql +=
                     $@")
-select j.StateName AS Key, count(*) AS Value
-from {_options.SchemaName}.Job j
-inner join cte on cte.Id = j.Id
-inner join {_options.SchemaName}.State s on j.StateId = s.Id
+select j.StateName AS `Key`, count(*) AS `Value`
+from `{_options.TablesPrefix}Job` j 
+inner join cte on cte.Id = j.Id 
+inner join `{_options.TablesPrefix}State` s on j.StateId = s.Id
 group by j.StateName order by count(*) desc
-limit {maxTags}";
+LIMIT {maxTags};
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
 
                 return connection.Query<KeyValuePair<string, int>>(
                         jobsSql,
@@ -136,25 +138,26 @@ limit {maxTags}";
             };
 
             var jobsSql =
-                $@";with cte as
+                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from {_options.SchemaName}.Job j ";
+  from `{_options.TablesPrefix}Job` j";
 
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $" inner join {_options.SchemaName}.Set s{i} on j.Id= s{i}.Value::bigint and s{i}.Key=@tag{i}";
+                jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
             }
 
             jobsSql +=
                 $@"
-  where (@stateName IS NULL OR LENGTH(@stateName)=0 OR j.StateName=@stateName)
+  where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
 )
 select count(*)
-from {_options.SchemaName}.Job j
-inner join cte on cte.Id = j.Id
-left join {_options.SchemaName}.State s  on j.StateId = s.Id";
+from `{_options.TablesPrefix}Job` j
+inner join cte on cte.Id = j.Id 
+left join `{_options.TablesPrefix}State` s on j.StateId = s.Id;
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 
             return connection.ExecuteScalar<int>(
                 jobsSql,
@@ -173,27 +176,28 @@ left join {_options.SchemaName}.State s  on j.StateId = s.Id";
             };
 
             var jobsSql =
-                $@";with cte as
+                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from {_options.SchemaName}.Job j";
+  from `{_options.TablesPrefix}Job` j";
 
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join {_options.SchemaName}.Set s{i} on j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
+                jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
             }
 
             jobsSql +=
 $@"
-  where (@stateName IS NULL OR LENGTH(@stateName) = 0 OR j.StateName=@stateName)
+  where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName)
 )
 select j.*, s.Reason as StateReason, s.Data as StateData
-from {_options.SchemaName}.Job j
-inner join cte on cte.Id = j.Id
-left join {_options.SchemaName}.State s on j.StateId = s.Id
-where cte.row_num between @start and @end
-order by j.Id desc";
+from `{_options.TablesPrefix}Job` j
+inner join cte on cte.Id = j.Id 
+left join `{_options.TablesPrefix}State` s on j.StateId = s.Id
+where cte.row_num between @start and @end 
+order by j.Id desc;
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 
             var jobs = connection.Query<SqlJob>(
                     jobsSql,
