@@ -16,7 +16,7 @@ namespace Hangfire.Tags.MySql
         /// <param name="options">Options for tags</param>
         /// <param name="sqlOptions">Options for sql storage</param>
         /// <returns></returns>
-        public static IGlobalConfiguration UseTagsWithPostgreSql(this IGlobalConfiguration configuration, TagsOptions options = null, MySqlStorageOptions sqlOptions = null)
+        public static IGlobalConfiguration UseTagsWithMySql(this IGlobalConfiguration configuration, TagsOptions options = null, MySqlStorageOptions sqlOptions = null)
         {
             options = options ?? new TagsOptions();
             sqlOptions = sqlOptions ?? new MySqlStorageOptions();
