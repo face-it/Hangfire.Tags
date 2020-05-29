@@ -38,12 +38,12 @@ namespace Hangfire.Tags.MySql
                     tag = "[^0-9]"; // Exclude tags:<id> entries
 
                 var sql =
-                    $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%'";
+                    $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%')";
                 var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
 
                 sql =
                     $@"select INSERT(`Key`, 1, 5, '') AS `Tag`, COUNT(*) AS `Amount`, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as `Percentage` 
-from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%' group by s.Key";
+from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%') group by s.Key";
 
                 var weightedTags = connection.Query<TagDto>(
                     sql,
@@ -58,7 +58,7 @@ from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%'
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select `Value` from `{_options.TablesPrefix}Set` s where s.Key like @setKey + ':%' + @tag + '%'";
+                    $@"select `Value` from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%')";
 
                 return connection.Query<string>(
                     sql,
