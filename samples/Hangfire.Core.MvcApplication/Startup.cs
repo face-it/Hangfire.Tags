@@ -59,7 +59,7 @@ namespace Hangfire.Core.MvcApplication
                 //end SqlServer Sample
 
                 //MySql Sample
-                //config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"), new MySqlStorageOptions
+                //var mySqlOptions = new MySqlStorageOptions
                 //{
                 //    TransactionIsolationLevel = IsolationLevel.ReadCommitted,
                 //    QueuePollInterval = TimeSpan.FromSeconds(15),
@@ -68,13 +68,14 @@ namespace Hangfire.Core.MvcApplication
                 //    PrepareSchemaIfNecessary = true,
                 //    DashboardJobListLimit = 50000,
                 //    TransactionTimeout = TimeSpan.FromMinutes(1),
-                //    TablesPrefix = ""
-                //}));
+                //    TablesPrefix = "hangfire"
+                //};
+                //config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"), mySqlOptions));
                 //var options = new TagsOptions()
                 //{
                 //    TagsListStyle = TagsListStyle.Dropdown
                 //};
-                //config.UseTagsWithMySql(options);
+                //config.UseTagsWithMySql(options,mySqlOptions);
                 //end MySql Sample
 
                 //postgreSql Sample
