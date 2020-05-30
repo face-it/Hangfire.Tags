@@ -92,7 +92,7 @@ from `{_options.TablesPrefix}Set` s where s.Key {keyClause} group by s.Key";
                 {
                     //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
                     var jobsSql =
-                        $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+                        $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
@@ -124,7 +124,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
                 {
                     //fallback for older MySql servers
                     var jobsSql =
-                        $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+                        $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
                     SET @rownum=0;
                     CREATE TEMPORARY TABLE cte
                       select Id, @rownum:=@rownum+1 as row_num FROM (
@@ -190,7 +190,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
             {
                 //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
                 var jobsSql =
-                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
+                $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from `{_options.TablesPrefix}Job` j";
@@ -203,7 +203,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
 
                 jobsSql +=
                     $@"
-  where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
+  where (@stateName IS NULL OR LENGTH(@stateName)=0 OR j.StateName=@stateName)
 )
 select count(*)
 from `{_options.TablesPrefix}Job` j
@@ -219,7 +219,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
             {
                 //fallback for older MySql servers
                 var jobsSql =
-                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+                $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 SET @rownum=0;
 CREATE TEMPORARY TABLE cte
 select Id, @rownum:=@rownum+1 as row_num FROM (
@@ -234,7 +234,7 @@ select Id, @rownum:=@rownum+1 as row_num FROM (
 
                 jobsSql +=
                     $@"
-  where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
+  where (@stateName IS NULL OR LENGTH(@stateName)=0 OR j.StateName=@stateName)
 order by j.Id DESC) t1, (select @rownum:=0) t2;
 select count(*)
 from `{_options.TablesPrefix}Job` j
@@ -266,7 +266,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
             {
                 //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
                 var jobsSql =
-                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
+                $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from `{_options.TablesPrefix}Job` j";
@@ -279,7 +279,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 
                 jobsSql +=
     $@"
-  where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName)
+  where (@stateName IS NULL OR LENGTH(@stateName) = 0 OR j.StateName=@stateName)
 )
 select j.*, s.Reason as StateReason, s.Data as StateData
 from `{_options.TablesPrefix}Job` j
@@ -295,12 +295,13 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
                     .ToList();
 
                 return DeserializeJobs(jobs, selector);
-            } else
+            }
+            else
             {
                 //fallback for older MySql servers
                 var jobsSql =
-                                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
-@SET @rownum=0;
+                                $@"SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SET @rownum=0;
 CREATE TEMPORARY TABLE cte
   select Id, @rownum:=@rownum+1 as row_num FROM (
   select j.Id
@@ -314,8 +315,8 @@ CREATE TEMPORARY TABLE cte
 
                 jobsSql +=
     $@"
-  where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName
-  order by j.Id desc) t1, (select @rownum:0) t2;
+  where (@stateName IS NULL OR LENGTH(@stateName) = 0 OR j.StateName=@stateName)
+  order by j.Id desc) t1, (select @rownum:=0) t2;
 
 select j.*, s.Reason as StateReason, s.Data as StateData
 from `{_options.TablesPrefix}Job` j
