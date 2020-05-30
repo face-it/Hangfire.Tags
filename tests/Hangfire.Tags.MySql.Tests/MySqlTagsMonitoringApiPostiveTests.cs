@@ -15,7 +15,7 @@ namespace Hangfire.Tags.MySql.Tests
         public void WhenTypeContainsUseConnection_ThenNotThrow()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new MySqlMonitoringApi();
 
             // Act
             Action act = () => new MySqlTagsMonitoringApi(fakeImplementation);
@@ -28,7 +28,7 @@ namespace Hangfire.Tags.MySql.Tests
         public void WhenTypeContainsUseConnection_ThenNotThrow1()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new MySqlMonitoringApi();
 
             // Act
             var api = new MySqlTagsMonitoringApi(fakeImplementation);
@@ -38,7 +38,7 @@ namespace Hangfire.Tags.MySql.Tests
             fakeImplementation.NumberOfCalls.Should().Be(1);
         }
 
-        private class PostgreSqlMonitoringApi : IMonitoringApi
+        private class MySqlMonitoringApi : IMonitoringApi
         {
             public int NumberOfCalls = 0;
 

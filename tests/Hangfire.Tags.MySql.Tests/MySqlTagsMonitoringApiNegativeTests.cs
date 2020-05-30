@@ -27,7 +27,7 @@ namespace Hangfire.Tags.MySql.Tests
         public void WhenUseConnectionMethodIsNotInTheInstance_ThenThrow()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new MySqlMonitoringApi();
 
             // Act
             Action act = () => new MySqlTagsMonitoringApi(fakeImplementation);
@@ -36,7 +36,7 @@ namespace Hangfire.Tags.MySql.Tests
             act.Should().Throw<ArgumentException>("Api doesn't have UseConnection method").WithMessage("The function UseConnection cannot be found.");
         }
 
-        private class PostgreSqlMonitoringApi : IMonitoringApi
+        private class MySqlMonitoringApi : IMonitoringApi
         {
             public JobList<DeletedJobDto> DeletedJobs(int from, int count)
             {
