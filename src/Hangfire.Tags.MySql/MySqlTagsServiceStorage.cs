@@ -86,23 +86,27 @@ from `{_options.TablesPrefix}Set` s where s.Key {keyClause} group by s.Key";
             return monitoringApi.UseConnection(connection =>
             {
                 var parameters = new Dictionary<string, object>();
-
-                var jobsSql =
-                    $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+                //only MySql version 8+ supports CTE
+                var serverStr = connection.ServerVersion;
+                if (Convert.ToInt32(serverStr.Split('.')[0]) >= 8)
+                {
+                    //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
+                    var jobsSql =
+                        $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from `{_options.TablesPrefix}Job` j";
 
-                for (var i = 0; i < tags.Length; i++)
-                {
-                    parameters["tag" + i] = tags[i];
-                    jobsSql +=
-                        $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
-                }
+                    for (var i = 0; i < tags.Length; i++)
+                    {
+                        parameters["tag" + i] = tags[i];
+                        jobsSql +=
+                            $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                    }
 
-                jobsSql +=
-                    $@")
+                    jobsSql +=
+                        $@")
 select j.StateName AS `Key`, count(*) AS `Value`
 from `{_options.TablesPrefix}Job` j 
 inner join cte on cte.Id = j.Id 
@@ -111,10 +115,45 @@ group by j.StateName order by count(*) desc
 LIMIT {maxTags};
 SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
 
-                return connection.Query<KeyValuePair<string, int>>(
-                        jobsSql,
-                        parameters)
-                    .ToDictionary(d => d.Key, d => d.Value);
+                    return connection.Query<KeyValuePair<string, int>>(
+                            jobsSql,
+                            parameters)
+                        .ToDictionary(d => d.Key, d => d.Value);
+                }
+                else
+                {
+                    //fallback for older MySql servers
+                    var jobsSql =
+                        $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+                    SET @rownum=0;
+                    CREATE TEMPORARY TABLE cte
+                      select Id, @rownum:=@rownum+1 as row_num FROM (
+                      select j.Id
+                      from `{_options.TablesPrefix}Job` j";
+
+                    for (var i = 0; i < tags.Length; i++)
+                    {
+                        parameters["tag" + i] = tags[i];
+                        jobsSql +=
+                            $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                    }
+
+                    jobsSql +=
+                        $@" order by j.Id desc) t1, (select @rownum:=0) t2;
+                    select j.StateName AS `Key`, count(*) AS `Value`
+                    from `{_options.TablesPrefix}Job` j 
+                    inner join cte on cte.Id = j.Id 
+                    inner join `{_options.TablesPrefix}State` s on j.StateId = s.Id
+                    group by j.StateName order by count(*) desc
+                    LIMIT {maxTags};
+                    DROP TEMPORARY TABLE cte;
+                    SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
+
+                    return connection.Query<KeyValuePair<string, int>>(
+                            jobsSql,
+                            parameters)
+                        .ToDictionary(d => d.Key, d => d.Value);
+                }
             });
         }
 
@@ -145,20 +184,25 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
                 {"stateName", stateName}
             };
 
-            var jobsSql =
+            //only MySql version 8+ supports CTE
+            var serverStr = connection.ServerVersion;
+            if (Convert.ToInt32(serverStr.Split('.')[0]) >= 8)
+            {
+                //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
+                var jobsSql =
                 $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from `{_options.TablesPrefix}Job` j";
 
-            for (var i = 0; i < tags.Length; i++)
-            {
-                parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
-            }
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    parameters["tag" + i] = tags[i];
+                    jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                }
 
-            jobsSql +=
-                $@"
+                jobsSql +=
+                    $@"
   where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
 )
 select count(*)
@@ -167,9 +211,42 @@ inner join cte on cte.Id = j.Id
 left join `{_options.TablesPrefix}State` s on j.StateId = s.Id;
 SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 
-            return connection.ExecuteScalar<int>(
-                jobsSql,
-                parameters);
+                return connection.ExecuteScalar<int>(
+                    jobsSql,
+                    parameters);
+            }
+            else
+            {
+                //fallback for older MySql servers
+                var jobsSql =
+                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SET @rownum=0;
+CREATE TEMPORARY TABLE cte
+select Id, @rownum:=@rownum+1 as row_num FROM (
+  select j.Id
+  from `{_options.TablesPrefix}Job` j";
+
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    parameters["tag" + i] = tags[i];
+                    jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                }
+
+                jobsSql +=
+                    $@"
+  where (@stateName IS NULL OR LEN(@stateName)=0 OR j.StateName=@stateName)
+order by j.Id DESC) t1, (select @rownum:=0) t2;
+select count(*)
+from `{_options.TablesPrefix}Job` j
+inner join cte on cte.Id = j.Id 
+left join `{_options.TablesPrefix}State` s on j.StateId = s.Id;
+DROP TEMPORARY TABLE cte;
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
+
+                return connection.ExecuteScalar<int>(
+                    jobsSql,
+                    parameters);
+            }
         }
 
         private JobList<TDto> GetJobs<TDto>(
@@ -183,20 +260,25 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
                 { "stateName", stateName }
             };
 
-            var jobsSql =
+            //only MySql version 8+ supports CTE
+            var serverStr = connection.ServerVersion;
+            if (Convert.ToInt32(serverStr.Split('.')[0]) >= 8)
+            {
+                //not tested, but original SQLServer query updated to reflect MySql's version of (nolock) and MySql not supporting (forceseek)
+                var jobsSql =
                 $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from `{_options.TablesPrefix}Job` j";
 
-            for (var i = 0; i < tags.Length; i++)
-            {
-                parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
-            }
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    parameters["tag" + i] = tags[i];
+                    jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                }
 
-            jobsSql +=
-$@"
+                jobsSql +=
+    $@"
   where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName)
 )
 select j.*, s.Reason as StateReason, s.Data as StateData
@@ -207,12 +289,50 @@ where cte.row_num between @start and @end
 order by j.Id desc;
 SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 
-            var jobs = connection.Query<SqlJob>(
-                    jobsSql,
-                    parameters)
-                .ToList();
+                var jobs = connection.Query<SqlJob>(
+                        jobsSql,
+                        parameters)
+                    .ToList();
 
-            return DeserializeJobs(jobs, selector);
+                return DeserializeJobs(jobs, selector);
+            } else
+            {
+                //fallback for older MySql servers
+                var jobsSql =
+                                $@";SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+@SET @rownum=0;
+CREATE TEMPORARY TABLE cte
+  select Id, @rownum:=@rownum+1 as row_num FROM (
+  select j.Id
+  from `{_options.TablesPrefix}Job` j";
+
+                for (var i = 0; i < tags.Length; i++)
+                {
+                    parameters["tag" + i] = tags[i];
+                    jobsSql += $"  inner join `{_options.TablesPrefix}Set` s{i} on j.Id=s{i}.Value and s{i}.Key=@tag{i}";
+                }
+
+                jobsSql +=
+    $@"
+  where (@stateName IS NULL OR LEN(@stateName) = 0 OR j.StateName=@stateName
+  order by j.Id desc) t1, (select @rownum:0) t2;
+
+select j.*, s.Reason as StateReason, s.Data as StateData
+from `{_options.TablesPrefix}Job` j
+inner join cte on cte.Id = j.Id 
+left join `{_options.TablesPrefix}State` s on j.StateId = s.Id
+where cte.row_num between @start and @end 
+order by j.Id desc;
+DROP TEMPORARY TABLE cte;
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
+
+                var jobs = connection.Query<SqlJob>(
+                        jobsSql,
+                        parameters)
+                    .ToList();
+
+                return DeserializeJobs(jobs, selector);
+            }
         }
 
         private static Job DeserializeJob(string invocationData, string arguments)
