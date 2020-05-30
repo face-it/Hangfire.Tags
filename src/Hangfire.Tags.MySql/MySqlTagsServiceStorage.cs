@@ -34,16 +34,24 @@ namespace Hangfire.Tags.MySql
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
+                string keyClause;
                 if (string.IsNullOrEmpty(tag))
-                    tag = "[^0-9]"; // Exclude tags:<id> entries
+                {
+                    // Exclude tags:<id> entries
+                    keyClause = "REGEXP CONCAT('(',@setKey,':[^0-9]|',@setkey,':?[0-9][^0-9])')";
+                }
+                else
+                {
+                    keyClause = "like CONCAT(@setKey,':%',@tag,'%')";
+                }
 
                 var sql =
-                    $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%')";
+                    $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key {keyClause}";
                 var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
 
                 sql =
                     $@"select INSERT(`Key`, 1, 5, '') AS `Tag`, COUNT(*) AS `Amount`, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as `Percentage` 
-from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%') group by s.Key";
+from `{_options.TablesPrefix}Set` s where s.Key {keyClause} group by s.Key";
 
                 var weightedTags = connection.Query<TagDto>(
                     sql,
