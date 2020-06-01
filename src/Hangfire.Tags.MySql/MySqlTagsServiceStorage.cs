@@ -8,7 +8,6 @@ using Hangfire.MySql;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.Dashboard.Monitoring;
-using Hangfire.Tags.MySql;
 using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.MySql

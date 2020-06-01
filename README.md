@@ -12,6 +12,7 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 ## Contributers
 
 - **[Yong Liu](https://github.com/yongliu-mdsol)**: Special thanks for all the pull requests you've created. Thank you so much!
+- **[Adam Taylor](https://github.com/granicus422)**: MySql support
 
 ## Features
 
@@ -33,6 +34,7 @@ public void ConfigureServices(IServiceCollection services)
     {
         config.UseSqlServerStorage("connectionSting");
         // config.UseTagsWithPostgreSql();
+        // config.UseTagsWithMySql();
         config.UseTagsWithSql();
     });
 }
@@ -44,11 +46,12 @@ Otherwise,
 GlobalConfiguration.Configuration
     .UseSqlServerStorage("connectionSting")
     //.UseTagsWithPostgreSql()
+    //.UseTagsWithMySql()
     .UseTagsWithSql();
 ```
 
 **NOTE**: If you have Dashboard and Server running separately,
-you'll need to call `UseTags()` or `UseTagsWithSql()` or `UseTagsWithPostgreSql()` on both.
+you'll need to call `UseTags()`, `UseTagsWithSql()`, `UseTagsWithPostgreSql()` or `UseTagsWithMySql()` on both.
 
 ### Additional options
 
@@ -64,7 +67,7 @@ Here's what you can configure:
 
 ## Providers
 
-In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. Right now, there are two providers. A provider for SQL server, and thanks to Yong Liu, a provider for PostgreSQL is available.
+In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. Right now, there are three providers: for SQL server, for PostgreSQL and for MySql.
 
 ## Tags
 
