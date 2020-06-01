@@ -17,7 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Core.MvcApplicatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.PostgreSql", "src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj", "{11CB8A72-DC51-42D0-A7CF-F2E8EA1869EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.PostgreSql.Tests", "tests\Hangfire.Tags.PostgreSql.Tests\Hangfire.Tags.PostgreSql.Tests.csproj", "{4E4A0F27-5630-4734-A1E7-63D379D339FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.PostgreSql.Tests", "tests\Hangfire.Tags.PostgreSql.Tests\Hangfire.Tags.PostgreSql.Tests.csproj", "{4E4A0F27-5630-4734-A1E7-63D379D339FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.MySql", "src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj", "{B7041AB7-9BAB-4D59-9465-0A2F6321C603}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.MySql.Tests", "tests\Hangfire.Tags.MySql.Tests\Hangfire.Tags.MySql.Tests.csproj", "{B06FFE1B-D0EB-4E9F-8F53-B7D19A351F63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,14 @@ Global
 		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E4A0F27-5630-4734-A1E7-63D379D339FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7041AB7-9BAB-4D59-9465-0A2F6321C603}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7041AB7-9BAB-4D59-9465-0A2F6321C603}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7041AB7-9BAB-4D59-9465-0A2F6321C603}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7041AB7-9BAB-4D59-9465-0A2F6321C603}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B06FFE1B-D0EB-4E9F-8F53-B7D19A351F63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B06FFE1B-D0EB-4E9F-8F53-B7D19A351F63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B06FFE1B-D0EB-4E9F-8F53-B7D19A351F63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B06FFE1B-D0EB-4E9F-8F53-B7D19A351F63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
