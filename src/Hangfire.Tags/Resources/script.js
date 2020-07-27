@@ -17,7 +17,7 @@ $(function() {
         $.post("../../tags/" + id, null, function (data) {
             tags.empty();
             data.forEach(function (tag) {
-                tags.append("<span class=\"label label-info\">" + tag + "</span>");
+                tags.append("<span class=\"label label-info\"><a href=\"../../tags/search/" + tag + "\">" + tag + "</a></span>");
             });
         });
     };

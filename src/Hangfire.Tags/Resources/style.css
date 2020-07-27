@@ -14,6 +14,10 @@
     background-color: #def;
 }
 
+.tags > .label > a:hover {
+    text-decoration: none;
+}
+
 .js-state-list {
     border-bottom: 1px solid #eee;
     margin-bottom: 20px;
