@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags MySql</PackageTags>
+    <PackageId>Hangfire.Tags.MySql.Official</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
