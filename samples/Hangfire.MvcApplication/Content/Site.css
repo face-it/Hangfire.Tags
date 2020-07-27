@@ -19,3 +19,7 @@ textarea {
 #buffer {
     height: 300px;
 }
+
+form {
+    display: inline;
+}

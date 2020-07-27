@@ -21,5 +21,9 @@
 @using (Html.BeginForm("Create", "Home"))
 {
     <button class="btn btn-primary" type="submit">Create a job</button>
-    <a class="btn btn-default" href="@Url.Content("~/hangfire")">Visit Dashboard</a>
 }
+@using (Html.BeginForm("Schedule", "Home"))
+{
+    <button class="btn btn-primary" type="submit">Schedule a job</button>
+}
+<a class="btn btn-default" href="@Url.Content("~/hangfire")">Visit Dashboard</a>

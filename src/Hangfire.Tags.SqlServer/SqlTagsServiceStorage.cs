@@ -123,7 +123,8 @@ group by j.StateName order by count(*) desc";
                         Job = job,
                         State = sqlJob.StateName,
                         CreatedAt = sqlJob.CreatedAt,
-                        ResultAt = GetStateDate(stateData, sqlJob.StateName)
+                        ResultAt = GetStateDate(stateData, sqlJob.StateName),
+                        EnqueueAt = GetStateDate(stateData, "Enqueue")
                     }));
         }
 

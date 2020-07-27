@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire.Core.MvcApplication.Models;
 using Hangfire.Server;
@@ -30,6 +31,15 @@ namespace Hangfire.Core.MvcApplication.Controllers
         {
             BackgroundJob.Enqueue(() => Job("Home", null));
             TextBuffer.WriteLine("Background job has been created.");
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult Schedule()
+        {
+            BackgroundJob.Schedule(() => Job("Home", null), TimeSpan.FromMinutes(1));
+            TextBuffer.WriteLine("Background job has been scheduled.");
 
             return RedirectToAction("Index");
         }
