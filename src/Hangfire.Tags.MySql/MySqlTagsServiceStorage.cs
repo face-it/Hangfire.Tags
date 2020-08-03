@@ -166,14 +166,21 @@ SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;";
                         Job = job,
                         State = sqlJob.StateName,
                         CreatedAt = sqlJob.CreatedAt,
-                        ResultAt = GetStateDate(stateData, sqlJob.StateName)
+                        ResultAt = GetStateDate(stateData, sqlJob.StateName),
+                        EnqueueAt = GetNullableStateDate(stateData, "Enqueue")
                     }));
         }
 
-        private DateTime GetStateDate(SafeDictionary<string, string> stateData, string stateName)
+        private static DateTime? GetNullableStateDate(SafeDictionary<string, string> stateData, string stateName)
         {
             var stateDateName = stateName == "Processing" ? "StartedAt" : $"{stateName}At";
-            return DateTime.TryParse(stateData?[stateDateName], out var result) ? result.ToUniversalTime() : DateTime.MinValue;
+            var dateTime = stateData?[stateDateName];
+            return !string.IsNullOrEmpty(dateTime) ? JobHelper.DeserializeNullableDateTime(dateTime) : null;
+        }
+
+        private static DateTime GetStateDate(SafeDictionary<string, string> stateData, string stateName)
+        {
+            return GetNullableStateDate(stateData, stateName) ?? DateTime.MinValue;
         }
 
         private int GetJobCount(DbConnection connection, string[] tags, string stateName)
