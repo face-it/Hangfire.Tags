@@ -14,8 +14,7 @@ namespace Hangfire.Tags.States
 
         public void OnCreated(CreatedContext filterContext)
         {
-            // BackgroundJob is Nullable from CreatedContext
-            var mi = filterContext?.BackgroundJob?.Job.Method ?? throw new ArgumentException("Background Job cannot be null", nameof(filterContext));
+            var mi = filterContext.Job.Method;
 
             var attrs = mi.GetCustomAttributes<TagAttribute>()
                 .Union(mi.DeclaringType?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
@@ -23,6 +22,9 @@ namespace Hangfire.Tags.States
 
             if (!attrs.Any())
                 return;
+
+            if (filterContext.BackgroundJob?.Id == null)
+                throw new ArgumentException("Background Job cannot be null", nameof(filterContext));
 
             var args = filterContext.Job.Args.ToArray();
             var tags = attrs.Select(tag => string.Format(tag, args)).Where(a => !string.IsNullOrEmpty(a));
