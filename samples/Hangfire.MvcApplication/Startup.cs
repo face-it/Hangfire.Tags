@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Configuration;
 using Hangfire.Common;
+using Hangfire.MySql;
+using Hangfire.Tags;
+using Hangfire.Tags.MySql;
 using Hangfire.Tags.SqlServer;
 using Microsoft.Owin;
 using Owin;
@@ -12,7 +16,18 @@ namespace Hangfire.MvcApplication
     {
         public void Configuration(IAppBuilder app)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql();
+            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
+            {
+                TagsListStyle = TagsListStyle.Dropdown
+            });
+
+            // var mysqlConnectionString =
+            //     ConfigurationManager.ConnectionStrings["DefaultMySqlConnection"].ConnectionString;
+            //
+            // GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(mysqlConnectionString, new MySqlStorageOptions())).UseTagsWithMySql(new TagsOptions
+            // {
+            //     TagsListStyle = TagsListStyle.Dropdown
+            // });
 
             app.UseHangfireDashboard();
             app.UseHangfireServer();

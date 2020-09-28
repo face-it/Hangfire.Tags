@@ -8,6 +8,7 @@
 @using Hangfire.Tags.Dashboard.Monitoring;
 @using Hangfire.Tags.Storage
 @using Hangfire.Storage.Monitoring;
+@using Hangfire.Tags
 @inherits RazorPage
 @{
     Layout = new LayoutPage("Tags");
@@ -25,11 +26,23 @@
         state = match.Groups["state"].Value;
     }
     Pager pager;
+
+    var options = TagsOptions.Options;
+    var tagsListStyle = options.TagsListStyle;
+
+    var relatedTags = new List<string>();
+
     JobList<MatchingJobDto> matchingJobs;
     IDictionary<string, int> matchingStates = null;
     using (var tagStorage = new TagsStorage(Storage))
     {
         var monitor = tagStorage.GetMonitoringApi();
+
+        if (tagsListStyle == TagsListStyle.Dropdown && tags.Length == 1)
+        {
+            relatedTags = monitor.SearchRelatedTags(tags.First()).ToList();
+        }
+
         pager = new Pager(from, perPage, monitor.GetJobCount(tags, state));
         if (pager.TotalPageCount == 0)
         {
@@ -42,6 +55,16 @@
         }
     }
 
+}
+
+@if (tagsListStyle == TagsListStyle.Dropdown && tags.Length == 1 && relatedTags.Any())
+{
+    <script>
+        function go(tag) {
+            var baseUrl = "@Url.To("/tags/search/" + tags.First() + ",")";
+            window.location = baseUrl + tag;
+        }
+    </script>
 }
 <div class="row">
     <div class="col-md-3">
@@ -59,6 +82,24 @@
         else
         {
             <h1 class="page-header">Tags</h1>
+        }
+        
+        @if (tagsListStyle == TagsListStyle.Dropdown && tags.Length == 1 && relatedTags.Any())
+        {
+            <div class="col-md-12 related-tags">
+                <datalist id="hangfireTagsList">
+                    @foreach (var t in relatedTags)
+                    {
+                        <option value="@t"></option>
+                    }
+                </datalist>
+                <div class="col-md-10">
+                    <input class="form-control" id="selectedTag" list="hangfireTagsList" autocomplete="off" placeholder="Select a related tag" />
+                </div>
+                <div class="col-md-2">
+                    <button id="btn_go" class="btn" onclick="go(document.getElementById('selectedTag').value)">Go</button>
+                </div>
+            </div>
         }
 
         @{
@@ -115,42 +156,42 @@
                             <tbody>
                                 @foreach (var job in matchingJobs)
                                 {
-                                <tr class="js-jobs-list-row">
-                                    <td>
-                                        <input type="checkbox" class="js-jobs-list-checkbox" name="jobs[]" value="@job.Key" />
-                                    </td>
-                                    <td class="min-width">
-                                        @Html.JobIdLink(job.Key)
-                                    </td>
+                                    <tr class="js-jobs-list-row">
+                                        <td>
+                                            <input type="checkbox" class="js-jobs-list-checkbox" name="jobs[]" value="@job.Key" />
+                                        </td>
+                                        <td class="min-width">
+                                            @Html.JobIdLink(job.Key)
+                                        </td>
 
-                                    @if (job.Value == null)
-                                    {
-                                        <td colspan="3">
-                                            <em>@Strings.Common_JobExpired</em>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td class="word-break">
-                                            @Html.JobNameLink(job.Key, job.Value.Job)
-                                        </td>
-                                        <td class="min-width">
-                                            @job.Value.State
-                                        </td>
-                                        <td class="min-width">
-                                            @if (job.Value.ResultAt.HasValue)
-                                            {
-                                                @Html.RelativeTime(job.Value.ResultAt.Value)
-                                            }
-                                        </td>
-                                        <td class="min-width align-right">
-                                            @if (job.Value.EnqueueAt.HasValue)
-                                            {
-                                                @Html.RelativeTime(job.Value.EnqueueAt.Value)
-                                            }
-                                        </td>
-                                    }
-                                </tr>
+                                        @if (job.Value == null)
+                                        {
+                                            <td colspan="3">
+                                                <em>@Strings.Common_JobExpired</em>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="word-break">
+                                                @Html.JobNameLink(job.Key, job.Value.Job)
+                                            </td>
+                                            <td class="min-width">
+                                                @job.Value.State
+                                            </td>
+                                            <td class="min-width">
+                                                @if (job.Value.ResultAt.HasValue)
+                                                {
+                                                    @Html.RelativeTime(job.Value.ResultAt.Value)
+                                                }
+                                            </td>
+                                            <td class="min-width align-right">
+                                                @if (job.Value.EnqueueAt.HasValue)
+                                                {
+                                                    @Html.RelativeTime(job.Value.EnqueueAt.Value)
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
                                 }
                             </tbody>
                         </table>

@@ -48,6 +48,11 @@ namespace Hangfire.Tags.Storage
             return TagsOptions.Options.Storage?.SearchWeightedTags(tag) ?? Enumerable.Empty<TagDto>();
         }
 
+        public IEnumerable<string> SearchRelatedTags(string tag)
+        {
+            return TagsOptions.Options.Storage?.SearchRelatedTags(tag);
+        }
+
         public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
         {
             return TagsOptions.Options.Storage?.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count,

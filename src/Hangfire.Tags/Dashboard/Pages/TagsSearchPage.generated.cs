@@ -90,15 +90,15 @@ WriteLiteral("\r\n");
     var options = TagsOptions.Options;
     var tagsListStyle = options.TagsListStyle;
 
-    var allTags = new List<TagDto>();
+    List<TagDto> allTags;
 
     using (var tagStorage = new TagsStorage(Storage))
     {
         var monitor = tagStorage.GetMonitoringApi();
+
         // Show a page with all tags
         allTags = monitor.SearchWeightedTags().ToList();
     }
-
 
 
             
@@ -171,7 +171,7 @@ WriteLiteral("                            <a href=\"");
 
             
             #line 58 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                Write(Url.To("/tags/search/" + @t.Tag));
+                                Write(Url.To("/tags/search/" + t.Tag));
 
             
             #line default
@@ -181,7 +181,7 @@ WriteLiteral("\" rel=\"");
 
             
             #line 58 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                        Write(intValue);
+                                                                       Write(intValue);
 
             
             #line default
@@ -191,7 +191,7 @@ WriteLiteral("\">");
 
             
             #line 58 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
-                                                                                   Write(t.Tag);
+                                                                                  Write(t.Tag);
 
             
             #line default

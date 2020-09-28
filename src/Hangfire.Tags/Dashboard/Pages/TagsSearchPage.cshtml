@@ -14,15 +14,15 @@
     var options = TagsOptions.Options;
     var tagsListStyle = options.TagsListStyle;
 
-    var allTags = new List<TagDto>();
+    List<TagDto> allTags;
 
     using (var tagStorage = new TagsStorage(Storage))
     {
         var monitor = tagStorage.GetMonitoringApi();
+
         // Show a page with all tags
         allTags = monitor.SearchWeightedTags().ToList();
     }
-
 }
 <script>
         function go(tag) {
@@ -55,7 +55,7 @@
                         foreach (var t in allTags)
                         {
                             var intValue = (int)Math.Round(t.Percentage);
-                            <a href="@Url.To("/tags/search/" + @t.Tag)" rel="@intValue">@t.Tag</a>
+                            <a href="@Url.To("/tags/search/" + t.Tag)" rel="@intValue">@t.Tag</a>
                         }
                     }
                     else if (tagsListStyle == TagsListStyle.Dropdown)

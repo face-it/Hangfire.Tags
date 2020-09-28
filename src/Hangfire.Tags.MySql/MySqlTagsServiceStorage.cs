@@ -33,23 +33,16 @@ namespace Hangfire.Tags.MySql
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
-                string keyClause;
-                if (string.IsNullOrEmpty(tag))
-                {
-                    // Exclude tags:<id> entries
-                    keyClause = "REGEXP CONCAT('(',@setKey,':[^0-9]|',@setkey,':?[0-9][^0-9])')";
-                }
-                else
-                {
-                    keyClause = "like CONCAT(@setKey,':%',@tag,'%')";
-                }
+                var keyClause = string.IsNullOrEmpty(tag)
+                    ? "REGEXP CONCAT('(',@setKey,':[^0-9]|',@setkey,':?[0-9][^0-9])')"
+                    : "like CONCAT(@setKey,':%',@tag,'%')";
 
                 var sql =
                     $@"select count(*) as Amount from `{_options.TablesPrefix}Set` s where s.Key {keyClause}";
                 var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
 
                 sql =
-                    $@"select INSERT(`Key`, 1, 5, '') AS `Tag`, COUNT(*) AS `Amount`, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as `Percentage` 
+                    $@"select INSERT(`Key`, 1, {setKey.Length + 1}, '') AS `Tag`, COUNT(*) AS `Amount`, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as `Percentage` 
 from `{_options.TablesPrefix}Set` s where s.Key {keyClause} group by s.Key";
 
                 var weightedTags = connection.Query<TagDto>(
@@ -59,13 +52,18 @@ from `{_options.TablesPrefix}Set` s where s.Key {keyClause} group by s.Key";
             });
         }
 
-        public IEnumerable<string> SearchTags(string tag, string setKey)
+        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
         {
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
+                var keyClause = string.IsNullOrEmpty(tag)
+                    ? "REGEXP CONCAT('(',@setKey,':[^0-9]|',@setkey,':?[0-9][^0-9])')"
+                    : "like CONCAT(@setKey,':%',@tag,'%')";
+
                 var sql =
-                    $@"select `Value` from `{_options.TablesPrefix}Set` s where s.Key like CONCAT(@setKey,':%',@tag,'%')";
+                    $@"select distinct INSERT(sr.`Key`, 1, {setKey.Length + 1}, '') from `{_options.TablesPrefix}Set` s INNER JOIN `{_options.TablesPrefix}Set` sr ON s.`Value`=sr.`Value` AND s.`Key` <> sr.`Key`
+                        where s.`Key` {keyClause}";
 
                 return connection.Query<string>(
                     sql,

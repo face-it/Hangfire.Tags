@@ -18,12 +18,12 @@ namespace Hangfire.Tags.Storage
         IEnumerable<TagDto> SearchWeightedTags(string tag = null, string setKey = IdExtensions.SetKey);
 
         /// <summary>
-        /// Searches for tags matching the specified tag.
+        /// Searches for tags that are used in combination with the specified tag.
         /// </summary>
         /// <param name="tag">A search string containing the partial or full tag.</param>
         /// <param name="setKey">The keyprefix used for the keys in the set.</param>
-        /// <returns>A list of tags that match the specified name.</returns>
-        IEnumerable<string> SearchTags(string tag, string setKey = IdExtensions.SetKey);
+        /// <returns>A list of tags that are used in combination with the specified tag.</returns>
+        IEnumerable<string> SearchRelatedTags(string tag, string setKey = IdExtensions.SetKey);
 
         /// <summary>
         /// Get the amount of matching jobs using the specified tags. The tags should be a full tag, not a partial tag name.

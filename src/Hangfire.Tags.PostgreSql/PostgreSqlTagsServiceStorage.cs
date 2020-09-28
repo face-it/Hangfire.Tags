@@ -41,7 +41,7 @@ namespace Hangfire.Tags.PostgreSql
                 var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
 
                 sql =
-                    $@"select Overlay(Key placing '' from 1 for 5) AS Tag, COUNT(*) AS Amount, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as Percentage
+                    $@"select Overlay(Key placing '' from 1 for {setKey.Length + 1}) AS Tag, COUNT(*) AS Amount, CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as Percentage
 from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by s.Key";
 
                 var weightedTags = connection.Query<TagDto>(
@@ -51,13 +51,13 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
             });
         }
 
-        public IEnumerable<string> SearchTags(string tag, string setKey)
+        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
         {
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select Value from {_options.SchemaName}.Set s where s.Key like (@setKey || ':%' || @tag || '%')";
+                    $@"select distinct Overlay(sr.Key placing '' from 1 for {setKey.Length + 1}) AS Tag from {_options.SchemaName}.Set s inner join {_options.SchemaName}.Set sr on s.Value=sr.Value and s.Key <> sr.Key where s.Key ~ (@setKey || ':' || @tag)";
 
                 return connection.Query<string>(
                     sql,

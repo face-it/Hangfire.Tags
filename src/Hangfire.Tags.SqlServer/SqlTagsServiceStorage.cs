@@ -46,7 +46,7 @@ namespace Hangfire.Tags.SqlServer
                 var total = connection.ExecuteScalar<int>(sql, new {setKey, tag});
 
                 sql =
-                    $@"select STUFF([Key], 1, 5, '') AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as [Percentage] 
+                    $@"select STUFF([Key], 1, {setKey.Length + 1}, '') AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS INT) as [Percentage] 
 from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%' group by s.[Key]";
 
                 return connection.Query<TagDto>(
@@ -56,13 +56,14 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
             });
         }
 
-        public IEnumerable<string> SearchTags(string tag, string setKey)
+        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
         {
             var monitoringApi = MonitoringApi;
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select [Value] from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + '%'";
+                    $@"select distinct STUFF(sr.[Key], 1, {setKey.Length + 1}, '') from [{_options.SchemaName}].[Set] s INNER JOIN [{_options.SchemaName}].[Set] sr ON s.[Value]=sr.[Value] AND s.[Key] <> sr.[Key]
+                        where s.[Key] like @setKey + ':%' + @tag + '%'";
 
                 return connection.Query<string>(
                     sql,

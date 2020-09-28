@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Hangfire.Common;
 using Hangfire.Dashboard;
@@ -51,7 +51,7 @@ namespace Hangfire.Core.MvcApplication
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
                     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
                 });
-                var options = new TagsOptions()
+                var options = new TagsOptions
                 {
                     TagsListStyle = TagsListStyle.Dropdown
                 };
@@ -79,15 +79,15 @@ namespace Hangfire.Core.MvcApplication
                 //end MySql Sample
 
                 //postgreSql Sample
-                //config.UsePostgreSqlStorage(Configuration.GetConnectionString("PostgreSqlConnection"), new PostgreSqlStorageOptions
-                //{
-                //    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                //});
-                //var options = new TagsOptions()
-                //{
-                //    TagsListStyle = TagsListStyle.Dropdown
-                //};
-                //config.UseTagsWithPostgreSql();
+                // config.UsePostgreSqlStorage(Configuration.GetConnectionString("PostgreSqlConnection"), new PostgreSqlStorageOptions
+                // {
+                //     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                // });
+                // var options = new TagsOptions
+                // {
+                //     TagsListStyle = TagsListStyle.Dropdown
+                // };
+                // config.UseTagsWithPostgreSql(options);
                 //end postgreSql Sample
 
                 //config.UseNLogLogProvider();

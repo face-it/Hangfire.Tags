@@ -14,6 +14,8 @@ namespace Hangfire.Tags.Storage
 
         IEnumerable<TagDto> SearchWeightedTags(string tag = null);
 
+        IEnumerable<string> SearchRelatedTags(string tag);
+
         JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null);
     }
 }
