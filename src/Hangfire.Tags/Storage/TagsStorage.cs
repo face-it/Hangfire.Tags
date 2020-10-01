@@ -85,7 +85,7 @@ namespace Hangfire.Tags.Storage
             using (var tran = _connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
-                    throw new NotSupportedException(" Storage transactions must impelement JobStorageTransaction");
+                    throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
                 var cleanTag = tag.Clean();
 
@@ -101,7 +101,7 @@ namespace Hangfire.Tags.Storage
             using (var tran = _connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
-                    throw new NotSupportedException(" Storage transactions must impelement JobStorageTransaction");
+                    throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
                 foreach (var tag in tags)
                 {
@@ -120,7 +120,7 @@ namespace Hangfire.Tags.Storage
             using (var tran = _connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
-                    throw new NotSupportedException(" Storage transactions must impelement JobStorageTransaction");
+                    throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
                 var cleanTag = tag.Clean();
 

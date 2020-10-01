@@ -23,6 +23,7 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 - **Clean up**: uses Hangfire sets, which are cleaned when jobs are removed.
 - **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
 - **Searching**: allows you to search for tags
+- **Storages**: has an storage for SQL Server, MySql, PostgreSql and initial Redis support
 
 ## Setup
 
@@ -36,6 +37,7 @@ public void ConfigureServices(IServiceCollection services)
         config.UseSqlServerStorage("connectionSting");
         // config.UseTagsWithPostgreSql();
         // config.UseTagsWithMySql();
+        // config.UseTagsWithRedis();
         config.UseTagsWithSql();
     });
 }
@@ -48,11 +50,12 @@ GlobalConfiguration.Configuration
     .UseSqlServerStorage("connectionSting")
     //.UseTagsWithPostgreSql()
     //.UseTagsWithMySql()
+    //.UseTagsWithRedis();
     .UseTagsWithSql();
 ```
 
 **NOTE**: If you have Dashboard and Server running separately,
-you'll need to call `UseTags()`, `UseTagsWithSql()`, `UseTagsWithPostgreSql()` or `UseTagsWithMySql()` on both.
+you'll need to call `UseTags()`, `UseTagsWithSql()`, `UseTagsWithPostgreSql()`, `UseTagsWithMySql()` or `UseTagsWithRedis()` on both.
 
 ### Additional options
 

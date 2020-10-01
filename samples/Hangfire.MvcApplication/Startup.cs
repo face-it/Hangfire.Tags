@@ -4,9 +4,11 @@ using Hangfire.Common;
 using Hangfire.MySql;
 using Hangfire.Tags;
 using Hangfire.Tags.MySql;
+using Hangfire.Tags.Redis.StackExchange;
 using Hangfire.Tags.SqlServer;
 using Microsoft.Owin;
 using Owin;
+using StackExchange.Redis;
 
 [assembly: OwinStartup(typeof(Hangfire.MvcApplication.Startup))]
 
@@ -25,6 +27,13 @@ namespace Hangfire.MvcApplication
             //     ConfigurationManager.ConnectionStrings["DefaultMySqlConnection"].ConnectionString;
             //
             // GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(mysqlConnectionString, new MySqlStorageOptions())).UseTagsWithMySql(new TagsOptions
+            // {
+            //     TagsListStyle = TagsListStyle.Dropdown
+            // });
+
+            // var redis = ConnectionMultiplexer.Connect(ConfigurationManager.ConnectionStrings["DefaultRedisConnection"]
+            //     .ConnectionString);
+            // GlobalConfiguration.Configuration.UseRedisStorage(redis).UseTagsWithRedis(new TagsOptions
             // {
             //     TagsListStyle = TagsListStyle.Dropdown
             // });
