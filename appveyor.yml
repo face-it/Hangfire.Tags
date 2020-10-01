@@ -26,12 +26,14 @@ build_script:
 - cmd: dotnet build tests/Hangfire.Tags.PostgreSql.Tests -c Release
 - cmd: dotnet build src/Hangfire.Tags.MySql -c Release
 - cmd: dotnet build tests/Hangfire.Tags.MySql.Tests -c Release
+- cmd: dotnet build src/Hangfire.Tags.Redis.StackExchange -c Release
 
 after_build:
 - cmd: dotnet pack src/Hangfire.Tags -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.SqlServer -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.PostgreSql -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.MySql -o ../../artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.Redis.StackExchange -o ../../artifacts -c Release
 
 test_script:
 - cmd: dotnet test tests/Hangfire.Tags.Tests/Hangfire.Tags.Tests.csproj
