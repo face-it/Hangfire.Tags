@@ -93,8 +93,8 @@ namespace Hangfire.Tags.Redis.StackExchange
 
                 foreach (var state in allStates)
                 {
-                    var redisKeys = tags.Select(t => new RedisKey(GetRedisKey($"{t}:{state.ToLower()}")));
-                    var tempKey = new RedisKey(GetRedisKey($"tags:jobstatecount-{state.ToLower()}"));
+                    var redisKeys = tags.Select(t => (RedisKey) GetRedisKey($"{t}:{state.ToLower()}"));
+                    var tempKey = (RedisKey) GetRedisKey($"tags:jobstatecount-{state.ToLower()}");
                     var amount = redis.SortedSetCombineAndStore(SetOperation.Intersect, tempKey, redisKeys.ToArray());
                     redis.KeyDelete(tempKey);
 
@@ -133,7 +133,7 @@ namespace Hangfire.Tags.Redis.StackExchange
             var redisKeys = tags.Select(t =>
             {
                 var key = string.IsNullOrEmpty(stateName) ? $"{t}" : $"{t}:{stateName.ToLower()}";
-                return new RedisKey(GetRedisKey(key));
+                return (RedisKey) GetRedisKey(key);
             }).ToArray();
 
             if (redisKeys.Length <= 1)
@@ -143,7 +143,7 @@ namespace Hangfire.Tags.Redis.StackExchange
                     : redis.SetLength(redisKeys.First()));
             }
 
-            var tempKey = new RedisKey(GetRedisKey($"tags:jobcount-{stateName.ToLower()}"));
+            var tempKey = (RedisKey) GetRedisKey($"tags:jobcount-{stateName.ToLower()}");
             var retval = string.IsNullOrEmpty(stateName)
                 ? redis.SortedSetCombineAndStore(SetOperation.Intersect, tempKey, redisKeys) // Without state are stored in Sorted Set
                 : redis.SetCombineAndStore(SetOperation.Intersect, tempKey, redisKeys); // With state are stored in a regular Set
@@ -159,7 +159,7 @@ namespace Hangfire.Tags.Redis.StackExchange
             var redisKeys = tags.Select(t =>
             {
                 var key = string.IsNullOrEmpty(stateName) ? $"{t}" : $"{t}:{stateName.ToLower()}";
-                return new RedisKey(GetRedisKey(key));
+                return (RedisKey) GetRedisKey(key);
             }).ToArray();
 
             List<string> jobIds;
@@ -173,7 +173,7 @@ namespace Hangfire.Tags.Redis.StackExchange
             }
             else
             {
-                var tempKey = new RedisKey(GetRedisKey($"tags:job-{stateName.ToLower()}"));
+                var tempKey = (RedisKey) GetRedisKey($"tags:job-{stateName.ToLower()}");
                 if (string.IsNullOrEmpty(stateName))
                 {
                     // Without state are stored in Sorted Set

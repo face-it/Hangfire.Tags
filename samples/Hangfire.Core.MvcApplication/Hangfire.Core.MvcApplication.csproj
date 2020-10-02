@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.7.8" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.5.0" />
-    <PackageReference Include="Hangfire.MemoryStorage.Core" Version="1.4.0" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.2" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.6.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -20,6 +19,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\Hangfire.Tags.Redis.StackExchange\Hangfire.Tags.Redis.StackExchange.csproj" />
+    <ProjectReference Include="..\..\src\Hangfire.Tags.SQLite\Hangfire.Tags.SQLite.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags\Hangfire.Tags.csproj" />
   </ItemGroup>

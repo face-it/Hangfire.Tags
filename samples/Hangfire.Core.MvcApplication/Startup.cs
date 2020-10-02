@@ -3,7 +3,6 @@ using System.IO;
 using Hangfire.Common;
 using Hangfire.Dashboard;
 using Hangfire.Heartbeat;
-using Hangfire.MemoryStorage;
 using Hangfire.MySql; //used with MySql Sample
 using Hangfire.PostgreSql; //used with postgreSql Sample
 using Hangfire.SqlServer; //used with SqlServer Sample
@@ -18,6 +17,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
+using Hangfire.SQLite;
+using Hangfire.Tags.Redis.StackExchange;
+using Hangfire.Tags.SQLite;
+using Microsoft.IdentityModel.Protocols;
+using StackExchange.Redis;
 
 namespace Hangfire.Core.MvcApplication
 {
@@ -42,8 +46,6 @@ namespace Hangfire.Core.MvcApplication
 
             services.AddHangfire(config =>
             {
-                config.UseMemoryStorage();
-
                 //SqlServer Sample
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
                 {
@@ -89,6 +91,17 @@ namespace Hangfire.Core.MvcApplication
                 // };
                 // config.UseTagsWithPostgreSql(options);
                 //end postgreSql Sample
+
+                //redis sample
+                // var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("DefaultRedisConnection"));
+                // config.UseRedisStorage(redis)
+                //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+
+                config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
+                    new TagsOptions
+                    {
+                        TagsListStyle = TagsListStyle.Dropdown
+                    });
 
                 //config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));

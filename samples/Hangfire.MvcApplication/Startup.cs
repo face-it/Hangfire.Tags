@@ -2,9 +2,11 @@
 using System.Configuration;
 using Hangfire.Common;
 using Hangfire.MySql;
+using Hangfire.SQLite;
 using Hangfire.Tags;
 using Hangfire.Tags.MySql;
 using Hangfire.Tags.Redis.StackExchange;
+using Hangfire.Tags.SQLite;
 using Hangfire.Tags.SqlServer;
 using Microsoft.Owin;
 using Owin;
@@ -18,10 +20,10 @@ namespace Hangfire.MvcApplication
     {
         public void Configuration(IAppBuilder app)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
-            {
-                TagsListStyle = TagsListStyle.Dropdown
-            });
+            // GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
+            // {
+            //     TagsListStyle = TagsListStyle.Dropdown
+            // });
 
             // var mysqlConnectionString =
             //     ConfigurationManager.ConnectionStrings["DefaultMySqlConnection"].ConnectionString;
@@ -37,6 +39,13 @@ namespace Hangfire.MvcApplication
             // {
             //     TagsListStyle = TagsListStyle.Dropdown
             // });
+
+            var sqliteConnectionString =
+                ConfigurationManager.ConnectionStrings["DefaultSqliteConnection"].ConnectionString;
+            GlobalConfiguration.Configuration.UseSQLiteStorage(sqliteConnectionString).UseTagsWithSQLite(new TagsOptions
+                {
+                    TagsListStyle = TagsListStyle.Dropdown
+                });
 
             app.UseHangfireDashboard();
             app.UseHangfireServer();
