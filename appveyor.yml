@@ -1,11 +1,7 @@
-version: 0.5.0-{build}
+version: 1.7.0-{build}
 
-os: Visual Studio 2017
+os: Visual Studio 2019
 
-nuget:
-  account_feed: false
-  project_feed: false
-  
 branches:
   only:
   - master
@@ -15,6 +11,9 @@ pull_requests:
 
 init:
 - git config --global core.autocrlf true
+
+install:
+- nuget sources add -Name ExtHf -Source %HFFeedUrl% -UserName %HFUser% -Password %HFPass%
 
 before_build:
 - cmd: dotnet restore
@@ -32,13 +31,13 @@ build_script:
 - cmd: dotnet build src/Hangfire.Tags.SQLite -c Release
 
 after_build:
-- cmd: dotnet pack src/Hangfire.Tags -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.SqlServer -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.PostgreSql -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.MySql -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.Pro.Redis -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.Redis.StackExchange -o ../../artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.SQLite -o ../../artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.SqlServer -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.PostgreSql -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.MySql -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.Pro.Redis -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.Redis.StackExchange -o artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.SQLite -o artifacts -c Release
 
 test_script:
 - cmd: dotnet test tests/Hangfire.Tags.Tests/Hangfire.Tags.Tests.csproj
