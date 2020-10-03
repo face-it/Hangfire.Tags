@@ -4,6 +4,7 @@ os: Visual Studio 2017
 
 nuget:
   account_feed: false
+  project_feed: false
   
 branches:
   only:
@@ -26,6 +27,7 @@ build_script:
 - cmd: dotnet build tests/Hangfire.Tags.PostgreSql.Tests -c Release
 - cmd: dotnet build src/Hangfire.Tags.MySql -c Release
 - cmd: dotnet build tests/Hangfire.Tags.MySql.Tests -c Release
+- cmd: dotnet build src/Hangfire.Tags.Pro.Redis -c Release
 - cmd: dotnet build src/Hangfire.Tags.Redis.StackExchange -c Release
 - cmd: dotnet build src/Hangfire.Tags.SQLite -c Release
 
@@ -34,6 +36,7 @@ after_build:
 - cmd: dotnet pack src/Hangfire.Tags.SqlServer -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.PostgreSql -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.MySql -o ../../artifacts -c Release
+- cmd: dotnet pack src/Hangfire.Tags.Pro.Redis -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.Redis.StackExchange -o ../../artifacts -c Release
 - cmd: dotnet pack src/Hangfire.Tags.SQLite -o ../../artifacts -c Release
 

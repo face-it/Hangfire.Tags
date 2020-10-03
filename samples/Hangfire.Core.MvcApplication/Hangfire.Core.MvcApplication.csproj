@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\Hangfire.Tags.Pro.Redis\Hangfire.Tags.Pro.Redis.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.Redis.StackExchange\Hangfire.Tags.Redis.StackExchange.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.SQLite\Hangfire.Tags.SQLite.csproj" />
     <ProjectReference Include="..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj" />

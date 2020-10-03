@@ -7,7 +7,7 @@ using Hangfire.Tags.Dashboard.Monitoring;
 
 namespace Hangfire.Tags.Storage
 {
-    internal class TagsStorage : ITagsStorage, ITagsMonitoringApi, IDisposable
+    internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
     {
         private readonly JobStorageConnection _connection;
 
@@ -88,10 +88,11 @@ namespace Hangfire.Tags.Storage
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
                 var cleanTag = tag.Clean();
+                var score = DateTime.Now.Ticks;
 
-                tran.AddToSet("tags", cleanTag);
-                tran.AddToSet(jobid.GetSetKey(), cleanTag);
-                tran.AddToSet(cleanTag.GetSetKey(), jobid);
+                tran.AddToSet("tags", cleanTag, score);
+                tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
+                tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
                 tran.Commit();
             }
         }
@@ -106,10 +107,11 @@ namespace Hangfire.Tags.Storage
                 foreach (var tag in tags)
                 {
                     var cleanTag = tag.Clean();
+                    var score = DateTime.Now.Ticks;
 
-                    tran.AddToSet("tags", cleanTag); // Use a set, because it merges by default, where a list only adds
-                    tran.AddToSet(jobid.GetSetKey(), cleanTag);
-                    tran.AddToSet(cleanTag.GetSetKey(), jobid);
+                    tran.AddToSet("tags", cleanTag, score); // Use a set, because it merges by default, where a list only adds
+                    tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
+                    tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
                 }
                 tran.Commit();
             }

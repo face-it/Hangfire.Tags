@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -19,6 +19,10 @@
 @using (Html.BeginForm("Create", "Home"))
 {
     <button class="btn btn-primary" type="submit">Create a job</button>
+}
+@using (Html.BeginForm("CreateALot", "Home"))
+{
+    <button class="btn btn-primary" type="submit">Create a lot of jobs</button>
 }
 @using (Html.BeginForm("Schedule", "Home"))
 {

@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
 using Hangfire.SQLite;
+// using Hangfire.Tags.Pro.Redis;
 using Hangfire.Tags.Redis.StackExchange;
 using Hangfire.Tags.SQLite;
 using Microsoft.IdentityModel.Protocols;
@@ -47,17 +48,17 @@ namespace Hangfire.Core.MvcApplication
             services.AddHangfire(config =>
             {
                 //SqlServer Sample
-                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
-                {
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
-                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                });
-                var options = new TagsOptions
-                {
-                    TagsListStyle = TagsListStyle.Dropdown
-                };
-                config.UseTagsWithSql(options);
+                // config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+                // {
+                //     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
+                //     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
+                //     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                // });
+                // var options = new TagsOptions
+                // {
+                //     TagsListStyle = TagsListStyle.Dropdown
+                // };
+                // config.UseTagsWithSql(options);
                 //end SqlServer Sample
 
                 //MySql Sample
@@ -93,15 +94,19 @@ namespace Hangfire.Core.MvcApplication
                 //end postgreSql Sample
 
                 //redis sample
-                // var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("DefaultRedisConnection"));
-                // config.UseRedisStorage(redis)
+                var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
+                config.UseRedisStorage(redis)
+                    .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+
+                // redis pro sample
+                // config.UseRedisStorage(Configuration.GetConnectionString("RedisConnection"))
                 //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
 
-                config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
-                    new TagsOptions
-                    {
-                        TagsListStyle = TagsListStyle.Dropdown
-                    });
+                // config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
+                //     new TagsOptions
+                //     {
+                //         TagsListStyle = TagsListStyle.Dropdown
+                //     });
 
                 //config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));

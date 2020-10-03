@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>REDISPRO</DefineConstants>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Erwin Bovendeur</Authors>
+    <Company>2Face-IT B.V.</Company>
+    <Version>1.0.0</Version>
+    <Description>Support for Redis for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
+    <Copyright />
+    <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>hangfire tags redis</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Pro.Redis" Version="2.7.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+  </ItemGroup>
+
+</Project>
