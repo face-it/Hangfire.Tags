@@ -11,10 +11,10 @@ namespace Hangfire.Tags.PostgreSql.Tests
     public class PostgreSqlTagsMonitoringApiPostiveTests
     {
         [Fact]
-        public void WhenTypeContainsUseConnection_ThenNotThrow()
+        public void WhenMonitorTypeContainsUseConnection_ThenNotThrow()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new WithoutConnection.PostgreSqlJobStorage();
 
             // Act
             Action act = () => new PostgreSqlTagsMonitoringApi(fakeImplementation);
@@ -24,10 +24,23 @@ namespace Hangfire.Tags.PostgreSql.Tests
         }
 
         [Fact]
-        public void WhenTypeContainsUseConnection_ThenNotThrow1()
+        public void WhenStorageTypeContainsUseConnection_ThenNotThrow()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new WithConnection.PostgreSqlJobStorage();
+
+            // Act
+            Action act = () => new PostgreSqlTagsMonitoringApi(fakeImplementation);
+
+            // Assert
+            act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void WhenMonitorTypeContainsUseConnection_ThenNotThrow1()
+        {
+            // Arrange
+            var fakeImplementation = new WithoutConnection.PostgreSqlJobStorage();
 
             // Act
             var api = new PostgreSqlTagsMonitoringApi(fakeImplementation);
@@ -37,125 +50,181 @@ namespace Hangfire.Tags.PostgreSql.Tests
             fakeImplementation.NumberOfCalls.Should().Be(1);
         }
 
-        private class PostgreSqlMonitoringApi : IMonitoringApi
+        [Fact]
+        public void WhenStorageTypeContainsUseConnection_ThenNotThrow1()
         {
-            public int NumberOfCalls = 0;
+            // Arrange
+            var fakeImplementation = new WithConnection.PostgreSqlJobStorage();
 
-            private T UseConnection<T>(Func<NpgsqlConnection, T> action)
-            {
-                NumberOfCalls++;
-                return action(new NpgsqlConnection());
-            }
+            // Act
+            var api = new PostgreSqlTagsMonitoringApi(fakeImplementation);
+            api.UseConnection((con) => con.CreateCommand());
 
-            public JobList<DeletedJobDto> DeletedJobs(int from, int count)
-            {
-                throw new NotImplementedException();
-            }
+            // Assert
+            fakeImplementation.NumberOfCalls.Should().Be(1);
+        }
+    }
+}
 
-            public long DeletedListCount()
-            {
-                throw new NotImplementedException();
-            }
+namespace Hangfire.Tags.PostgreSql.Tests.WithConnection
+{
+    internal class PostgreSqlJobStorage : WithoutConnection.PostgreSqlJobStorage
+    {
+        private T UseConnection<T>(Func<NpgsqlConnection, T> action)
+        {
+            NumberOfCalls++;
+            return action(new NpgsqlConnection());
+        }
+        public override IMonitoringApi GetMonitoringApi()
+        {
+            return new WithoutConnection.PostgreSqlMonitoringApi();
+        }
+    }
 
-            public long EnqueuedCount(string queue)
-            {
-                throw new NotImplementedException();
-            }
+    internal class PostgreSqlMonitoringApi : WithoutConnection.PostgreSqlMonitoringApi
+    {
+        private readonly WithoutConnection.PostgreSqlJobStorage _postgreSqlJobStorage;
 
-            public JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage)
-            {
-                throw new NotImplementedException();
-            }
+        public PostgreSqlMonitoringApi(WithoutConnection.PostgreSqlJobStorage postgreSqlJobStorage)
+        {
+            _postgreSqlJobStorage = postgreSqlJobStorage;
+        }
 
-            public IDictionary<DateTime, long> FailedByDatesCount()
-            {
-                throw new NotImplementedException();
-            }
+        private T UseConnection<T>(Func<NpgsqlConnection, T> action)
+        {
+            _postgreSqlJobStorage.NumberOfCalls++;
+            return action(new NpgsqlConnection());
+        }
+    }
+}
 
-            public long FailedCount()
-            {
-                throw new NotImplementedException();
-            }
+namespace Hangfire.Tags.PostgreSql.Tests.WithoutConnection
+{
+    internal class PostgreSqlJobStorage : JobStorage
+    {
+        public int NumberOfCalls = 0;
 
-            public JobList<FailedJobDto> FailedJobs(int from, int count)
-            {
-                throw new NotImplementedException();
-            }
+        public override IMonitoringApi GetMonitoringApi()
+        {
+            return new WithConnection.PostgreSqlMonitoringApi(this);
+        }
 
-            public long FetchedCount(string queue)
-            {
-                throw new NotImplementedException();
-            }
+        public override IStorageConnection GetConnection()
+        {
+            return null;
+        }
+    }
 
-            public JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage)
-            {
-                throw new NotImplementedException();
-            }
+    internal class PostgreSqlMonitoringApi : IMonitoringApi
+    {
+        public JobList<DeletedJobDto> DeletedJobs(int from, int count)
+        {
+            throw new NotImplementedException();
+        }
 
-            public StatisticsDto GetStatistics()
-            {
-                throw new NotImplementedException();
-            }
+        public long DeletedListCount()
+        {
+            throw new NotImplementedException();
+        }
 
-            public IDictionary<DateTime, long> HourlyFailedJobs()
-            {
-                throw new NotImplementedException();
-            }
+        public long EnqueuedCount(string queue)
+        {
+            throw new NotImplementedException();
+        }
 
-            public IDictionary<DateTime, long> HourlySucceededJobs()
-            {
-                throw new NotImplementedException();
-            }
+        public JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage)
+        {
+            throw new NotImplementedException();
+        }
 
-            public JobDetailsDto JobDetails(string jobId)
-            {
-                throw new NotImplementedException();
-            }
+        public IDictionary<DateTime, long> FailedByDatesCount()
+        {
+            throw new NotImplementedException();
+        }
 
-            public long ProcessingCount()
-            {
-                throw new NotImplementedException();
-            }
+        public long FailedCount()
+        {
+            throw new NotImplementedException();
+        }
 
-            public JobList<ProcessingJobDto> ProcessingJobs(int from, int count)
-            {
-                throw new NotImplementedException();
-            }
+        public JobList<FailedJobDto> FailedJobs(int from, int count)
+        {
+            throw new NotImplementedException();
+        }
 
-            public IList<QueueWithTopEnqueuedJobsDto> Queues()
-            {
-                throw new NotImplementedException();
-            }
+        public long FetchedCount(string queue)
+        {
+            throw new NotImplementedException();
+        }
 
-            public long ScheduledCount()
-            {
-                throw new NotImplementedException();
-            }
+        public JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage)
+        {
+            throw new NotImplementedException();
+        }
 
-            public JobList<ScheduledJobDto> ScheduledJobs(int from, int count)
-            {
-                throw new NotImplementedException();
-            }
+        public StatisticsDto GetStatistics()
+        {
+            throw new NotImplementedException();
+        }
 
-            public IList<ServerDto> Servers()
-            {
-                throw new NotImplementedException();
-            }
+        public IDictionary<DateTime, long> HourlyFailedJobs()
+        {
+            throw new NotImplementedException();
+        }
 
-            public IDictionary<DateTime, long> SucceededByDatesCount()
-            {
-                throw new NotImplementedException();
-            }
+        public IDictionary<DateTime, long> HourlySucceededJobs()
+        {
+            throw new NotImplementedException();
+        }
 
-            public JobList<SucceededJobDto> SucceededJobs(int from, int count)
-            {
-                throw new NotImplementedException();
-            }
+        public JobDetailsDto JobDetails(string jobId)
+        {
+            throw new NotImplementedException();
+        }
 
-            public long SucceededListCount()
-            {
-                throw new NotImplementedException();
-            }
+        public long ProcessingCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public JobList<ProcessingJobDto> ProcessingJobs(int from, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<QueueWithTopEnqueuedJobsDto> Queues()
+        {
+            throw new NotImplementedException();
+        }
+
+        public long ScheduledCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public JobList<ScheduledJobDto> ScheduledJobs(int from, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<ServerDto> Servers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDictionary<DateTime, long> SucceededByDatesCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public JobList<SucceededJobDto> SucceededJobs(int from, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long SucceededListCount()
+        {
+            throw new NotImplementedException();
         }
     }
 }

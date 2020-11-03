@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
+using System.Data;
 using System.Linq;
 using Dapper;
 using Hangfire.Common;
@@ -16,7 +16,7 @@ namespace Hangfire.Tags.PostgreSql
     {
         private readonly PostgreSqlStorageOptions _options;
 
-        private PostgreSqlTagsMonitoringApi MonitoringApi => new PostgreSqlTagsMonitoringApi(JobStorage.Current.GetMonitoringApi());
+        private PostgreSqlTagsMonitoringApi MonitoringApi => new PostgreSqlTagsMonitoringApi(JobStorage.Current);
 
         public PostgreSqlTagsServiceStorage(PostgreSqlStorageOptions options)
         {
@@ -134,7 +134,7 @@ limit {maxTags}";
             return GetNullableStateDate(stateData, stateName) ?? DateTime.MinValue;
         }
 
-        private int GetJobCount(DbConnection connection, string[] tags, string stateName)
+        private int GetJobCount(IDbConnection connection, string[] tags, string stateName)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -168,7 +168,7 @@ left join {_options.SchemaName}.State s  on j.StateId = s.Id";
         }
 
         private JobList<TDto> GetJobs<TDto>(
-            DbConnection connection, int from, int count, string[] tags, string stateName,
+            IDbConnection connection, int from, int count, string[] tags, string stateName,
             Func<SqlJob, Job, SafeDictionary<string, string>, TDto> selector)
         {
             var parameters = new Dictionary<string, object>

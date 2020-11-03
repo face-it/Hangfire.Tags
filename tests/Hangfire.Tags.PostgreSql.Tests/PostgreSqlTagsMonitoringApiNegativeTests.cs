@@ -14,10 +14,11 @@ namespace Hangfire.Tags.PostgreSql.Tests
         public void WhenTypeDoesNotMatch_ThenThrow()
         {
             // Arrange
-            var monitoringApiMock = Mock.Of<IMonitoringApi>();
+            var jobStorageApiMock = new Mock<JobStorage>();
+            jobStorageApiMock.Setup(x => x.GetMonitoringApi()).Returns(Mock.Of<IMonitoringApi>());
 
             // Act
-            Action act = () => new PostgreSqlTagsMonitoringApi(monitoringApiMock);
+            Action act = () => new PostgreSqlTagsMonitoringApi(jobStorageApiMock.Object);
 
             // Assert
             act.Should().Throw<Exception>("Monitoring api is not postgreSqlMonitoringApi type").WithMessage("The monitor API is not implemented using PostgreSql*");
@@ -27,13 +28,26 @@ namespace Hangfire.Tags.PostgreSql.Tests
         public void WhenUseConnectionMethodIsNotInTheInstance_ThenThrow()
         {
             // Arrange
-            var fakeImplementation = new PostgreSqlMonitoringApi();
+            var fakeImplementation = new PostgreSqlJobStorage();
 
             // Act
             Action act = () => new PostgreSqlTagsMonitoringApi(fakeImplementation);
 
             // Assert
             act.Should().Throw<ArgumentException>("Api doesn't have UseConnection method").WithMessage("The function UseConnection cannot be found.");
+        }
+
+        private class PostgreSqlJobStorage : JobStorage
+        {
+            public override IMonitoringApi GetMonitoringApi()
+            {
+                return new PostgreSqlMonitoringApi();
+            }
+
+            public override IStorageConnection GetConnection()
+            {
+                return null;
+            }
         }
 
         private class PostgreSqlMonitoringApi : IMonitoringApi
