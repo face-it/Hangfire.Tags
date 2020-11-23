@@ -16,6 +16,14 @@ namespace Hangfire.Tags.States
         {
             var mi = filterContext.Job.Method;
 
+            if (filterContext.Job.Method.DeclaringType != filterContext.Job.Type)
+            {
+                // This job (or method) is from an inherited type, we should use reflection to retrieve the correct Job method
+                var dmi = filterContext.Job.Type.GetMethod(filterContext.Job.Method.Name,
+                    filterContext.Job.Method.GetParameters().Select(p => p.ParameterType).ToArray());
+                mi = dmi ?? mi;
+            }
+
             var attrs = mi.GetCustomAttributes<TagAttribute>()
                 .Union(mi.DeclaringType?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
                 .SelectMany(t => t.Tag).ToList();
@@ -24,7 +32,8 @@ namespace Hangfire.Tags.States
                 return;
 
             if (filterContext.BackgroundJob?.Id == null)
-                throw new ArgumentException("Background Job cannot be null", nameof(filterContext));
+                return;
+//                throw new ArgumentException("Background Job cannot be null", nameof(filterContext));
 
             var args = filterContext.Job.Args.ToArray();
             var tags = attrs.Select(tag => string.Format(tag, args)).Where(a => !string.IsNullOrEmpty(a));
