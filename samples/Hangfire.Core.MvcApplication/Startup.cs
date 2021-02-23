@@ -17,11 +17,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
+using Hangfire.Core.MvcApplication.Jobs;
 using Hangfire.SQLite;
+using Hangfire.Tags.Pro.Redis;
 // using Hangfire.Tags.Pro.Redis;
-using Hangfire.Tags.Redis.StackExchange;
+// using Hangfire.Tags.Redis.StackExchange;
 using Hangfire.Tags.SQLite;
-using Microsoft.IdentityModel.Protocols;
+using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 
 namespace Hangfire.Core.MvcApplication
@@ -94,13 +96,13 @@ namespace Hangfire.Core.MvcApplication
                 //end postgreSql Sample
 
                 //redis sample
-                var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
-                config.UseRedisStorage(redis)
-                    .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+                // var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
+                // config.UseRedisStorage(redis)
+                //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
 
                 // redis pro sample
-                // config.UseRedisStorage(Configuration.GetConnectionString("RedisConnection"))
-                //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+                config.UseRedisStorage(Configuration.GetConnectionString("RedisConnection"))
+                    .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
 
                 // config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
                 //     new TagsOptions
@@ -112,11 +114,11 @@ namespace Hangfire.Core.MvcApplication
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -133,18 +135,17 @@ namespace Hangfire.Core.MvcApplication
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseRouting();
+            app.UseEndpoints(routes => routes.MapDefaultControllerRoute());
 
             var recurringJobs = new RecurringJobManager();
 
             RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
             //            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), "*/2 * * * *");
             recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *", TimeZoneInfo.Local);
+
+            BackgroundJob.Enqueue<BaseJob>(x => x.Run());
+            BackgroundJob.Enqueue<DerivedJob>(x => x.Run());
         }
     }
 }
