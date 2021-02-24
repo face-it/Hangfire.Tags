@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.7.0</Version>
+    <Version>1.7.1</Version>
     <Description>Support for SQL Server for Hangfire.Tags. This seperate library is required in order to search for tags, and proper cleanup.</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -30,5 +30,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
   </ItemGroup>
-
 </Project>
