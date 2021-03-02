@@ -9,8 +9,6 @@ namespace Hangfire.Tags.Storage
 {
     internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
     {
-        private readonly JobStorageConnection _connection;
-
         public TagsStorage(JobStorage jobStorage)
         {
             var connection = jobStorage.GetConnection();
@@ -19,17 +17,19 @@ namespace Hangfire.Tags.Storage
             if (!(connection is JobStorageConnection jobStorageConnection))
                 throw new NotSupportedException("Storage connection must implement JobStorageConnection");
 
-            _connection = jobStorageConnection;
+            Connection = jobStorageConnection;
         }
+
+        internal JobStorageConnection Connection { get; }
 
         public void Dispose()
         {
-            _connection.Dispose();
+            Connection.Dispose();
         }
 
         public long GetTagsCount()
         {
-            return _connection.GetSetCount("tags");
+            return Connection.GetSetCount("tags");
         }
 
         public long GetJobCount(string[] tags, string stateName = null)
@@ -67,12 +67,12 @@ namespace Hangfire.Tags.Storage
 
         public string[] GetTags(string jobid)
         {
-            return _connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
+            return Connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
         }
 
         public string[] GetAllTags()
         {
-            return _connection.GetAllItemsFromSet("tags").ToArray();
+            return Connection.GetAllItemsFromSet("tags").ToArray();
         }
 
         public void InitTags(string jobid)
@@ -82,7 +82,7 @@ namespace Hangfire.Tags.Storage
 
         public void AddTag(string jobid, string tag)
         {
-            using (var tran = _connection.CreateWriteTransaction())
+            using (var tran = Connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
@@ -99,7 +99,7 @@ namespace Hangfire.Tags.Storage
 
         public void AddTags(string jobid, IEnumerable<string> tags)
         {
-            using (var tran = _connection.CreateWriteTransaction())
+            using (var tran = Connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
@@ -119,7 +119,7 @@ namespace Hangfire.Tags.Storage
 
         public void Removetag(string jobid, string tag)
         {
-            using (var tran = _connection.CreateWriteTransaction())
+            using (var tran = Connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
@@ -129,7 +129,7 @@ namespace Hangfire.Tags.Storage
                 tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
                 tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
 
-                if (_connection.GetSetCount(cleanTag.GetSetKey()) == 0)
+                if (Connection.GetSetCount(cleanTag.GetSetKey()) == 0)
                 {
                     // Remove the tag, it's no longer in use
                     tran.RemoveFromSet("tags", cleanTag);
@@ -141,7 +141,7 @@ namespace Hangfire.Tags.Storage
 
         public void Expire(string jobid, TimeSpan expireIn)
         {
-            using (var tran = (JobStorageTransaction) _connection.CreateWriteTransaction())
+            using (var tran = (JobStorageTransaction) Connection.CreateWriteTransaction())
             {
                 using (var expiration = new TagExpirationTransaction(this, tran))
                 {

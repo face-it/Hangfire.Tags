@@ -15,7 +15,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags</PackageTags>
     <PackageReleaseNotes>Initial release with support for adding tags to background jobs. The tags are visible on the job details page. It's possible to select a tag, and get a list of all jobs containing the selected tag.</PackageReleaseNotes>
-    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <AssemblyVersion>1.7.1.0</AssemblyVersion>
     <FileVersion>1.7.0.0</FileVersion>
   </PropertyGroup>
 

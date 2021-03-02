@@ -39,7 +39,11 @@ namespace Hangfire.Tags.Storage
             var tags = _tagsStorage.GetTags(jobid);
             foreach (var tag in tags)
             {
-                tagTransaction.ExpireSetValue(tag.GetSetKey(), jobid, expireIn);
+                var key = tag.GetSetKey();
+                tagTransaction.ExpireSetValue(key, jobid, expireIn);
+                
+                if (_tagsStorage.Connection.GetSetCount(key) == 0)
+                    tagTransaction.ExpireSetValue("tags", key, expireIn);
             }
         }
 
@@ -57,7 +61,9 @@ namespace Hangfire.Tags.Storage
             var tags = _tagsStorage.GetTags(jobid);
             foreach (var tag in tags)
             {
-                tagTransaction.PersistSetValue(tag.GetSetKey(), jobid);
+                var key = tag.GetSetKey();
+                tagTransaction.PersistSetValue(key, jobid);
+                tagTransaction.PersistSetValue("tags", key);
             }
         }
     }
