@@ -93,7 +93,8 @@ namespace Hangfire.Tags.Storage
                 tran.AddToSet("tags", cleanTag, score);
                 tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
                 tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
-                tran.Commit();
+
+                TagsOptions.Options.RetryPolicy.RetryOnTransactionError(() => tran.Commit());
             }
         }
 
@@ -113,7 +114,8 @@ namespace Hangfire.Tags.Storage
                     tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
                     tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
                 }
-                tran.Commit();
+
+                TagsOptions.Options.RetryPolicy.RetryOnTransactionError(() => tran.Commit());
             }
         }
 
@@ -135,7 +137,7 @@ namespace Hangfire.Tags.Storage
                     tran.RemoveFromSet("tags", cleanTag);
                 }
 
-                tran.Commit();
+                TagsOptions.Options.RetryPolicy.RetryOnTransactionError(() => tran.Commit());
             }
         }
 
