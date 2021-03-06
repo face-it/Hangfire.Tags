@@ -24,7 +24,10 @@ namespace Hangfire.Tags
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            TagsOptions.Options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
+            options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
+            options.RetryPolicy = options.RetryPolicy ?? new NoOpTagsStorageTransactionRetryPolicy();
+
+            TagsOptions.Options = options;
 
             if (TagsOptions.Options.Storage == null)
             {

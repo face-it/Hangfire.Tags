@@ -22,6 +22,8 @@ namespace Hangfire.Tags
 
         public string TextColor { get; set; }
 
+        public ITagsStorageTransactionRetryPolicy RetryPolicy { get; set; }
+        
         public TagsListStyle TagsListStyle { get; set; } = TagsListStyle.LinkButton; // default
     }
 }
