@@ -21,7 +21,7 @@ namespace Hangfire.Tags.PostgreSql
             sqlOptions = sqlOptions ?? new PostgreSqlStorageOptions();
 
             options.Storage = new PostgreSqlTagsServiceStorage(sqlOptions);
-            options.RetryPolicy = options.RetryPolicy ?? new TagsStorageTransactionRetryPolicy(15);
+            options.RetryPolicy = options.RetryPolicy ?? new PostgreSqlTransactionRetryPolicy(15);
 
             TagsServiceStorage.Current = options.Storage;
 

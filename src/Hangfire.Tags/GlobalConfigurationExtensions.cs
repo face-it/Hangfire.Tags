@@ -25,7 +25,7 @@ namespace Hangfire.Tags
                 throw new ArgumentNullException(nameof(configuration));
 
             options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
-            options.RetryPolicy = options.RetryPolicy ?? new NoOpTagsStorageTransactionRetryPolicy();
+            options.RetryPolicy = options.RetryPolicy ?? new TransactionRetryPolicy();
 
             TagsOptions.Options = options;
 

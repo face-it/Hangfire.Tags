@@ -73,6 +73,22 @@ Here's what you can configure:
 
 In order to properly cleanup tags for expired jobs, an extension is required for the default storage providers. Right now, there are three providers: for SQL server, for PostgreSQL and for MySql.
 
+### PostgreSql
+
+The Hangfire.PostgreSql library uses ```RepetableRead``` isolation level for its transactions. I check postgresql docs (1.3.2.2. Repeatable Read Isolation Level section), and here what it says:
+
+> Applications using this level must be prepared to retry transactions due to serialization failures.
+
+Thanks to [https://github.com/Frazi1](Frazi1) the default implementation will retry the transaction 15 times. This amount is configurable like this:
+
+```
+var options = new TagsOptions
+{
+    RetryPolicy = new PostgreSqlTransactionRetryPolicy(20)
+};
+config.UseTagsWithPostgreSql(options);
+```
+
 ## Tags
 
 Hangfire.Tags provides extension methods on `PerformContext` object,
