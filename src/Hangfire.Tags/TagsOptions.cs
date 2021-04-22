@@ -1,4 +1,5 @@
-﻿using Hangfire.Tags.Storage;
+﻿using System.Collections.Generic;
+using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags
 {
@@ -17,6 +18,8 @@ namespace Hangfire.Tags
         public ITagsServiceStorage Storage { get; set; }
 
         internal static TagsOptions Options { get; set; }
+
+        internal static Dictionary<string, TagsOptions> OptionsDictionary { get; set; } = new Dictionary<string, TagsOptions>();
 
         public string TagColor { get; set; }
 

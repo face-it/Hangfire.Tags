@@ -18,13 +18,19 @@ namespace Hangfire.Tags
         /// </summary>
         /// <param name="configuration">Global configuration</param>
         /// <param name="options">Options for tags</param>
+        /// <param name="jobStorage">Job storage</param>
         /// <returns></returns>
-        public static IGlobalConfiguration UseTags(this IGlobalConfiguration configuration, TagsOptions options = null)
+        public static IGlobalConfiguration UseTags(this IGlobalConfiguration configuration, TagsOptions options = null, JobStorage jobStorage = null)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
             TagsOptions.Options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
+
+            if (options != null && jobStorage != null)
+            {
+                TagsOptions.OptionsDictionary.Add(jobStorage.ToString(), options);
+            }
 
             if (TagsOptions.Options.Storage == null)
             {
@@ -44,11 +50,11 @@ namespace Hangfire.Tags
             DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
 
             DashboardMetrics.AddMetric(TagDashboardMetrics.TagsCount);
-            JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
+
+            if (!JobsSidebarMenu.Items.Contains(TagsMenuItemInitializer))
             {
-                Active = page.RequestPath.StartsWith("/tags/search"),
-                Metric = TagDashboardMetrics.TagsCount,
-            });
+                JobsSidebarMenu.Items.Add(TagsMenuItemInitializer);
+            }
 
             var assembly = typeof(GlobalConfigurationExtensions).Assembly;
 
@@ -60,6 +66,15 @@ namespace Hangfire.Tags
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style.css"));
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(TagsOptions.Options));
             return configuration;
+        }
+
+        private static MenuItem TagsMenuItemInitializer(RazorPage page)
+        {
+            return new MenuItem("Tags", page.Url.To($"/tags/search"))
+            {
+                Active = page.RequestPath.StartsWith("/tags/search"),
+                Metric = TagDashboardMetrics.TagsCount
+            };
         }
     }
 }

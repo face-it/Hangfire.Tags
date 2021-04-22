@@ -9,6 +9,8 @@ namespace Hangfire.Tags.Storage
 {
     internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
     {
+        private readonly JobStorage _jobStorage;
+
         public TagsStorage(JobStorage jobStorage)
         {
             var connection = jobStorage.GetConnection();
@@ -18,6 +20,8 @@ namespace Hangfire.Tags.Storage
                 throw new NotSupportedException("Storage connection must implement JobStorageConnection");
 
             Connection = jobStorageConnection;
+
+            _jobStorage = jobStorage;
         }
 
         internal JobStorageConnection Connection { get; }
@@ -34,29 +38,43 @@ namespace Hangfire.Tags.Storage
 
         public long GetJobCount(string[] tags, string stateName = null)
         {
+            if (TagsOptions.OptionsDictionary.TryGetValue(this._jobStorage.ToString(), out var options))
+                return options.Storage?.GetJobCount(tags.Select(t => t.GetSetKey()).ToArray(), stateName) ?? 0;
+
             return TagsOptions.Options.Storage?.GetJobCount(tags.Select(t => t.GetSetKey()).ToArray(), stateName) ?? 0;
         }
 
         public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
         {
-            return TagsOptions.Options.Storage?.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags) ??
-                   new Dictionary<string, int>();
+            if (TagsOptions.OptionsDictionary.TryGetValue(this._jobStorage.ToString(), out var options))
+                return options.Storage?.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags) ?? new Dictionary<string, int>();
+
+            return TagsOptions.Options.Storage?.GetJobStateCount(tags.Select(t => t.GetSetKey()).ToArray(), maxTags) ?? new Dictionary<string, int>();
         }
 
         public IEnumerable<TagDto> SearchWeightedTags(string tag = null)
         {
+            if (TagsOptions.OptionsDictionary.TryGetValue(this._jobStorage.ToString(), out var options))
+                return options.Storage?.SearchWeightedTags(tag) ?? Enumerable.Empty<TagDto>();
+
             return TagsOptions.Options.Storage?.SearchWeightedTags(tag) ?? Enumerable.Empty<TagDto>();
         }
 
         public IEnumerable<string> SearchRelatedTags(string tag)
         {
+            if (TagsOptions.OptionsDictionary.TryGetValue(this._jobStorage.ToString(), out var options))
+                return options.Storage?.SearchRelatedTags(tag);
+
             return TagsOptions.Options.Storage?.SearchRelatedTags(tag);
         }
 
         public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
         {
-            return TagsOptions.Options.Storage?.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count,
-                       stateName) ??
+            if (TagsOptions.OptionsDictionary.TryGetValue(this._jobStorage.ToString(), out var options))
+                return options.Storage?.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count, stateName) ??
+                       new JobList<MatchingJobDto>(Enumerable.Empty<KeyValuePair<string, MatchingJobDto>>());
+
+            return TagsOptions.Options.Storage?.GetMatchingJobs(tags.Select(t => t.GetSetKey()).ToArray(), from, count, stateName) ??
                    new JobList<MatchingJobDto>(Enumerable.Empty<KeyValuePair<string, MatchingJobDto>>());
         }
 
@@ -141,7 +159,7 @@ namespace Hangfire.Tags.Storage
 
         public void Expire(string jobid, TimeSpan expireIn)
         {
-            using (var tran = (JobStorageTransaction) Connection.CreateWriteTransaction())
+            using (var tran = (JobStorageTransaction)Connection.CreateWriteTransaction())
             {
                 using (var expiration = new TagExpirationTransaction(this, tran))
                 {

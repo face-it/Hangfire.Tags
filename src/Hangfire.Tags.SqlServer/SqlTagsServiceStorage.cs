@@ -16,7 +16,9 @@ namespace Hangfire.Tags.SqlServer
     {
         private readonly SqlServerStorageOptions _options;
 
-        private SqlTagsMonitoringApi MonitoringApi => new SqlTagsMonitoringApi(JobStorage.Current.GetMonitoringApi());
+        private readonly SqlServerStorage _jobStorage;
+
+        private SqlTagsMonitoringApi MonitoringApi => new SqlTagsMonitoringApi(_jobStorage == null ? JobStorage.Current.GetMonitoringApi() : _jobStorage.GetMonitoringApi());
 
         public SqlTagsServiceStorage()
             : this(new SqlServerStorageOptions())
@@ -26,6 +28,12 @@ namespace Hangfire.Tags.SqlServer
         public SqlTagsServiceStorage(SqlServerStorageOptions options)
         {
             _options = options;
+        }
+
+        public SqlTagsServiceStorage(SqlServerStorageOptions options, SqlServerStorage jobStorage)
+        {
+            _options = options;
+            _jobStorage = jobStorage;
         }
 
         public ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
