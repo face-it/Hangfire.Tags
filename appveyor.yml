@@ -21,9 +21,6 @@ init:
 install:
 - cmd: IF DEFINED HFPass nuget sources add -Name ExtHf -Source %HFFeedUrl% -UserName %HFUser% -Password %HFPass%
 
-before_build:
-- cmd: dotnet restore
-
 build_script:
 - cmd: dotnet build src/Hangfire.Tags -c Release
 - cmd: dotnet build src/Hangfire.Tags.SqlServer -c Release
