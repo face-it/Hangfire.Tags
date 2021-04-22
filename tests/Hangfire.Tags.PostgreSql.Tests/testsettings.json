@@ -1,5 +1,5 @@
 {
-  "ConnectionStrings":{
-    "HangfirePostgres":"host=localhost;port=5432;User ID=postgres;password=test;"
+  "ConnectionStrings": {
+    "HangfirePostgres": "host=localhost;port=5432;User ID=postgres;password=Password12!;"
   }
 }
