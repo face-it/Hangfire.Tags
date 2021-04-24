@@ -23,6 +23,7 @@ namespace Hangfire.Tags.States
 
         public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
+            // We don't need to unapply the cleanup of tags.
         }
     }
 }

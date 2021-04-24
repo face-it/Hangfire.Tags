@@ -62,6 +62,12 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line default
     #line hidden
     
+    #line 12 "..\..\Dashboard\Pages\TagsJobsPage.cshtml"
+    using Hangfire.Tags.Dashboard;
+    
+    #line default
+    #line hidden
+    
     #line 8 "..\..\Dashboard\Pages\TagsJobsPage.cshtml"
     using Hangfire.Tags.Dashboard.Monitoring;
     
@@ -75,7 +81,7 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line hidden
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    internal partial class TagsJobsPage : RazorPage
+    internal partial class TagsJobsPage : TagsRazorPage
     {
 #line hidden
 
@@ -97,8 +103,9 @@ WriteLiteral("\r\n");
 
 
 
+
             
-            #line 13 "..\..\Dashboard\Pages\TagsJobsPage.cshtml"
+            #line 14 "..\..\Dashboard\Pages\TagsJobsPage.cshtml"
   
     Layout = new LayoutPage("Tags");
 
@@ -116,8 +123,7 @@ WriteLiteral("\r\n");
     }
     Pager pager;
 
-    var options = TagsOptions.Options;
-    var tagsListStyle = options.TagsListStyle;
+    var tagsListStyle = Options.TagsListStyle;
 
     var relatedTags = new List<string>();
 

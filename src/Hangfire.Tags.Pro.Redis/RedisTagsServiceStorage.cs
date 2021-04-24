@@ -10,9 +10,14 @@ using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.Pro.Redis
 {
-    public class RedisTagsServiceStorage : ITagsServiceStorage
+    public class RedisTagsServiceStorage : ObsoleteBaseStorage, ITagsServiceStorage
     {
-        internal RedisTagsMonitoringApi MonitoringApi { get; }
+        private readonly RedisStorageOptions _options;
+
+        internal RedisTagsMonitoringApi GetMonitoringApi(JobStorage jobStorage)
+        {
+            return new RedisTagsMonitoringApi(jobStorage.GetMonitoringApi(), _options);
+        }
 
         public RedisTagsServiceStorage()
             : this(new RedisStorageOptions())
@@ -21,17 +26,17 @@ namespace Hangfire.Tags.Pro.Redis
 
         public RedisTagsServiceStorage(RedisStorageOptions options)
         {
-            MonitoringApi = new RedisTagsMonitoringApi(JobStorage.Current.GetMonitoringApi(), options);
+            _options = options;
         }
 
-        public ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
+        public override ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
         {
             return new RedisTagsTransaction();
         }
 
-        public IEnumerable<TagDto> SearchWeightedTags(string tag, string setKey)
+        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi= GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 var key = setKey;
@@ -45,9 +50,9 @@ namespace Hangfire.Tags.Pro.Redis
             });
         }
 
-        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
+        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 // Get all jobs with the specified tag
@@ -64,15 +69,15 @@ namespace Hangfire.Tags.Pro.Redis
             });
         }
 
-        public int GetJobCount(string[] tags, string stateName = null)
+        public override int GetJobCount(JobStorage jobStorage, string[] tags, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis => GetJobCount(redis, tags, stateName));
         }
 
-        public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
+        public override IDictionary<string, int> GetJobStateCount(JobStorage jobStorage, string[] tags, int maxTags = 50)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 var retval = new Dictionary<string, int>();
@@ -94,10 +99,10 @@ namespace Hangfire.Tags.Pro.Redis
             });
         }
 
-        public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
+        public override JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from, int count, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
-            return monitoringApi.UseConnection(redis => GetJobs(redis, from, count, tags, stateName,
+            var monitoringApi = GetMonitoringApi(jobStorage);
+            return monitoringApi.UseConnection(redis => GetJobs(monitoringApi, redis, from, count, tags, stateName,
                 (redisJob, job, stateData) =>
                     new MatchingJobDto
                     {
@@ -131,7 +136,7 @@ namespace Hangfire.Tags.Pro.Redis
             return (int) retval;
         }
 
-        private JobList<MatchingJobDto> GetJobs(
+        private JobList<MatchingJobDto> GetJobs(RedisTagsMonitoringApi monitoringApi,
             DatabaseWrapper redis, int from, int count, string[] tags, string stateName,
             Func<RedisJob, Job, SafeDictionary<string, string>, MatchingJobDto> selector)
         {
@@ -152,7 +157,7 @@ namespace Hangfire.Tags.Pro.Redis
                 redis.KeyDelete(tempKey);
             }
 
-            return MonitoringApi.GetJobsWithProperties(jobIds, new[] {"State", "CreatedAt"},
+            return monitoringApi.GetJobsWithProperties(jobIds, new[] {"State", "CreatedAt"},
                 new[] {"EnqueuedAt", "FailedAt", "ScheduledAt", "SucceededAt", "DeletedAt"},
                 (method, job, state) =>
                 {

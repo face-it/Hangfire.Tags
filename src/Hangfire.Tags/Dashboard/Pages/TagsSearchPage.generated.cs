@@ -31,7 +31,7 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line hidden
     using System.Text;
     
-    #line 5 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    #line 6 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
     using Hangfire.Dashboard;
     
     #line default
@@ -49,7 +49,13 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line default
     #line hidden
     
-    #line 6 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    #line 10 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+    using Hangfire.Tags.Dashboard;
+    
+    #line default
+    #line hidden
+    
+    #line 5 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
     using Hangfire.Tags.Dashboard.Monitoring;
     
     #line default
@@ -62,7 +68,7 @@ namespace Hangfire.Tags.Dashboard.Pages
     #line hidden
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    internal partial class TagsSearchPage : RazorPage
+    internal partial class TagsSearchPage : TagsRazorPage
     {
 #line hidden
 
@@ -82,13 +88,13 @@ WriteLiteral("\r\n");
 
 
 
+
             
-            #line 11 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
+            #line 12 "..\..\Dashboard\Pages\TagsSearchPage.cshtml"
   
     Layout = new LayoutPage("Tags");
 
-    var options = TagsOptions.Options;
-    var tagsListStyle = options.TagsListStyle;
+    var tagsListStyle = Options.TagsListStyle;
 
     List<TagDto> allTags;
 

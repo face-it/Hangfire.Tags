@@ -1,5 +1,5 @@
 ﻿using Hangfire.SQLite;
-using Hangfire.Tags.Storage;
+using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.SQLite
 {
@@ -14,15 +14,15 @@ namespace Hangfire.Tags.SQLite
         /// <param name="configuration">Global configuration</param>
         /// <param name="options">Options for tags</param>
         /// <param name="sqlOptions">Options for sql storage</param>
+        /// <param name="jobStorage">The jobStorage for which this configuration is used.</param>
         /// <returns></returns>
-        public static IGlobalConfiguration UseTagsWithSQLite(this IGlobalConfiguration configuration, TagsOptions options = null, SQLiteStorageOptions sqlOptions = null)
+        public static IGlobalConfiguration UseTagsWithSQLite(this IGlobalConfiguration configuration, TagsOptions options = null, SQLiteStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
             sqlOptions = sqlOptions ?? new SQLiteStorageOptions();
 
-            options.Storage = new SQLiteTagsServiceStorage(sqlOptions);
-
-            TagsServiceStorage.Current = options.Storage;
+            var storage = new SQLiteTagsServiceStorage(sqlOptions);
+            (jobStorage ?? JobStorage.Current).Register(options, storage);
 
             var config = configuration.UseTags(options);
             return config;
