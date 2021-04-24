@@ -27,7 +27,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.Redis.StackEx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.SQLite", "src\Hangfire.Tags.SQLite\Hangfire.Tags.SQLite.csproj", "{FF7CE541-CFCB-46F7-8D66-4594A4B4A8E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Tags.Pro.Redis", "src\Hangfire.Tags.Pro.Redis\Hangfire.Tags.Pro.Redis.csproj", "{1BF704F8-48B4-4EC4-9F53-18FD03A51DF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire.Tags.Pro.Redis", "src\Hangfire.Tags.Pro.Redis\Hangfire.Tags.Pro.Redis.csproj", "{1BF704F8-48B4-4EC4-9F53-18FD03A51DF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultipleDashboards", "MultipleDashboards", "{BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobsInterfaces", "samples\MultipleDashboards\JobsInterfaces\JobsInterfaces.csproj", "{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HangfireServerOne", "samples\MultipleDashboards\HangfireServerOne\HangfireServerOne.csproj", "{EEA66D18-4686-4E37-834B-0EA212739ACB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HangfireServerTwo", "samples\MultipleDashboards\HangfireServerTwo\HangfireServerTwo.csproj", "{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleDashboards", "samples\MultipleDashboards\MultipleDashboards\MultipleDashboards.csproj", "{028B3A6D-A07D-482D-B1B3-9E00409F30D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +93,22 @@ Global
 		{1BF704F8-48B4-4EC4-9F53-18FD03A51DF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BF704F8-48B4-4EC4-9F53-18FD03A51DF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BF704F8-48B4-4EC4-9F53-18FD03A51DF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEA66D18-4686-4E37-834B-0EA212739ACB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEA66D18-4686-4E37-834B-0EA212739ACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEA66D18-4686-4E37-834B-0EA212739ACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEA66D18-4686-4E37-834B-0EA212739ACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +116,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{27D5C2D5-D5E5-4DE5-8B65-D790AC5E5780} = {4E9A7A9B-8F5E-402E-AA3C-5B1A3C1C3F06}
 		{B11DCB78-8FE2-4659-A45F-815A671DE280} = {4E9A7A9B-8F5E-402E-AA3C-5B1A3C1C3F06}
+		{BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D} = {4E9A7A9B-8F5E-402E-AA3C-5B1A3C1C3F06}
+		{C6FC060B-4BFF-4B93-BEE5-3076B39A4ED4} = {BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D}
+		{EEA66D18-4686-4E37-834B-0EA212739ACB} = {BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D}
+		{21D2DB8E-7707-4EBD-80E6-5AEA0AE436BD} = {BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D}
+		{028B3A6D-A07D-482D-B1B3-9E00409F30D3} = {BEB04C3A-7089-43A3-A2C5-81C8EFD99B7D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22FEDCF4-B618-487D-A59E-8A483ABE8CF2}
