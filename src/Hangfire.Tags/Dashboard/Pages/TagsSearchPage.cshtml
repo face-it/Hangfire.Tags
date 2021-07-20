@@ -2,17 +2,17 @@
 @using System
 @using System.Collections.Generic
 @using System.Linq
-@using Hangfire.Dashboard
 @using Hangfire.Tags.Dashboard.Monitoring;
+@using Hangfire.Dashboard;
 @using Hangfire.Dashboard.Pages
 @using Hangfire.Tags.Storage
 @using Hangfire.Tags;
-@inherits RazorPage
+@using Hangfire.Tags.Dashboard 
+@inherits TagsRazorPage
 @{
     Layout = new LayoutPage("Tags");
 
-    var options = TagsOptions.Options;
-    var tagsListStyle = options.TagsListStyle;
+    var tagsListStyle = Options.TagsListStyle;
 
     List<TagDto> allTags;
 

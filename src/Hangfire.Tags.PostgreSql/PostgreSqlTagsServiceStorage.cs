@@ -12,25 +12,28 @@ using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.PostgreSql
 {
-    public class PostgreSqlTagsServiceStorage : ITagsServiceStorage
+    public class PostgreSqlTagsServiceStorage : ObsoleteBaseStorage, ITagsServiceStorage
     {
         private readonly PostgreSqlStorageOptions _options;
 
-        private PostgreSqlTagsMonitoringApi MonitoringApi => new PostgreSqlTagsMonitoringApi(JobStorage.Current);
+        private PostgreSqlTagsMonitoringApi GetMonitoringApi(JobStorage jobStorage)
+        {
+            return new PostgreSqlTagsMonitoringApi(jobStorage);
+        }
 
         public PostgreSqlTagsServiceStorage(PostgreSqlStorageOptions options)
         {
             _options = options;
         }
 
-        public ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
+        public override ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
         {
             return new PostgreSqlTagsTransaction(_options, transaction);
         }
 
-        public IEnumerable<TagDto> SearchWeightedTags(string tag, string setKey)
+        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
                 if (string.IsNullOrEmpty(tag))
@@ -51,9 +54,9 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
             });
         }
 
-        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
+        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
@@ -65,15 +68,15 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
             });
         }
 
-        public int GetJobCount(string[] tags, string stateName = null)
+        public override int GetJobCount(JobStorage jobStorage, string[] tags, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection => GetJobCount(connection, tags, stateName));
         }
 
-        public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
+        public override IDictionary<string, int> GetJobStateCount(JobStorage jobStorage, string[] tags, int maxTags = 50)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
                 var parameters = new Dictionary<string, object>();
@@ -107,9 +110,9 @@ limit {maxTags}";
             });
         }
 
-        public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
+        public override JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from, int count, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection => GetJobs(connection, from, count, tags, stateName,
                 (sqlJob, job, stateData) =>
                     new MatchingJobDto

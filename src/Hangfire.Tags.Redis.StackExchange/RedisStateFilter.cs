@@ -31,7 +31,7 @@ namespace Hangfire.Tags.Redis.StackExchange
             var oldState = context.OldStateName?.ToLower();
             var state = context.NewState?.Name.ToLower();
 
-            _storage.MonitoringApi.UseConnection(redis =>
+            _storage.GetMonitoringApi(context.Storage).UseConnection(redis =>
             {
                 var tags = redis.SortedSetScan(_storage.GetRedisKey($"tags:{context.BackgroundJob.Id}"))
                     .Select(e => e.Element.ToString());

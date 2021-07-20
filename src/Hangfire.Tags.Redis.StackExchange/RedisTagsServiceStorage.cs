@@ -12,11 +12,14 @@ using StackExchange.Redis;
 
 namespace Hangfire.Tags.Redis.StackExchange
 {
-    public class RedisTagsServiceStorage : ITagsServiceStorage
+    public class RedisTagsServiceStorage : ObsoleteBaseStorage, ITagsServiceStorage
     {
         private readonly RedisStorageOptions _options;
 
-        internal RedisTagsMonitoringApi MonitoringApi => new RedisTagsMonitoringApi(JobStorage.Current.GetMonitoringApi());
+        internal RedisTagsMonitoringApi GetMonitoringApi(JobStorage jobStorage)
+        {
+            return new RedisTagsMonitoringApi(jobStorage.GetMonitoringApi());
+        }
 
         public RedisTagsServiceStorage()
             : this(new RedisStorageOptions())
@@ -34,14 +37,14 @@ namespace Hangfire.Tags.Redis.StackExchange
             return _options.Prefix + key;
         }
 
-        public ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
+        public override ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
         {
             return new RedisTagsTransaction();
         }
 
-        public IEnumerable<TagDto> SearchWeightedTags(string tag, string setKey)
+        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 var key = GetRedisKey(setKey);
@@ -55,9 +58,9 @@ namespace Hangfire.Tags.Redis.StackExchange
             });
         }
 
-        public IEnumerable<string> SearchRelatedTags(string tag, string setKey)
+        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 // Get all jobs with the specified tag
@@ -76,15 +79,15 @@ namespace Hangfire.Tags.Redis.StackExchange
             });
         }
 
-        public int GetJobCount(string[] tags, string stateName = null)
+        public override int GetJobCount(JobStorage jobStorage, string[] tags, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis => GetJobCount(redis, tags, stateName));
         }
 
-        public IDictionary<string, int> GetJobStateCount(string[] tags, int maxTags = 50)
+        public override IDictionary<string, int> GetJobStateCount(JobStorage jobStorage, string[] tags, int maxTags = 50)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis =>
             {
                 var retval = new Dictionary<string, int>();
@@ -106,9 +109,9 @@ namespace Hangfire.Tags.Redis.StackExchange
             });
         }
 
-        public JobList<MatchingJobDto> GetMatchingJobs(string[] tags, int from, int count, string stateName = null)
+        public override JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from, int count, string stateName = null)
         {
-            var monitoringApi = MonitoringApi;
+            var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(redis => GetJobs(redis, from, count, tags, stateName,
                 (redisJob, job, stateData) =>
                     new MatchingJobDto

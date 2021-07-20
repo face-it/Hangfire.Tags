@@ -15,13 +15,6 @@ namespace Hangfire.Tags.Dashboard
             ContractResolver = new DefaultContractResolver()
         };
 
-        private readonly TagsOptions _options;
-
-        public JobTagsDispatcher(TagsOptions options)
-        {
-            _options = options;
-        }
-
         public async Task Dispatch(DashboardContext context)
         {
             if (!"POST".Equals(context.Request.Method, StringComparison.OrdinalIgnoreCase))

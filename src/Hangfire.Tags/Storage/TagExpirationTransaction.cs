@@ -1,5 +1,6 @@
 ﻿using System;
 using Hangfire.Storage;
+using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.Storage
 {
@@ -7,16 +8,19 @@ namespace Hangfire.Tags.Storage
     {
         private readonly TagsStorage _tagsStorage;
         private readonly JobStorageTransaction _transaction;
+        private readonly ITagsServiceStorage _serviceStorage;
 
         public TagExpirationTransaction(JobStorage jobStorage, JobStorageTransaction transaction)
-        : this(new TagsStorage(jobStorage), transaction)
+            : this(jobStorage.FindRegistration().Item2, new TagsStorage(jobStorage), transaction)
         {
         }
 
-        public TagExpirationTransaction(TagsStorage tagsStorage, JobStorageTransaction transaction)
+        public TagExpirationTransaction(ITagsServiceStorage tagsServiceStorage, TagsStorage tagsStorage,
+            JobStorageTransaction transaction)
         {
             _tagsStorage = tagsStorage ?? throw new ArgumentNullException(nameof(tagsStorage));
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
+            _serviceStorage = tagsServiceStorage;
         }
 
         public void Dispose()
@@ -32,7 +36,7 @@ namespace Hangfire.Tags.Storage
 
             _transaction.ExpireSet(jobid.GetSetKey(), expireIn);
 
-            var tagTransaction = TagsOptions.Options.Storage?.GetTransaction(_transaction);
+            var tagTransaction = _serviceStorage.GetTransaction(_transaction);
             if (tagTransaction == null)
                 return;
 
@@ -54,7 +58,7 @@ namespace Hangfire.Tags.Storage
 
             _transaction.PersistSet(jobid.GetSetKey());
 
-            var tagTransaction = TagsOptions.Options.Storage?.GetTransaction(_transaction);
+            var tagTransaction = _serviceStorage.GetTransaction(_transaction);
             if (tagTransaction == null)
                 return;
 

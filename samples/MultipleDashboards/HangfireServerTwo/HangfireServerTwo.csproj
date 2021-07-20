@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>HangfireServerTwo</AssemblyName>
+    <RootNamespace>HangfireServerTwo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.22" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj" />
+    <ProjectReference Include="..\..\..\src\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\JobsInterfaces\JobsInterfaces.csproj" />
+  </ItemGroup>
+
+</Project>

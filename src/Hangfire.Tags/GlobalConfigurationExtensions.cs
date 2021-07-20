@@ -3,7 +3,6 @@ using Hangfire.Dashboard;
 using Hangfire.Tags.Dashboard;
 using Hangfire.Tags.Dashboard.Pages;
 using Hangfire.Tags.States;
-using Hangfire.Tags.Storage;
 using Hangfire.Tags.Support;
 
 namespace Hangfire.Tags
@@ -18,18 +17,14 @@ namespace Hangfire.Tags
         /// </summary>
         /// <param name="configuration">Global configuration</param>
         /// <param name="options">Options for tags</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         /// <returns></returns>
         public static IGlobalConfiguration UseTags(this IGlobalConfiguration configuration, TagsOptions options = null)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
-
-            TagsOptions.Options = options ?? new TagsOptions { Storage = JobStorage.Current as ITagsServiceStorage };
-
-            if (TagsOptions.Options.Storage == null)
-            {
-                throw new ApplicationException("The specified storage is not suitable for use with tags");
-            }
 
             if (DashboardRoutes.Routes.FindDispatcher("/tags/(.*)") != null)
                 throw new InvalidOperationException("Tags are already initialized");
@@ -40,15 +35,15 @@ namespace Hangfire.Tags
 
             DashboardRoutes.Routes.AddRazorPage("/tags/search", x => new TagsSearchPage());
             DashboardRoutes.Routes.AddRazorPage("/tags/search/.+", x => new TagsJobsPage());
-            DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher(TagsOptions.Options));
-            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher(TagsOptions.Options));
+            DashboardRoutes.Routes.Add("/tags/all", new TagsDispatcher());
+            DashboardRoutes.Routes.Add("/tags/([0-9a-z\\-]+)", new JobTagsDispatcher());
 
             DashboardMetrics.AddMetric(TagDashboardMetrics.TagsCount);
-            JobsSidebarMenu.Items.Add(page => new MenuItem("Tags", page.Url.To("/tags/search"))
+
+            if (!JobsSidebarMenu.Items.Contains(TagsMenuItemInitializer))
             {
-                Active = page.RequestPath.StartsWith("/tags/search"),
-                Metric = TagDashboardMetrics.TagsCount,
-            });
+                JobsSidebarMenu.Items.Add(TagsMenuItemInitializer);
+            }
 
             var assembly = typeof(GlobalConfigurationExtensions).Assembly;
 
@@ -58,8 +53,17 @@ namespace Hangfire.Tags
 
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style.css"));
-            DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(TagsOptions.Options));
+            DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(options));
             return configuration;
+        }
+
+        private static MenuItem TagsMenuItemInitializer(RazorPage page)
+        {
+            return new MenuItem("Tags", page.Url.To("/tags/search"))
+            {
+                Active = page.RequestPath.StartsWith("/tags/search"),
+                Metric = TagDashboardMetrics.TagsCount
+            };
         }
     }
 }
