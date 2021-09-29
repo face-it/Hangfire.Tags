@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.8.0</Version>
+    <Version>1.8.1</Version>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags</PackageTags>
-    <PackageReleaseNotes>Initial release with support for adding tags to background jobs. The tags are visible on the job details page. It's possible to select a tag, and get a list of all jobs containing the selected tag.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyVersion>1.7.1.0</AssemblyVersion>
     <FileVersion>1.7.0.0</FileVersion>
   </PropertyGroup>

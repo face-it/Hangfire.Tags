@@ -22,6 +22,14 @@ namespace Hangfire.Tags
             return jobid;
         }
 
+        public static string[] GetTags(this string jobid)
+        {
+            using (var storage = new TagsStorage(JobStorage.Current))
+            {
+                return storage.GetTags(jobid);
+            }
+        }
+
         public static PerformContext AddTags(this PerformContext context, IEnumerable<string> tags)
         {
             return context.AddTags(tags.ToArray());
