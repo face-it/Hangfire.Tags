@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Reflection;
 using Hangfire.PostgreSql;
 using Hangfire.Storage;
@@ -32,7 +33,7 @@ namespace Hangfire.Tags.PostgreSql
                 throw new ArgumentException("The functions QueueCommand cannot be found.");
         }
 
-        private void QueueCommand(Action<NpgsqlConnection> action)
+        private void QueueCommand(Action<IDbConnection> action)
         {
             _queueCommand.Invoke(_transaction, new object[] { action });
         }
@@ -58,7 +59,7 @@ update {_options.SchemaName}.Set set ExpireAt = @expireAt where Key = @key and V
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            string query = $@"
+            var query = $@"
 update {_options.SchemaName}.Set set ExpireAt = null where Key = @key and Value = @value";
 
             QueueCommand((connection) => connection.Execute(query,
