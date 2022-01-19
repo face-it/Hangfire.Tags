@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.78" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.8.1" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.9.5" />
   </ItemGroup>
 
   <ItemGroup>
