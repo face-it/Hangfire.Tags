@@ -4,7 +4,7 @@ using Hangfire.MySql;
 using Hangfire.Storage;
 using Hangfire.Tags.Storage;
 using Dapper;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace Hangfire.Tags.MySql
 {

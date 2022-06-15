@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Hangfire.Core.MvcApplication.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire.Core.MvcApplication.Models;
 using Hangfire.Server;
@@ -56,6 +57,7 @@ namespace Hangfire.Core.MvcApplication.Controllers
         }
 
         [Tag("job", "{0}")]
+        [ExpireQuick]
         public void Job(string name, PerformContext ctx)
         {
             // TextBuffer.WriteLine("Background Job completed succesfully!");

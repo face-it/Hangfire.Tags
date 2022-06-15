@@ -2,9 +2,9 @@
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.MySql;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using MySqlConnector;
 using Xunit;
 
 namespace Hangfire.Tags.MySql.Tests
