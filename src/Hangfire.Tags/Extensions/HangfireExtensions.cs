@@ -40,5 +40,20 @@ namespace Hangfire.Tags
             context.BackgroundJob.Id.AddTags(tags);
             return context;
         }
+
+        public static PerformContext AddTags(this PerformContext context, JobStorage jobStorage = null, params string[] tags)
+        {
+            if (jobStorage == null)
+            {
+                jobStorage = JobStorage.Current;
+            }
+
+            using (var storage = new TagsStorage(jobStorage))
+            {
+                storage.AddTags(context.BackgroundJob.Id, tags);
+            }
+
+            return context;
+        }
     }
 }
