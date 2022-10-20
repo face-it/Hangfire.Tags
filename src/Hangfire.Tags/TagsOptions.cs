@@ -5,6 +5,8 @@
     /// </summary>
     public class TagsOptions
     {
+        public int? MaxTagLength { get; set; }
+
         public string TagColor { get; set; }
 
         public string TextColor { get; set; }
