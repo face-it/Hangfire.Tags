@@ -31,7 +31,7 @@ namespace Hangfire.Tags.Pro.Redis
 
         public override ITagsTransaction GetTransaction(IWriteOnlyTransaction transaction)
         {
-            return new RedisTagsTransaction();
+            return new RedisTagsTransaction(transaction);
         }
 
         public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)

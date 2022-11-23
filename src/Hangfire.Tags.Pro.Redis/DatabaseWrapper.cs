@@ -27,12 +27,18 @@ namespace Hangfire.Tags.Pro.Redis
 
         private static readonly MethodInfo RedisKeyTypeConverter;
         private static readonly MethodInfo RedisValueTypeConverter;
-        
+
+        private static readonly MethodInfo CreateBatchMethod;
+        private static readonly MethodInfo KeyExistsMethod;
+        private static readonly MethodInfo StringSetMethod;
+        private static readonly MethodInfo StringGetMethod;
+
         private static readonly object CommandFlagNone;
         private static readonly object SetOperationIntersect;
         private static readonly object AggregateSum;
         private static readonly object ExcludeNone;
         private static readonly object OrderDescending;
+        private static readonly object WhenAlways;
 
         private static readonly Type RedisKeyType;
 
@@ -49,11 +55,12 @@ namespace Hangfire.Tags.Pro.Redis
             var aggregateType = Type.GetType("StackExchange.Redis.Aggregate, Hangfire.Pro.Redis");
             var excludeType = Type.GetType("StackExchange.Redis.Exclude, Hangfire.Pro.Redis");
             var orderType = Type.GetType("StackExchange.Redis.Order, Hangfire.Pro.Redis");
+            var whenType = Type.GetType("StackExchange.Redis.When, Hangfire.Pro.Redis");
 
             if (RedisKeyType == null || redisValueType == null || commandFlagType == null || setOperationType == null ||
-                aggregateType == null || excludeType == null || orderType == null)
+                aggregateType == null || excludeType == null || orderType == null || whenType == null)
                 throw new ArgumentException(
-                    "One or more of the types RedisKey, RedisValue, CommandFlags, SetOperation, Aggregate, Exclude or Order are not found in Hangfire.Pro.Redis");
+                    "One or more of the types RedisKey, RedisValue, CommandFlags, SetOperation, Aggregate, Exclude, Order or When are not found in Hangfire.Pro.Redis");
 
             RedisKeyTypeConverter = RedisKeyType.GetMethod("op_Implicit", new[] {typeof(string)});
             RedisValueTypeConverter = redisValueType.GetMethod("op_Implicit", new[] {typeof(string)});
@@ -63,6 +70,7 @@ namespace Hangfire.Tags.Pro.Redis
             AggregateSum = Enum.Parse(aggregateType, "Sum");
             ExcludeNone = Enum.Parse(excludeType, "None");
             OrderDescending = Enum.Parse(orderType, "Descending");
+            WhenAlways = Enum.Parse(whenType, "Always");
 
             var redisKeyArrayType = RedisKeyType.MakeArrayType();
 
@@ -86,6 +94,13 @@ namespace Hangfire.Tags.Pro.Redis
 
             HashGetAllMethod = type.GetMethod(nameof(HashGetAll), new[] {RedisKeyType, commandFlagType});
             KeyDeleteMethod = type.GetMethod(nameof(KeyDelete), new[] {RedisKeyType, commandFlagType});
+
+            CreateBatchMethod = type.GetMethod(nameof(CreateBatch), new[] {typeof(object)});
+            KeyExistsMethod = type.GetMethod(nameof(KeyExists), new[] {RedisKeyType, commandFlagType});
+            StringSetMethod = type.GetMethod(nameof(StringSet),
+                new[] {RedisKeyType, redisValueType, typeof(TimeSpan?), whenType, commandFlagType});
+            StringGetMethod = type.GetMethod(nameof(StringGet),
+                new[] {RedisKeyType, commandFlagType});
 
             type = Type.GetType("StackExchange.Redis.SortedSetEntry, Hangfire.Pro.Redis");
             if (type == null)
@@ -129,6 +144,28 @@ namespace Hangfire.Tags.Pro.Redis
         // {
         //     return values.Select(v => RedisKeyTypeConverter.ConvertFromString(v)).ToArray();
         // }
+
+        public BatchWrapper CreateBatch(object asyncState = null)
+        {
+            return new BatchWrapper(CreateBatchMethod.Invoke(_objFactory, new[] {asyncState}));
+        }
+
+        public bool KeyExists(string key)
+        {
+            return (bool) KeyExistsMethod.Invoke(_objFactory, new[] {ToRedisKey(key), CommandFlagNone});
+        }
+
+        public bool StringSet(string key, string value, TimeSpan? expiry = null)
+        {
+            return (bool) StringSetMethod.Invoke(_objFactory,
+                new[] {ToRedisKey(key), ToRedisValue(value), expiry, WhenAlways, CommandFlagNone});
+        }
+
+        public string StringGet(string key)
+        {
+            return StringGetMethod.Invoke(_objFactory,
+                new[] {ToRedisKey(key), CommandFlagNone})?.ToString();
+        }
 
         public IEnumerable<string> SortedSetScan(string key, string pattern = default)
         {
@@ -174,13 +211,13 @@ namespace Hangfire.Tags.Pro.Redis
             SortedSetRemoveMethod.Invoke(_objFactory, new[] {ToRedisKey(key), ToRedisValue(value), CommandFlagNone});
         }
 
-        public IEnumerable<string> SortedSetRangeByScore(string key, int from, int count)
+        public IEnumerable<string> SortedSetRangeByScore(string key, double start, double stop, long skip = 0, long take = -1)
         {
             var enumerable = (IEnumerable) SortedSetRangeByScoreMethod.Invoke(_objFactory,
                 new[]
                 {
-                    ToRedisKey(key), double.NegativeInfinity, double.PositiveInfinity, ExcludeNone, OrderDescending,
-                    from, count, CommandFlagNone
+                    ToRedisKey(key), start, stop, ExcludeNone, OrderDescending,
+                    skip, take, CommandFlagNone
                 });
             foreach (var obj in enumerable)
             {

@@ -25,7 +25,6 @@ namespace Hangfire.Tags.Storage
 
         public void Dispose()
         {
-            _transaction.Dispose();
             _tagsStorage.Dispose();
         }
 
