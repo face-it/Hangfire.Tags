@@ -157,6 +157,8 @@ namespace Hangfire.Tags.Storage
                 {
                     expiration.Expire(jobid, expireIn);
                 }
+
+                tran.Commit();
             }
         }
     }
