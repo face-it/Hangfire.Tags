@@ -5,6 +5,7 @@ os: Visual Studio 2019
 branches:
   only:
   - master
+  - redis-expire
 
 pull_requests:
   do_not_increment_build_number: true
@@ -53,4 +54,6 @@ deploy:
     secure: C7FYdlcp6DAi4kbubqFIdPa0SvldEHlcdok5mk4+xJjmmreEibwgR6AUo27O7NQw
   skip_symbols: true
   on:
-    branch: master
+    branch: 
+    - master
+    - redis-expire
