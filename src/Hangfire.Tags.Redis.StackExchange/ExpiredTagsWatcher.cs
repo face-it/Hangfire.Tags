@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Hangfire.Redis;
+using Hangfire.Redis.StackExchange;
 using Hangfire.Server;
 
 namespace Hangfire.Tags.Redis.StackExchange

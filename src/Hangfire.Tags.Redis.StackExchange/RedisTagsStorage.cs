@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hangfire.Logging;
-using Hangfire.Redis;
+using Hangfire.Redis.StackExchange;
 using Hangfire.Server;
 using Hangfire.States;
 using Hangfire.Storage;
