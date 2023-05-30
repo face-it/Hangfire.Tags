@@ -93,7 +93,7 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
                 {
                     parameters["tag" + i] = tags[i];
                     jobsSql +=
-                        $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+                        $"  inner join [{_options.SchemaName}].[Set] s{i} on ISNUMERIC(s{i}.Value)=1 AND j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
                 }
 
                 jobsSql +=
@@ -155,7 +155,7 @@ group by j.StateName order by count(*) desc";
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on ISNUMERIC(s{i}.Value)=1 AND j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
             }
 
             jobsSql +=
@@ -192,7 +192,7 @@ inner join cte on cte.Id = j.Id";
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
+                jobsSql += $"  inner join [{_options.SchemaName}].[Set] s{i} on ISNUMERIC(s{i}.Value)=1 AND j.Id=s{i}.Value and s{i}.[Key]=@tag{i}";
             }
 
             jobsSql +=

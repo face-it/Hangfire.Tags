@@ -34,26 +34,28 @@ namespace Hangfire.MvcApplication
     {
         public void Configuration(IAppBuilder app)
         {
-            // GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
-            // {
-            //     TagsListStyle = TagsListStyle.Dropdown
-            // });
+            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
+            {
+                TagsListStyle = TagsListStyle.Dropdown,
+                MaxTagLength = 100
+            });
 
             // var mysqlConnectionString =
             //     ConfigurationManager.ConnectionStrings["DefaultMySqlConnection"].ConnectionString;
             //
             // GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(mysqlConnectionString, new MySqlStorageOptions())).UseTagsWithMySql(new TagsOptions
             // {
-            //     TagsListStyle = TagsListStyle.Dropdown
+            //     TagsListStyle = TagsListStyle.Dropdown,
+            //     MaxTagLength = 100
             // });
 
-            var redis = ConnectionMultiplexer.Connect(ConfigurationManager.ConnectionStrings["DefaultRedisConnection"]
-                .ConnectionString);
-            GlobalConfiguration.Configuration.UseRedisStorage(redis)
-                .UseTagsWithRedis(new TagsOptions
-                {
-                    TagsListStyle = TagsListStyle.Dropdown
-                });
+            // var redis = ConnectionMultiplexer.Connect(ConfigurationManager.ConnectionStrings["DefaultRedisConnection"]
+            //     .ConnectionString);
+            // GlobalConfiguration.Configuration.UseRedisStorage(redis)
+            //     .UseTagsWithRedis(new TagsOptions
+            //     {
+            //         TagsListStyle = TagsListStyle.Dropdown
+            //     });
 
             // var sqliteConnectionString =
             //     ConfigurationManager.ConnectionStrings["DefaultSqliteConnection"].ConnectionString;

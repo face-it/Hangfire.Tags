@@ -55,7 +55,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Hangfire.MySql, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hangfire.MySqlStorage.2.0.2\lib\net452\Hangfire.MySql.dll</HintPath>
+      <HintPath>..\..\packages\Hangfire.MySqlStorage.2.0.3\lib\net452\Hangfire.MySql.dll</HintPath>
     </Reference>
     <Reference Include="Hangfire.Redis.StackExchange, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Hangfire.Redis.StackExchange.1.8.4\lib\net461\Hangfire.Redis.StackExchange.dll</HintPath>
@@ -76,8 +76,8 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.4.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="MySqlConnector, Version=0.47.1.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MySqlConnector.0.47.1\lib\net461\MySqlConnector.dll</HintPath>
+    <Reference Include="MySqlConnector, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MySqlConnector.1.0.0\lib\net471\MySqlConnector.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>

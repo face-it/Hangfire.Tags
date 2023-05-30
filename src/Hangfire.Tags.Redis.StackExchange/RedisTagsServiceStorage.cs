@@ -194,7 +194,7 @@ namespace Hangfire.Tags.Redis.StackExchange
                 redis.KeyDelete(tempKey);
             }
 
-            var redisJobs = jobIds.Select(i =>
+            var redisJobs = jobIds.Where(j => Guid.TryParse(j, out var _)).Select(i =>
             {
                 var values = new SafeDictionary<string, string>(
                     redis.HashGetAll(GetRedisKey($"job:{i}")).ToStringDictionary(), StringComparer.OrdinalIgnoreCase);

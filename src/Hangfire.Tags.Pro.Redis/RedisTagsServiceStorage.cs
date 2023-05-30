@@ -147,17 +147,17 @@ namespace Hangfire.Tags.Pro.Redis
 
             if (redisKeys.Length <= 1)
             {
-                jobIds = redis.SortedSetRangeByScore(redisKeys.First(), from, count).ToList();
+                jobIds = redis.SortedSetRangeByScore(redisKeys.First(), double.NegativeInfinity, double.PositiveInfinity, from, count).ToList();
             }
             else
             {
                 var tempKey = $"tags:job-{stateName.ToLower()}-{Guid.NewGuid():N}";
                 redis.SortedSetCombineAndStore(tempKey, redisKeys);
-                jobIds = redis.SortedSetRangeByScore(tempKey, from, count).ToList();
+                jobIds = redis.SortedSetRangeByScore(tempKey, double.NegativeInfinity, double.PositiveInfinity, from, count).ToList();
                 redis.KeyDelete(tempKey);
             }
 
-            return monitoringApi.GetJobsWithProperties(jobIds, new[] {"State", "CreatedAt"},
+            return monitoringApi.GetJobsWithProperties(jobIds.Where(j => Guid.TryParse(j, out var _)).ToList(), new[] {"State", "CreatedAt"},
                 new[] {"EnqueuedAt", "FailedAt", "ScheduledAt", "SucceededAt", "DeletedAt"},
                 (method, job, state) =>
                 {

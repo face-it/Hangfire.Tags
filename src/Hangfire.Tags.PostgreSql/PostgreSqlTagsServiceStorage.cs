@@ -91,7 +91,7 @@ from {_options.SchemaName}.Set s where s.Key ~ (@setKey || ':' || @tag) group by
                 {
                     parameters["tag" + i] = tags[i];
                     jobsSql +=
-                        $"  inner join {_options.SchemaName}.Set s{i} on j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
+                        $"  inner join {_options.SchemaName}.Set s{i} on s{i}.Value ~ '^[0-9]+$' AND j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
                 }
 
                 jobsSql +=
@@ -153,7 +153,7 @@ limit {maxTags}";
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $" inner join {_options.SchemaName}.Set s{i} on j.Id= s{i}.Value::bigint and s{i}.Key=@tag{i}";
+                jobsSql += $" inner join {_options.SchemaName}.Set s{i} on s{i}.Value ~ '^[0-9]+$' AND j.Id=s{i}.Value::bigint and s{i}.Key=@tag{i}";
             }
 
             jobsSql +=
@@ -190,7 +190,7 @@ left join {_options.SchemaName}.State s  on j.StateId = s.Id";
             for (var i = 0; i < tags.Length; i++)
             {
                 parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join {_options.SchemaName}.Set s{i} on j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
+                jobsSql += $"  inner join {_options.SchemaName}.Set s{i} on s{i}.Value ~ '^[0-9]+$' AND j.Id=s{i}.Value::BIGINT and s{i}.Key=@tag{i}";
             }
 
             jobsSql +=
