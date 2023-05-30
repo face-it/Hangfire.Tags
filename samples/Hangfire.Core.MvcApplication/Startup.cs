@@ -121,11 +121,11 @@ namespace Hangfire.Core.MvcApplication
                 //     new TagsOptions {TagsListStyle = TagsListStyle.Dropdown}
                 // );
 
-                config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
-                    new TagsOptions
-                    {
-                        TagsListStyle = TagsListStyle.Dropdown
-                    });
+                // config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
+                //     new TagsOptions
+                //     {
+                //         TagsListStyle = TagsListStyle.Dropdown
+                //     });
 
                 //config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));

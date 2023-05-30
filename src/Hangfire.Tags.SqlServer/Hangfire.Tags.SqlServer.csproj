@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -15,6 +15,11 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags sql server</PackageTags>
     <PackageReleaseNotes>Initial release with support for adding tags to background jobs. The tags are visible on the job details page. It's possible to select a tag, and get a list of all jobs containing the selected tag.</PackageReleaseNotes>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.*" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
