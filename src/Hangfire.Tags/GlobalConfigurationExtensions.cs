@@ -53,6 +53,7 @@ namespace Hangfire.Tags
 
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style.css"));
+            DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Tags.Resources.style-{0}.css", true));
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(options));
             return configuration;
         }

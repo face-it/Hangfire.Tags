@@ -1,4 +1,4 @@
-﻿using Hangfire.Redis;
+﻿using Hangfire.Redis.StackExchange;
 using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.Redis.StackExchange

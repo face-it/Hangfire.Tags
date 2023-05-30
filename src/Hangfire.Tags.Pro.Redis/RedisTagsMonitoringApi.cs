@@ -48,7 +48,7 @@ namespace Hangfire.Tags.Pro.Redis
 
         public JobList<MatchingJobDto> GetJobsWithProperties(
             IList<string> jobIds, string[] properties, string[] stateProperties,
-            Func<Job, string[], string[], MatchingJobDto> selector)
+            Func<Job, InvocationData, JobLoadException, string[], string[], MatchingJobDto> selector)
         {
             return (JobList<MatchingJobDto>) _getJobsWithPropertiesMethod.Invoke(_monitoringApi,
                 new object[] {jobIds, properties, stateProperties, selector});

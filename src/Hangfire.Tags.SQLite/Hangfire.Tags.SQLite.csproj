@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>2Face-IT B.V.</Company>
-    <Version>1.8.0</Version>
+    <Version>1.9.0-beta.1</Version>
     <Description>Support for SQLite for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -20,12 +20,12 @@
     <PackageReference Include="Hangfire.SQLite" Version="1.4.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.105.2" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.*" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.*" />
   </ItemGroup>
 
   <ItemGroup>

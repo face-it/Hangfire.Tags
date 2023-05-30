@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.8.2</Version>
+    <Version>1.9.0-beta.1</Version>
     <Description>Support for SQL Server for Hangfire.Tags. This seperate library is required in order to search for tags, and proper cleanup.</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
@@ -22,9 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.30" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.7.8" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
+    <PackageReference Include="Dapper" Version="2.*" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.2" />
   </ItemGroup>
 
   <ItemGroup>

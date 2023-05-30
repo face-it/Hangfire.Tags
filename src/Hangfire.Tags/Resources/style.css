@@ -1,5 +1,5 @@
 .tags {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid;
     margin-bottom: 20px;
     padding-bottom: 20px;
 }
@@ -10,21 +10,17 @@
     display: inline-block;
 }
 
-.tags > .label:hover {
-    background-color: #def;
-}
-
 .tags > .label > a:hover {
     text-decoration: none;
 }
 
 .js-state-list {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid;
     margin-bottom: 20px;
 }
 
 .related-tags {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid;
     margin-bottom: 5px;
     padding-left: 0;
     padding-bottom: 15px;

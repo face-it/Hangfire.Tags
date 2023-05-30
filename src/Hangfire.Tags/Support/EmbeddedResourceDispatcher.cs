@@ -13,8 +13,9 @@ namespace Hangfire.Tags.Support
         private readonly Assembly _assembly;
         private readonly string _resourceName;
         private readonly string _contentType;
+        private readonly bool _hasDarkMode;
 
-        public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, string contentType = null)
+        public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, bool hasDarkMode = false, string contentType = null)
         {
             if (string.IsNullOrEmpty(resourceName))
                 throw new ArgumentNullException(nameof(resourceName));
@@ -22,6 +23,7 @@ namespace Hangfire.Tags.Support
             _assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             _resourceName = resourceName;
             _contentType = contentType;
+            _hasDarkMode = hasDarkMode;
         }
 
         public Task Dispatch(DashboardContext context)
@@ -42,7 +44,11 @@ namespace Hangfire.Tags.Support
                 }
             }
 
-            return WriteResourceAsync(context.Response, _assembly, _resourceName);
+            var resourceName = _hasDarkMode
+                ? string.Format(_resourceName, context.Options.DarkModeEnabled ? "dark" : "light")
+                : _resourceName;
+
+            return WriteResourceAsync(context.Response, _assembly, resourceName);
         }
 
         private static async Task WriteResourceAsync(DashboardResponse response, Assembly assembly, string resourceName)

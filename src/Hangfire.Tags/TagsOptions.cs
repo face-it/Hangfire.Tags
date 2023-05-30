@@ -11,6 +11,10 @@
 
         public string TextColor { get; set; }
 
+        public string DarkTagColor { get; set; }
+
+        public string DarkTextColor { get; set; }
+
         public TagsListStyle TagsListStyle { get; set; } = TagsListStyle.LinkButton; // default
     }
 }

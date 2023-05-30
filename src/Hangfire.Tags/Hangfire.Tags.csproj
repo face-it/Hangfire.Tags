@@ -1,27 +1,31 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
-    <Version>1.8.4</Version>
+    <Version>1.9.0-beta.1</Version>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <AssemblyVersion>1.7.2.0</AssemblyVersion>
-    <FileVersion>1.7.0.0</FileVersion>
+    <AssemblyVersion>1.8.2.0</AssemblyVersion>
+    <FileVersion>1.8.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\jquery.tagcloud.js" />
     <None Remove="Resources\script.js" />
+    <None Remove="Resources\style-dark.css" />
+    <None Remove="Resources\style-light.css" />
     <None Remove="Resources\style.css" />
   </ItemGroup>
 
@@ -31,11 +35,22 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\script.js" />
+    <EmbeddedResource Include="Resources\style-dark.css" />
+    <EmbeddedResource Include="Resources\style-light.css" />
     <EmbeddedResource Include="Resources\style.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.Core" Version="1.7.8" />
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Dashboard.png" Link="Dashboard.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Sidemenu-dark.png" Link="Sidemenu-dark.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Sidemenu-light.png" Link="Sidemenu-light.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Tagsearch.png" Link="Tagsearch.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
   </ItemGroup>
 
   <ItemGroup>

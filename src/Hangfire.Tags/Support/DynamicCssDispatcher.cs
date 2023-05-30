@@ -21,13 +21,16 @@ namespace Hangfire.Tags.Support
         {
             var builder = new StringBuilder();
 
-            if (!string.IsNullOrEmpty(_options.TagColor) || !string.IsNullOrEmpty(_options.TextColor))
+            var tagColor = context.Options.DarkModeEnabled ? _options.DarkTagColor : _options.TagColor;
+            var textColor = context.Options.DarkModeEnabled ? _options.DarkTextColor : _options.TextColor;
+
+            if (!string.IsNullOrEmpty(tagColor) || !string.IsNullOrEmpty(textColor))
             {
                 builder.AppendLine(".tags > .label-info {");
-                if (!string.IsNullOrEmpty(_options.TagColor))
-                    builder.Append("    background-color: ").Append(_options.TagColor).AppendLine(";");
-                if (!string.IsNullOrEmpty(_options.TextColor))
-                    builder.Append("    color: ").Append(_options.TextColor).AppendLine(";");
+                if (!string.IsNullOrEmpty(tagColor))
+                    builder.Append("    background-color: ").Append(tagColor).AppendLine(";");
+                if (!string.IsNullOrEmpty(textColor))
+                    builder.Append("    color: ").Append(textColor).AppendLine(";");
                 builder.AppendLine("}");
             }
 

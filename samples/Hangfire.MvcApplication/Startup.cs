@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using Hangfire.Common;
 using Hangfire.MySql;
@@ -64,7 +64,7 @@ namespace Hangfire.MvcApplication
             //         TagsListStyle = TagsListStyle.Dropdown
             //     });
 
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { DarkModeEnabled = false });
             app.UseHangfireServer();
 
             GlobalConfiguration.Configuration.UseFilter(new ProlongExpirationTimeAttribute());

@@ -5,7 +5,7 @@ os: Visual Studio 2019
 branches:
   only:
   - master
-  - redis-expire
+  - hangfire_182
 
 pull_requests:
   do_not_increment_build_number: true
@@ -56,4 +56,4 @@ deploy:
   on:
     branch: 
     - master
-    - redis-expire
+    - hangfire_182
