@@ -57,6 +57,25 @@ GlobalConfiguration.Configuration
 **NOTE**: If you have Dashboard and Server running separately,
 you'll need to call `UseTags()`, `UseTagsWithSql()`, `UseTagsWithPostgreSql()`, `UseTagsWithMySql()` or `UseTagsWithRedis()` on both.
 
+### Sql Options
+If you have a custom HangFire schema in your database, you'll need to pass your sql options to your storage method. For example:
+
+```csharp
+        var tagsOptions = new TagsOptions() { TagsListStyle = TagsListStyle.Dropdown };
+        var hangfireSqlOptions = new SqlServerStorageOptions
+        {
+            SchemaName = "MyCustomHangFireSchema",
+        };
+        services.AddHangfire(hangfireConfig => hangfireConfig
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseColouredConsoleLogProvider()
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage("dbConnection", hangfireSqlOptions)
+            .UseTagsWithSql(tagsOptions, hangfireSqlOptions)
+        );
+```
+
 ### Additional options
 
 As usual, you may provide additional options for `UseTags()` method.
