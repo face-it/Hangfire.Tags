@@ -98,5 +98,15 @@ namespace Hangfire.Tags
 
             return context;
         }
+
+        /// <summary>
+        /// Gets the tags monitoring API, which can be used to query tags
+        /// </summary>
+        /// <param name="jobStorage">The current jobstorage</param>
+        /// <returns>An object which implements the ITagsMonitoringApi.</returns>
+        public static ITagsMonitoringApi GetTagsMonitoringApi(this JobStorage jobStorage)
+        {
+            return new TagsStorage(jobStorage);
+        }
     }
 }
