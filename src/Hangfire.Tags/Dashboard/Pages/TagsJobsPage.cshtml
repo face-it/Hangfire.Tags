@@ -135,6 +135,15 @@
                             <span class="glyphicon glyphicon-repeat"></span>
                             @Strings.Common_RequeueJobs
                         </button>
+                        
+                        <button class="js-jobs-list-command btn btn-sm btn-default"
+                                data-url="@Url.To("/jobs/enqueued/delete")"
+                                data-loading-text="@Strings.Common_Deleting"
+                                data-confirm="@Strings.Common_DeleteConfirm"
+                                disabled="disabled">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            @Strings.Common_DeleteSelected
+                        </button>
 
                         @Html.PerPageSelector(pager)
                     </div>
