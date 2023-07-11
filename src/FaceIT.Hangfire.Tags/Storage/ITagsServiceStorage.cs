@@ -103,5 +103,21 @@ namespace Hangfire.Tags.Storage
         /// <param name="stateName">The optional name of the state.</param>
         /// <returns></returns>
         JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from, int count, string stateName = null);
+
+        /// <summary>
+        /// Get all the tags for a specific job.
+        /// </summary>
+        /// <param name="jobStorage">The jobstorage to use when multiple storages are defined.</param>
+        /// <param name="jobId">The job id.</param>
+        /// <returns>A list of all tags which are attached to the job.</returns>
+        string[] GetTags(JobStorage jobStorage, string jobId);
+
+        /// <summary>
+        /// Get the amount of unique tags 
+        /// </summary>
+        /// <param name="jobStorage">The jobstorage to use when multiple storages are defined.</param>
+        /// <param name="setKey">The keyprefix used for the keys in the set.</param>
+        /// <returns></returns>
+        long GetTagCount(JobStorage jobStorage, string setKey = IdExtensions.SetKey);
     }
 }

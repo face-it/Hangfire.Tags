@@ -12,8 +12,8 @@ namespace Hangfire.Tags.Dashboard
             _context = context;
         }
 
-        public TagsOptions Options => StorageRegistration.FindRegistration(_context.Storage).Item1;
+        public TagsOptions Options => _context.Storage.FindRegistration().Item1;
 
-        public ITagsServiceStorage TagsServiceStorage => StorageRegistration.FindRegistration(_context.Storage).Item2;
+        public ITagsServiceStorage TagsServiceStorage => _context.Storage.FindRegistration().Item2;
     }
 }

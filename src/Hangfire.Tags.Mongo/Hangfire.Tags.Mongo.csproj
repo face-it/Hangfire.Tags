@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Authors>Erwin Bovendeur</Authors>
+        <Company>2Face-IT B.V.</Company>
+        <Version>1.9.0-beta.1</Version>
+        <Description>Support for MongoDB for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
+        <Copyright />
+        <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <PackageTags>hangfire tags mongo</PackageTags>
+
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Hangfire.Mongo" Version="1.9.6" />
+    </ItemGroup>
+</Project>

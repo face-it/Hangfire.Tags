@@ -18,12 +18,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
 using Hangfire.Core.MvcApplication.Jobs;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Hangfire.SQLite;
 using Hangfire.Tags.SQLite;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using Hangfire.States;
 using Hangfire.Storage;
+using Hangfire.Tags.Mongo;
+using MongoDB.Driver;
 
 namespace Hangfire.Core.MvcApplication
 {
@@ -62,18 +67,18 @@ namespace Hangfire.Core.MvcApplication
             services.AddHangfire(config =>
             {
                 //SqlServer Sample
-                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
-                {
-                    JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
-                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                });
-                var options = new TagsOptions
-                {
-                    TagsListStyle = TagsListStyle.Dropdown
-                };
-                config.UseTagsWithSql(options);
+                // config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+                // {
+                //     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
+                //     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
+                //     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
+                //     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                // });
+                // var options = new TagsOptions
+                // {
+                //     TagsListStyle = TagsListStyle.Dropdown
+                // };
+                // config.UseTagsWithSql(options);
                 //end SqlServer Sample
 
                 //MySql Sample
@@ -128,9 +133,27 @@ namespace Hangfire.Core.MvcApplication
                 //         TagsListStyle = TagsListStyle.Dropdown
                 //     });
 
+                // mongo sample
+                var mongoUrlBuilder = new MongoUrlBuilder(Configuration.GetConnectionString("MongoConnection"));
+                var mongoClient = new MongoClient(mongoUrlBuilder.ToMongoUrl());
+
+                var options = new MongoStorageOptions
+                {
+                    MigrationOptions = new MongoMigrationOptions
+                    {
+                        MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                        BackupStrategy = new CollectionMongoBackupStrategy()
+                    },
+                    Prefix = "hangfire.mongo",
+                    CheckConnection = true
+                };
+                config.UseMongoStorage(mongoClient, mongoUrlBuilder.DatabaseName, options)
+                    .UseTagsWithMongo(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, options);
+                
                 //config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
             });
+            services.AddHangfireServer();
 
             services.AddMvc();
         }

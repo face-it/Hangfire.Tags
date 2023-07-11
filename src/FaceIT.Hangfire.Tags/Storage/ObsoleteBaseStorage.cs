@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.Dashboard.Monitoring;
@@ -47,5 +48,15 @@ namespace Hangfire.Tags.Storage
 
         public abstract JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from,
             int count, string stateName = null);
+
+        public virtual string[] GetTags(JobStorage jobStorage, string jobId)
+        {
+            return ((JobStorageConnection) jobStorage.GetConnection()).GetAllItemsFromSet(jobId.GetSetKey()).ToArray();
+        }
+
+        public virtual long GetTagCount(JobStorage jobStorage, string setKey = "tags")
+        {
+            return ((JobStorageConnection) jobStorage.GetConnection()).GetSetCount(setKey);
+        }
     }
 }
