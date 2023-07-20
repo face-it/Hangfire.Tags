@@ -1,0 +1,1 @@
+PostgreSql storage support for Hangfire Tags (extension for Hangfire).

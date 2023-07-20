@@ -9,7 +9,7 @@
     <Description>Support for SQL Server for Hangfire.Tags. This seperate library is required in order to search for tags, and proper cleanup.</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -21,17 +21,20 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Hangfire.Tags.SqlServer.csproj.DotSettings" />
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.30" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.8" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

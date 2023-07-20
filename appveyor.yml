@@ -31,9 +31,9 @@ after_build:
 - cmd: IF NOT DEFINED HFPass dotnet pack /p:ContinuousIntegrationBuild=true -c Release -o artifacts Hangfire.Tags.sln
 
 test_script:
-- cmd: dotnet test tests/Hangfire.Tags.Tests/Hangfire.Tags.Tests.csproj
-- cmd: dotnet test tests/Hangfire.Tags.PostgreSql.Tests/Hangfire.Tags.PostgreSql.Tests.csproj
-- cmd: dotnet test tests/Hangfire.Tags.MySql.Tests/Hangfire.Tags.MySql.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.Tests/FaceIT.Hangfire.Tags.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.PostgreSql.Tests/FaceIT.Hangfire.Tags.PostgreSql.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.MySql.Tests/FaceIT.Hangfire.Tags.MySql.Tests.csproj
 
 artifacts:
 - path: 'artifacts/**/*.*nupkg'

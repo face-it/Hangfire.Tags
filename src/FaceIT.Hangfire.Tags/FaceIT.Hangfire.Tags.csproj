@@ -9,8 +9,7 @@
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/face-it/Hangfire.Tags/blob/master/LICENSE.md</PackageLicenseUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags</PackageTags>
@@ -23,6 +22,8 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,17 +42,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\Dashboard.png" Link="Dashboard.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\Sidemenu-dark.png" Link="Sidemenu-dark.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\Sidemenu-light.png" Link="Sidemenu-light.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\Tagsearch.png" Link="Tagsearch.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Hangfire.Core" Version="1.7.8" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

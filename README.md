@@ -7,8 +7,8 @@
 
 Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to search and group different jobs. 
 
-![sidemenu](Sidemenu.png)
-![dashboard](Dashboard.png)
+![sidemenu](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Sidemenu.png)
+![dashboard](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Dashboard.png)
 
 ## Contributers
 
@@ -135,7 +135,7 @@ config.UseTagsWithSql(options);
 ```
 
 The result will look like this:
-![tagsearch](Tagsearch.png)
+![tagsearch](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Tagsearch.png)
 
 ## License
 
