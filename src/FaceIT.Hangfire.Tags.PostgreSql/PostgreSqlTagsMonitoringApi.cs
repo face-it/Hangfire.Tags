@@ -30,6 +30,7 @@ namespace Hangfire.Tags.PostgreSql
             if (_type != monitoringApi.GetType())
             {
                 _useConnection = null;
+                _useStorage = false;
 
                 _type = monitoringApi.GetType();
             }
