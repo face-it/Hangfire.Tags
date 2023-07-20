@@ -69,10 +69,11 @@ namespace Hangfire.MvcApplication
 
             GlobalConfiguration.Configuration.UseFilter(new ProlongExpirationTimeAttribute());
 
-            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
+            RecurringJob.AddOrUpdate<Tasks>("Success Task", x => x.SuccessTask(null, null), Cron.Minutely);
 
             var recurringJobs = new RecurringJobManager();
-            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null, null)), "*/2 * * * *", TimeZoneInfo.Local);
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null, null)),
+                "*/2 * * * *", new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
         }
 
         private static void ThrowException()

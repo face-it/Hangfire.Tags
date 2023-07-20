@@ -32,7 +32,6 @@ namespace HangfireServerTwo
                         SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
                         QueuePollInterval = TimeSpan.Zero,
                         UseRecommendedIsolationLevel = true,
-                        UsePageLocksOnDequeue = true,
                         DisableGlobalLocks = true
                     })
                 .UseTagsWithSql(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown });

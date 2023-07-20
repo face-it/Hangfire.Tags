@@ -14,13 +14,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.Pro.Redis\Hangfire.Tags.Pro.Redis.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.Redis.StackExchange\Hangfire.Tags.Redis.StackExchange.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.SQLite\Hangfire.Tags.SQLite.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.MySql\FaceIT.Hangfire.Tags.MySql.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.PostgreSql\FaceIT.Hangfire.Tags.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Pro.Redis\FaceIT.Hangfire.Tags.Pro.Redis.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Redis.StackExchange\FaceIT.Hangfire.Tags.Redis.StackExchange.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SQLite\FaceIT.Hangfire.Tags.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SqlServer\FaceIT.Hangfire.Tags.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 
 </Project>

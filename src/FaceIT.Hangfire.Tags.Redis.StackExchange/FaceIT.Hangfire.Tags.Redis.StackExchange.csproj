@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Erwin Bovendeur</Authors>
+    <Company>2Face-IT B.V.</Company>
+    <Version>1.9.2-beta.1</Version>
+    <Description>Support for Redis for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
+    <Copyright />
+    <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>hangfire tags redis</PackageTags>
+    <RootNamespace>Hangfire.Tags.Redis.StackExchange</RootNamespace>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
+    <PackageReference Include="HangFire.Redis.StackExchange" Version="1.8.7" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Update="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

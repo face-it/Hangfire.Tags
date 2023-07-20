@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Erwin Bovendeur</Authors>
+    <Company>faceit</Company>
+    <Version>1.9.0-beta.2</Version>
+    <Description>Add tags to Hangfire backgroundjobs</Description>
+    <Copyright />
+    <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>hangfire tags</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <AssemblyVersion>1.8.2.0</AssemblyVersion>
+    <FileVersion>1.8.0.0</FileVersion>
+    <RootNamespace>Hangfire.Tags</RootNamespace>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\jquery.tagcloud.js" />
+    <None Remove="Resources\script.js" />
+    <None Remove="Resources\style-dark.css" />
+    <None Remove="Resources\style-light.css" />
+    <None Remove="Resources\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jquery.tagcloud.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\script.js" />
+    <EmbeddedResource Include="Resources\style-dark.css" />
+    <EmbeddedResource Include="Resources\style-light.css" />
+    <EmbeddedResource Include="Resources\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.8.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Dashboard\Pages\TagsJobsPage.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TagsJobsPage.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Dashboard\Pages\TagsSearchPage.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TagsSearchPage.cshtml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dashboard\Pages\TagsJobsPage.cshtml">
+      <LastGenOutput>TagsJobsPage.generated.cs</LastGenOutput>
+      <Generator>RazorGenerator</Generator>
+    </None>
+    <None Update="Dashboard\Pages\TagsSearchPage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TagsSearchPage.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

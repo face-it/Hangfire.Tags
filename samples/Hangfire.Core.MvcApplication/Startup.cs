@@ -58,6 +58,7 @@ namespace Hangfire.Core.MvcApplication
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddHangfireServer();
             services.AddHangfire(config =>
             {
                 //SqlServer Sample
@@ -146,7 +147,6 @@ namespace Hangfire.Core.MvcApplication
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseHangfireServer();
             app.UseHangfireDashboard();
 
             app.UseStaticFiles();
@@ -157,9 +157,10 @@ namespace Hangfire.Core.MvcApplication
 
             var recurringJobs = new RecurringJobManager();
 
-            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
+            RecurringJob.AddOrUpdate<Tasks>("Success Task", x => x.SuccessTask(null, null), Cron.Minutely);
             //            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), "*/2 * * * *");
-            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *", TimeZoneInfo.Local);
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *",
+                new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             BackgroundJob.Enqueue<BaseJob>(x => x.Run());
             BackgroundJob.Enqueue<DerivedJob>(x => x.Run());
