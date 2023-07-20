@@ -22,7 +22,7 @@
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SQLite\FaceIT.Hangfire.Tags.SQLite.csproj" />
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SqlServer\FaceIT.Hangfire.Tags.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
-    <ProjectReference Include="..\..\src\Hangfire.Tags.Mongo\Hangfire.Tags.Mongo.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Mongo\FaceIT.Hangfire.Tags.Mongo.csproj" />
   </ItemGroup>
 
 </Project>

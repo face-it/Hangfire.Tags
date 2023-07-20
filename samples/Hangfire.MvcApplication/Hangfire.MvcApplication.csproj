@@ -401,9 +401,9 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.Mongo\Hangfire.Tags.Mongo.csproj">
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Mongo\FaceIT.Hangfire.Tags.Mongo.csproj">
       <Project>{a8d87699-6234-417c-b60e-65121fcf2fe5}</Project>
-      <Name>Hangfire.Tags.Mongo</Name>
+      <Name>FaceIT.Hangfire.Tags.Mongo</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.MySql\FaceIT.Hangfire.Tags.MySql.csproj">
       <Project>{b7041ab7-9bab-4d59-9465-0a2f6321c603}</Project>
