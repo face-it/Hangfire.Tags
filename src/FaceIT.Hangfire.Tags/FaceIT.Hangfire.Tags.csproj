@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
@@ -18,6 +18,11 @@
     <AssemblyVersion>1.7.2.0</AssemblyVersion>
     <FileVersion>1.7.0.0</FileVersion>
     <RootNamespace>Hangfire.Tags</RootNamespace>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,7 +41,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Dashboard.png" Link="Dashboard.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Sidemenu-dark.png" Link="Sidemenu-dark.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Sidemenu-light.png" Link="Sidemenu-light.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\Tagsearch.png" Link="Tagsearch.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hangfire.Core" Version="1.7.8" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
