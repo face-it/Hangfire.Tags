@@ -1,10 +1,10 @@
-﻿using Hangfire.PostgreSql;
+﻿using Hangfire.MySql;
 using Hangfire.Tags.Dashboard;
 
-namespace Hangfire.Tags.PostgreSql
+namespace Hangfire.Tags.MySql
 {
     /// <summary>
-    /// Provides extension methods to setup Hangfire.Tags
+    /// Provides extension methods to setup FaceIT.Hangfire.Tags
     /// </summary>
     public static class GlobalConfigurationExtensions
     {
@@ -16,12 +16,12 @@ namespace Hangfire.Tags.PostgreSql
         /// <param name="sqlOptions">Options for sql storage</param>
         /// <param name="jobStorage">The jobStorage for which this configuration is used.</param>
         /// <returns></returns>
-        public static IGlobalConfiguration UseTagsWithPostgreSql(this IGlobalConfiguration configuration, TagsOptions options = null, PostgreSqlStorageOptions sqlOptions = null, JobStorage jobStorage = null)
+        public static IGlobalConfiguration UseTagsWithMySql(this IGlobalConfiguration configuration, TagsOptions options = null, MySqlStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
-            sqlOptions = sqlOptions ?? new PostgreSqlStorageOptions();
+            sqlOptions = sqlOptions ?? new MySqlStorageOptions();
 
-            var storage = new PostgreSqlTagsServiceStorage(sqlOptions);
+            var storage = new MySqlTagsServiceStorage(sqlOptions);
             (jobStorage ?? JobStorage.Current).Register(options, storage);
 
             var config = configuration.UseTags(options);

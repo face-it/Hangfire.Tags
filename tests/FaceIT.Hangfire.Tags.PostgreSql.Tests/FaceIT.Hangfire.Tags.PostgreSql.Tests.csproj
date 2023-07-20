@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
+    <RootNamespace>Hangfire.Tags.PostgreSql.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.PostgreSql\FaceIT.Hangfire.Tags.PostgreSql.csproj" />
   </ItemGroup>
 
 </Project>

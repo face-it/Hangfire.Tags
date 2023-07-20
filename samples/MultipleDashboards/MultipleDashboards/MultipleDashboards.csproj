@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj" />
+    <ProjectReference Include="..\..\..\src\FaceIT.Hangfire.Tags.SqlServer\FaceIT.Hangfire.Tags.SqlServer.csproj" />
     <ProjectReference Include="..\JobsInterfaces\JobsInterfaces.csproj" />
   </ItemGroup>
 

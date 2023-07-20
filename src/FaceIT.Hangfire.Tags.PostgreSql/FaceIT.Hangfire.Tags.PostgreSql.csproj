@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags PostgreSql</PackageTags>
+    <RootNamespace>Hangfire.Tags.PostgreSql</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 
 </Project>

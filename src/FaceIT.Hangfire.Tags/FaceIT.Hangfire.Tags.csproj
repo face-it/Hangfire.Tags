@@ -17,6 +17,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyVersion>1.7.2.0</AssemblyVersion>
     <FileVersion>1.7.0.0</FileVersion>
+    <RootNamespace>Hangfire.Tags</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

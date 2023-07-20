@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DefineConstants>REDISPRO</DefineConstants>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>2Face-IT B.V.</Company>
@@ -15,14 +14,16 @@
     <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags redis</PackageTags>
+    <RootNamespace>Hangfire.Tags.Redis.StackExchange</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.Pro.Redis" Version="2.7.6" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.8" />
+    <PackageReference Include="HangFire.Redis.StackExchange" Version="1.8.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 
 </Project>

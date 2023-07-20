@@ -1,9 +1,10 @@
-﻿using Hangfire.Pro.Redis;
+﻿using Hangfire.Redis;
 using Hangfire.Tags.Dashboard;
-namespace Hangfire.Tags.Pro.Redis
+
+namespace Hangfire.Tags.Redis.StackExchange
 {
     /// <summary>
-    /// Provides extension methods to setup Hangfire.Tags
+    /// Provides extension methods to setup FaceIT.Hangfire.Tags
     /// </summary>
     public static class GlobalConfigurationExtensions
     {
@@ -23,7 +24,7 @@ namespace Hangfire.Tags.Pro.Redis
             var storage = new RedisTagsServiceStorage(redisOptions);
             (jobStorage ?? JobStorage.Current).Register(options, storage);
 
-            configuration.UseStorage(new RedisTagsStorage((RedisStorage)(jobStorage ?? JobStorage.Current), storage, redisOptions));
+            configuration.UseStorage(new RedisTagsStorage((RedisStorage) (jobStorage ?? JobStorage.Current), storage, redisOptions));
 
             var config = configuration.UseTags(options).UseFilter(new RedisStateFilter(storage));
             return config;

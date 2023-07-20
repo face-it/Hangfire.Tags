@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
+    <RootNamespace>Hangfire.Tags.MySql.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.MySql\FaceIT.Hangfire.Tags.MySql.csproj" />
   </ItemGroup>
 
 </Project>

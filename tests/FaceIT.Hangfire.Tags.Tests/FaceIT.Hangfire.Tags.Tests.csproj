@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Hangfire.Tags.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 
   <ItemGroup>

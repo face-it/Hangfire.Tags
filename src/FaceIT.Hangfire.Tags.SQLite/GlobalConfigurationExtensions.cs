@@ -1,10 +1,10 @@
-﻿using Hangfire.SqlServer;
+﻿using Hangfire.SQLite;
 using Hangfire.Tags.Dashboard;
 
-namespace Hangfire.Tags.SqlServer
+namespace Hangfire.Tags.SQLite
 {
     /// <summary>
-    /// Provides extension methods to setup Hangfire.Tags
+    /// Provides extension methods to setup FaceIT.Hangfire.Tags
     /// </summary>
     public static class GlobalConfigurationExtensions
     {
@@ -16,13 +16,12 @@ namespace Hangfire.Tags.SqlServer
         /// <param name="sqlOptions">Options for sql storage</param>
         /// <param name="jobStorage">The jobStorage for which this configuration is used.</param>
         /// <returns></returns>
-        public static IGlobalConfiguration UseTagsWithSql(this IGlobalConfiguration configuration,
-            TagsOptions options = null, SqlServerStorageOptions sqlOptions = null, JobStorage jobStorage = null)
+        public static IGlobalConfiguration UseTagsWithSQLite(this IGlobalConfiguration configuration, TagsOptions options = null, SQLiteStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
-            sqlOptions = sqlOptions ?? new SqlServerStorageOptions();
+            sqlOptions = sqlOptions ?? new SQLiteStorageOptions();
 
-            var storage = new SqlTagsServiceStorage(sqlOptions);
+            var storage = new SQLiteTagsServiceStorage(sqlOptions);
             (jobStorage ?? JobStorage.Current).Register(options, storage);
 
             var config = configuration.UseTags(options);

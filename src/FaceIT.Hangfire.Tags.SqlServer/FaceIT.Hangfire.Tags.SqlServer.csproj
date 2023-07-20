@@ -15,6 +15,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags sql server</PackageTags>
     <PackageReleaseNotes>Initial release with support for adding tags to background jobs. The tags are visible on the job details page. It's possible to select a tag, and get a list of all jobs containing the selected tag.</PackageReleaseNotes>
+    <RootNamespace>Hangfire.Tags.SqlServer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 </Project>

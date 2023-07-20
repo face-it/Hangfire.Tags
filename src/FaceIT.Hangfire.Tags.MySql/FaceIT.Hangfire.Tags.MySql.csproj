@@ -15,6 +15,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>hangfire tags MySql</PackageTags>
     <PackageId>Hangfire.Tags.MySql.Official</PackageId>
+    <RootNamespace>Hangfire.Tags.MySql</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hangfire.Tags\Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
 
 </Project>
