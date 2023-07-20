@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HangfireServerTwo", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleDashboards", "samples\MultipleDashboards\MultipleDashboards\MultipleDashboards.csproj", "{028B3A6D-A07D-482D-B1B3-9E00409F30D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FaceIT.Hangfire.Tags.Mongo", "src\FaceIT.Hangfire.Tags.Mongo\FaceIT.Hangfire.Tags.Mongo.csproj", "{A8D87699-6234-417C-B60E-65121FCF2FE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,12 @@ Global
 		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{028B3A6D-A07D-482D-B1B3-9E00409F30D3}.ReleasePro|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.ReleasePro|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D87699-6234-417C-B60E-65121FCF2FE5}.ReleasePro|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -36,7 +36,7 @@ namespace Hangfire.Tags.Storage
 
         public long GetTagsCount()
         {
-            return Connection.GetSetCount("tags");
+            return ServiceStorage?.GetTagCount(_jobStorage) ?? Connection.GetSetCount("tags");
         }
 
         public long GetJobCount(string[] tags, string stateName = null)
@@ -72,12 +72,12 @@ namespace Hangfire.Tags.Storage
 
         public string[] GetTags(string jobid)
         {
-            return Connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
+            return ServiceStorage?.GetTags(_jobStorage, jobid) ?? Connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
         }
 
         public string[] GetAllTags()
         {
-            return Connection.GetAllItemsFromSet("tags").ToArray();
+            return Connection.GetAllItemsFromSet(IdExtensions.SetKey).ToArray();
         }
 
         public void InitTags(string jobid)

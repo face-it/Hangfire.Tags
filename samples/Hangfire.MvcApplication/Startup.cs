@@ -1,11 +1,15 @@
 using System;
 using System.Configuration;
 using Hangfire.Common;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Hangfire.MySql;
 using Hangfire.SQLite;
 using Hangfire.States;
 using Hangfire.Storage;
 using Hangfire.Tags;
+using Hangfire.Tags.Mongo;
 using Hangfire.Tags.MySql;
 using Hangfire.Tags.Redis.StackExchange;
 using Hangfire.Tags.SQLite;
@@ -34,11 +38,11 @@ namespace Hangfire.MvcApplication
     {
         public void Configuration(IAppBuilder app)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
-            {
-                TagsListStyle = TagsListStyle.Dropdown,
-                MaxTagLength = 100
-            });
+            // GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection").UseTagsWithSql(new TagsOptions
+            // {
+            //     TagsListStyle = TagsListStyle.Dropdown,
+            //     MaxTagLength = 100
+            // });
 
             // var mysqlConnectionString =
             //     ConfigurationManager.ConnectionStrings["DefaultMySqlConnection"].ConnectionString;
@@ -64,6 +68,18 @@ namespace Hangfire.MvcApplication
             //         TagsListStyle = TagsListStyle.Dropdown
             //     });
 
+            var options = new MongoStorageOptions
+            {
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new DropMongoMigrationStrategy(),
+                    BackupStrategy = new NoneMongoBackupStrategy()
+                }
+            };
+            GlobalConfiguration.Configuration
+                .UseMongoStorage(ConfigurationManager.ConnectionStrings["DefaultMongoConnection"].ConnectionString,
+                    options).UseTagsWithMongo(new TagsOptions { TagsListStyle = TagsListStyle.Dropdown }, options);
+            
             app.UseHangfireDashboard("/hangfire", new DashboardOptions { DarkModeEnabled = false });
             app.UseHangfireServer();
 

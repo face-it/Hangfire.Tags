@@ -10,6 +10,7 @@ branches:
   only:
   - master
   - hangfire_182
+  - mongodb
 
 pull_requests:
   do_not_increment_build_number: true
@@ -48,3 +49,4 @@ deploy:
     branch: 
     - master
     - hangfire_182
+    - mongodb

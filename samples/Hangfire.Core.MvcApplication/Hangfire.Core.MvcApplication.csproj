@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.8.2" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.5.1" />
+    <PackageReference Include="Hangfire.Mongo" Version="1.9.6" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.9.5" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SQLite\FaceIT.Hangfire.Tags.SQLite.csproj" />
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SqlServer\FaceIT.Hangfire.Tags.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Mongo\FaceIT.Hangfire.Tags.Mongo.csproj" />
   </ItemGroup>
 
 </Project>
