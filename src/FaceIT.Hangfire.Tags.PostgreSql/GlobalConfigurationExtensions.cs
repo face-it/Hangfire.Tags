@@ -19,6 +19,9 @@ namespace Hangfire.Tags.PostgreSql
         public static IGlobalConfiguration UseTagsWithPostgreSql(this IGlobalConfiguration configuration, TagsOptions options = null, PostgreSqlStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
+            if (options.MaxTagLength == null || options.MaxTagLength > 150)
+                options.MaxTagLength = 150; // The maximum length in the Hangfire.Set table of the [Key] column
+            
             sqlOptions = sqlOptions ?? new PostgreSqlStorageOptions();
 
             var storage = new PostgreSqlTagsServiceStorage(sqlOptions);

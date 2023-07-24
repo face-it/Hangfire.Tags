@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("FaceIT.FaceIT.Hangfire.Tags.PostgreSql.Tests")]
+[assembly: InternalsVisibleTo("FaceIT.Hangfire.Tags.PostgreSql.Tests")]
