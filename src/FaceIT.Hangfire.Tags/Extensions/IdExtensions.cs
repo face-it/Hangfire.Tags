@@ -11,11 +11,15 @@ namespace Hangfire.Tags
             return $"{SetKey}:{jobId}";
         }
 
-        public static string Clean(this string tag, int? maxTagLength = null)
+        public static string Clean(this string tag, Clean clean = Tags.Clean.Default, int? maxTagLength = null)
         {
-            var retval = new string(tag.ToLower().Where(c => char.IsLetterOrDigit(c) || c == ' ' || c == '-').ToArray())
-                .Replace(' ', '-').Replace("--", "-");
-
+            var retval = tag.Replace(",", ""); // Remove all commas
+            if ((clean & Tags.Clean.Lowercase) == Tags.Clean.Lowercase)
+                retval = retval.ToLower();
+            if ((clean & Tags.Clean.Punctuation) == Tags.Clean.Punctuation)
+                retval = new string(retval.Where(c => char.IsLetterOrDigit(c) || c == ' ' || c == '-').ToArray())
+                    .Replace(' ', '-').Replace("--", "-");
+            
             if (maxTagLength.HasValue && retval.Length > maxTagLength.Value)
                 retval = retval.Substring(0,
                     maxTagLength.Value -

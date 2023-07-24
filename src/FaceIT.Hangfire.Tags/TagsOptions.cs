@@ -1,4 +1,4 @@
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Hangfire.Tags
 {
     /// <summary>
@@ -35,5 +35,11 @@ namespace Hangfire.Tags
         /// How to show tags in the dashboard, when clicking on the tags menu
         /// </summary>
         public TagsListStyle TagsListStyle { get; set; } = TagsListStyle.LinkButton; // default
+
+        /// <summary>
+        /// Specifies how the tags should be cleaned before storing them. Some backends don't support punctuation, or case sensitive tags. By default Hangfire.Tags clean aggresively, in order to support all backends.
+        /// Commas will always be removed, since it's used as a seperator.
+        /// </summary>
+        public Clean Clean { get; set; } = Clean.Default;
     }
 }

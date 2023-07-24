@@ -11,6 +11,7 @@ namespace Hangfire.Tags.Storage
     internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
     {
         private readonly JobStorage _jobStorage;
+        private readonly TagsOptions _options;
 
         public TagsStorage(JobStorage jobStorage)
         {
@@ -21,7 +22,9 @@ namespace Hangfire.Tags.Storage
             if (!(connection is JobStorageConnection jobStorageConnection))
                 throw new NotSupportedException("Storage connection must implement JobStorageConnection");
 
-            ServiceStorage = jobStorage.FindRegistration().Item2;
+            var registration = jobStorage.FindRegistration();
+            _options = registration.Item1;
+            ServiceStorage = registration.Item2;
             Connection = jobStorageConnection;
         }
 
@@ -92,9 +95,7 @@ namespace Hangfire.Tags.Storage
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var options = _jobStorage.FindRegistration().Item1;
-
-                var cleanTag = tag.Clean(options?.MaxTagLength);
+                var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
                 var score = DateTime.Now.Ticks;
 
                 tran.AddToSet("tags", cleanTag, score);
@@ -111,11 +112,9 @@ namespace Hangfire.Tags.Storage
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var options = _jobStorage.FindRegistration().Item1;
-
                 foreach (var tag in tags)
                 {
-                    var cleanTag = tag.Clean(options?.MaxTagLength);
+                    var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
                     var score = DateTime.Now.Ticks;
 
                     tran.AddToSet("tags", cleanTag, score); // Use a set, because it merges by default, where a list only adds
@@ -133,8 +132,7 @@ namespace Hangfire.Tags.Storage
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var options = _jobStorage.FindRegistration().Item1;
-                var cleanTag = tag.Clean(options?.MaxTagLength);
+                var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
 
                 tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
                 tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
