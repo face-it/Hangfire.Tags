@@ -25,7 +25,7 @@ namespace Hangfire.Tags.States
             }
 
             var attrs = mi.GetCustomAttributes<TagAttribute>()
-                .Union(filterContext.BackgroundJob.Job.Type?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
+                .Union(filterContext.BackgroundJob?.Job.Type?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
                 .Union(mi.DeclaringType?.GetCustomAttributes<TagAttribute>() ?? Enumerable.Empty<TagAttribute>())
                 .SelectMany(t => t.Tag).ToList();
 

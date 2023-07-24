@@ -48,12 +48,23 @@ namespace Hangfire.Tags
             var assembly = typeof(GlobalConfigurationExtensions).Assembly;
 
             var jsPath = DashboardRoutes.Routes.Contains("/js[0-9]+") ? "/js[0-9]+" : "/js[0-9]{3}";
-            DashboardRoutes.Routes.Append(jsPath, new EmbeddedResourceDispatcher(assembly, "FaceIT.Hangfire.Tags.Resources.jquery.tagcloud.js"));
-            DashboardRoutes.Routes.Append(jsPath, new EmbeddedResourceDispatcher(assembly, "FaceIT.Hangfire.Tags.Resources.script.js"));
+            DashboardRoutes.Routes.Append(jsPath,
+                new EmbeddedResourceDispatcher(assembly,
+                    new[]
+                    {
+                        new Resource("Hangfire.Tags.Resources.jquery.tagcloud.js", false),
+                        new Resource("Hangfire.Tags.Resources.script.js", false)
+                    }));
 
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
-            DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "FaceIT.Hangfire.Tags.Resources.style.css"));
-            DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "FaceIT.Hangfire.Tags.Resources.style-{0}.css", true));
+            DashboardRoutes.Routes.Append(cssPath,
+                new EmbeddedResourceDispatcher(assembly,
+                    new[]
+                    {
+                        new Resource("Hangfire.Tags.Resources.style.css", false),
+                        new Resource("Hangfire.Tags.Resources.style-{0}.css", true)
+                    }));
+            
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(options));
             return configuration;
         }

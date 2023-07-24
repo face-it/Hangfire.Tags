@@ -1,5 +1,4 @@
 ﻿using Hangfire.Dashboard;
-using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.Dashboard
 {
@@ -13,7 +12,5 @@ namespace Hangfire.Tags.Dashboard
         }
 
         public TagsOptions Options => _context.Storage.FindRegistration().Item1;
-
-        public ITagsServiceStorage TagsServiceStorage => _context.Storage.FindRegistration().Item2;
     }
 }
