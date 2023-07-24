@@ -21,9 +21,13 @@ namespace Hangfire.Tags.Pro.Redis
             redisOptions = redisOptions ?? new RedisStorageOptions();
 
             var storage = new RedisTagsServiceStorage(redisOptions);
-            (jobStorage ?? JobStorage.Current).Register(options, storage);
 
-            configuration.UseStorage(new RedisTagsStorage((RedisStorage)(jobStorage ?? JobStorage.Current), storage, redisOptions));
+            JobStorage.Current.Register(options, storage); // Required when UI requests information about tags
+            
+            var tagsStorage =
+                new RedisTagsStorage((RedisStorage)(jobStorage ?? JobStorage.Current), storage, redisOptions);
+            configuration.UseStorage(tagsStorage);
+            tagsStorage.Register(options, storage); // Required when backend requests information about tags
 
             var config = configuration.UseTags(options).UseFilter(new RedisStateFilter(storage));
             return config;
