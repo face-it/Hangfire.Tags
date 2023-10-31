@@ -12,7 +12,7 @@ namespace Hangfire.MvcApplication
         public void SuccessTask(PerformContext context, IJobCancellationToken token)
         {
             TextBuffer.WriteLine("Recurring Job completed successfully!");
-            context.AddTags("finished");
+            context.AddTags("finished", context.BackgroundJob.Id);
         }
 
         [Tag("fail")]

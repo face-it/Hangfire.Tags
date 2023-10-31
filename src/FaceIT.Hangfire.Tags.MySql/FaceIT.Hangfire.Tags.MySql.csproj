@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Adam Taylor</Authors>
+    <Company>No-Lyfe Media</Company>
+    <Version>1.8.1</Version>
+    <Description>Support for MySql for Hangfire.Tags. This separate library is required in order to search for tags, and proper cleanup.</Description>
+    <Copyright />
+    <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/face-it/Hangfire.Tags</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>hangfire tags MySql</PackageTags>
+    <RootNamespace>Hangfire.Tags.MySql</RootNamespace>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\Icon.png" Link="Icon.png" Pack="true" PackagePath="\" />
+    <None Update="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
+  </ItemGroup>
+
+</Project>

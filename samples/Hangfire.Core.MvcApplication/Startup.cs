@@ -19,15 +19,26 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
 using Hangfire.Core.MvcApplication.Jobs;
 using Hangfire.SQLite;
-using Hangfire.Tags.Pro.Redis;
-// using Hangfire.Tags.Pro.Redis;
-// using Hangfire.Tags.Redis.StackExchange;
 using Hangfire.Tags.SQLite;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
+using Hangfire.States;
+using Hangfire.Storage;
 
 namespace Hangfire.Core.MvcApplication
 {
+    public class ProlongExpirationTimeAttribute : JobFilterAttribute, IApplyStateFilter
+    {
+        public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+        {
+            context.JobExpirationTimeout = TimeSpan.FromMinutes(1);
+        }
+
+        public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+        {
+        }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -50,38 +61,38 @@ namespace Hangfire.Core.MvcApplication
             services.AddHangfire(config =>
             {
                 //SqlServer Sample
-                // config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
-                // {
-                //     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                //     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
-                //     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
-                //     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                // });
-                // var options = new TagsOptions
-                // {
-                //     TagsListStyle = TagsListStyle.Dropdown
-                // };
-                // config.UseTagsWithSql(options);
-                //end SqlServer Sample
-
-                //MySql Sample
-                var mySqlOptions = new MySqlStorageOptions
+                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
                 {
-                    TransactionIsolationLevel = IsolationLevel.ReadCommitted,
-                    QueuePollInterval = TimeSpan.FromSeconds(15),
                     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                    CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                    PrepareSchemaIfNecessary = true,
-                    DashboardJobListLimit = 50000,
-                    TransactionTimeout = TimeSpan.FromMinutes(1),
-                    TablesPrefix = "hangfire"
-                };
-                config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"), mySqlOptions));
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
+                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                });
                 var options = new TagsOptions
                 {
                     TagsListStyle = TagsListStyle.Dropdown
                 };
-                config.UseTagsWithMySql(options,mySqlOptions);
+                config.UseTagsWithSql(options);
+                //end SqlServer Sample
+
+                //MySql Sample
+                // var mySqlOptions = new MySqlStorageOptions
+                // {
+                //     TransactionIsolationLevel = IsolationLevel.ReadCommitted,
+                //     QueuePollInterval = TimeSpan.FromSeconds(15),
+                //     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
+                //     CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                //     PrepareSchemaIfNecessary = true,
+                //     DashboardJobListLimit = 50000,
+                //     TransactionTimeout = TimeSpan.FromMinutes(1),
+                //     TablesPrefix = "hangfire"
+                // };
+                // config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"), mySqlOptions));
+                // var options = new TagsOptions
+                // {
+                //     TagsListStyle = TagsListStyle.Dropdown
+                // };
+                // config.UseTagsWithMySql(options,mySqlOptions);
                 //end MySql Sample
 
                 //postgreSql Sample
@@ -99,12 +110,16 @@ namespace Hangfire.Core.MvcApplication
 
                 //redis sample
                 // var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
-                // config.UseRedisStorage(redis)
-                //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+                // Tags.Redis.StackExchange.GlobalConfigurationExtensions.UseTagsWithRedis(
+                //     Hangfire.RedisStorageExtensions.UseRedisStorage(config, redis),
+                //     new TagsOptions {TagsListStyle = TagsListStyle.Dropdown}
+                // );
 
                 // redis pro sample
-                // config.UseRedisStorage(Configuration.GetConnectionString("RedisConnection"))
-                //     .UseTagsWithRedis(new TagsOptions {TagsListStyle = TagsListStyle.Dropdown});
+                // Tags.Pro.Redis.GlobalConfigurationExtensions.UseTagsWithRedis(
+                //     Hangfire.RedisStorageGlobalConfigurationExtensions.UseRedisStorage(config, Configuration.GetConnectionString("RedisConnection")), 
+                //     new TagsOptions {TagsListStyle = TagsListStyle.Dropdown}
+                // );
 
                 // config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
                 //     new TagsOptions

@@ -1,0 +1,1 @@
+SQL Server 2008+ (including Express), SQL Server LocalDB and SQL Azure storage support for Hangfire Tags (extension for Hangfire).
