@@ -61,7 +61,7 @@ namespace Hangfire.Tags.SqlServer
             if (_addCommand == null)
             {
                 _addCommand = transaction.GetType().GetTypeInfo().GetMethod(nameof(AddCommand),
-                    BindingFlags.NonPublic | BindingFlags.Instance);
+                    BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                 _addCommand = _addCommand?.MakeGenericMethod(typeof(string));
             }
 
