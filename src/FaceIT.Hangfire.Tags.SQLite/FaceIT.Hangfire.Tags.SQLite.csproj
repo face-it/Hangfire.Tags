@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Erwin Bovendeur</Authors>
     <Company>2Face-IT B.V.</Company>
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.SQLite" Version="1.4.2" />
+    <PackageReference Include="Hangfire.Storage.SQLite" Version="0.3.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
@@ -34,14 +34,6 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.105.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.8" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj" />
   </ItemGroup>
