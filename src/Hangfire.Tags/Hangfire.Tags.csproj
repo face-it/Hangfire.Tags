@@ -6,6 +6,7 @@
     <Authors>Erwin Bovendeur</Authors>
     <Company>faceit</Company>
     <Version>1.8.4-beta.1</Version>
+		<AssemblyName>FaceIT.Hangfire.Tags</AssemblyName>
     <Description>Add tags to Hangfire backgroundjobs</Description>
     <Copyright />
     <PackageProjectUrl>https://github.com/face-it/Hangfire.Tags</PackageProjectUrl>

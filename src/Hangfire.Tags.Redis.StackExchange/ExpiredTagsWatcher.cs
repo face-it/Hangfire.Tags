@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
-using Hangfire.Redis;
+using Hangfire.Redis.StackExchange;
 using Hangfire.Server;
 
 namespace Hangfire.Tags.Redis.StackExchange
 {
-    internal class ExpiredTagsWatcher : IServerComponent, IBackgroundProcess
+    internal class ExpiredTagsWatcher :  IBackgroundProcess
     {
         private readonly RedisStorage _storage;
         private readonly RedisTagsServiceStorage _tagsServiceStorage;
