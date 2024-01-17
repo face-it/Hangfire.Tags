@@ -55,7 +55,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Hangfire.MySql, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hangfire.MySqlStorage.2.0.2\lib\net452\Hangfire.MySql.dll</HintPath>
+      <HintPath>..\..\packages\Hangfire.MySqlStorage.2.0.3\lib\net452\Hangfire.MySql.dll</HintPath>
     </Reference>
     <Reference Include="Hangfire.Redis.StackExchange, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Hangfire.Redis.StackExchange.1.8.4\lib\net461\Hangfire.Redis.StackExchange.dll</HintPath>
@@ -76,8 +76,8 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.4.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="MySqlConnector, Version=0.47.1.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MySqlConnector.0.47.1\lib\net461\MySqlConnector.dll</HintPath>
+    <Reference Include="MySqlConnector, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MySqlConnector.1.0.0\lib\net471\MySqlConnector.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -322,29 +322,29 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.MySql\Hangfire.Tags.MySql.csproj">
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.MySql\FaceIT.Hangfire.Tags.MySql.csproj">
       <Project>{b7041ab7-9bab-4d59-9465-0a2f6321c603}</Project>
-      <Name>Hangfire.Tags.MySql</Name>
+      <Name>FaceIT.Hangfire.Tags.MySql</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.PostgreSql\Hangfire.Tags.PostgreSql.csproj">
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.PostgreSql\FaceIT.Hangfire.Tags.PostgreSql.csproj">
       <Project>{11cb8a72-dc51-42d0-a7cf-f2e8ea1869ee}</Project>
-      <Name>Hangfire.Tags.PostgreSql</Name>
+      <Name>FaceIT.Hangfire.Tags.PostgreSql</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.Redis.StackExchange\Hangfire.Tags.Redis.StackExchange.csproj">
-      <Project>{6B61F26F-404E-44FD-A458-A41C9CB96E3F}</Project>
-      <Name>Hangfire.Tags.Redis.StackExchange</Name>
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.Redis.StackExchange\FaceIT.Hangfire.Tags.Redis.StackExchange.csproj">
+      <Project>{6b61f26f-404e-44fd-a458-a41c9cb96e3f}</Project>
+      <Name>FaceIT.Hangfire.Tags.Redis.StackExchange</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.SQLite\Hangfire.Tags.SQLite.csproj">
-      <Project>{FF7CE541-CFCB-46F7-8D66-4594A4B4A8E7}</Project>
-      <Name>Hangfire.Tags.SQLite</Name>
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SQLite\FaceIT.Hangfire.Tags.SQLite.csproj">
+      <Project>{ff7ce541-cfcb-46f7-8d66-4594a4b4a8e7}</Project>
+      <Name>FaceIT.Hangfire.Tags.SQLite</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hangfire.Tags.SqlServer\Hangfire.Tags.SqlServer.csproj">
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags.SqlServer\FaceIT.Hangfire.Tags.SqlServer.csproj">
       <Project>{7e6a4efd-5490-44ff-8b92-ab6280b23ec1}</Project>
-      <Name>Hangfire.Tags.SqlServer</Name>
+      <Name>FaceIT.Hangfire.Tags.SqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hangfire.Tags\Hangfire.Tags.csproj">
+    <ProjectReference Include="..\..\src\FaceIT.Hangfire.Tags\FaceIT.Hangfire.Tags.csproj">
       <Project>{a9fa3828-3fee-4086-b378-e1bfd9ef8104}</Project>
-      <Name>Hangfire.Tags</Name>
+      <Name>FaceIT.Hangfire.Tags</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

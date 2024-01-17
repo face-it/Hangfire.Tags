@@ -1,6 +1,10 @@
 version: 1.7.0-{build}
 
-os: Visual Studio 2019
+os: Visual Studio 2022
+
+environment:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 branches:
   only:
@@ -14,46 +18,32 @@ nuget:
   disable_publish_on_pr: true
 
 init:
-- git config --global core.autocrlf true
+- cmd: git config --global core.autocrlf true
 
 install:
 - cmd: IF DEFINED HFPass nuget sources add -Name ExtHf -Source %HFFeedUrl% -UserName %HFUser% -Password %HFPass%
 
 build_script:
-- cmd: dotnet build src/Hangfire.Tags -c Release
-- cmd: dotnet build src/Hangfire.Tags.SqlServer -c Release
-- cmd: dotnet build tests/Hangfire.Tags.Tests -c Release
-- cmd: dotnet build src/Hangfire.Tags.PostgreSql -c Release
-- cmd: dotnet build tests/Hangfire.Tags.PostgreSql.Tests -c Release
-- cmd: dotnet build src/Hangfire.Tags.MySql -c Release
-- cmd: dotnet build tests/Hangfire.Tags.MySql.Tests -c Release
-- cmd: IF DEFINED HFPass dotnet build src/Hangfire.Tags.Pro.Redis -c Release
-- cmd: dotnet build src/Hangfire.Tags.Redis.StackExchange -c Release
-- cmd: dotnet build src/Hangfire.Tags.SQLite -c Release
+- cmd: IF DEFINED HFPass dotnet build /p:ContinuousIntegrationBuild=true -c ReleasePro Hangfire.Tags.sln
+- cmd: IF NOT DEFINED HFPass dotnet build /p:ContinuousIntegrationBuild=true -c Release Hangfire.Tags.sln
 
 after_build:
-- cmd: dotnet pack src/Hangfire.Tags -o artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.SqlServer -o artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.PostgreSql -o artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.MySql -o artifacts -c Release
-- cmd: IF DEFINED HFPass dotnet pack src/Hangfire.Tags.Pro.Redis -o artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.Redis.StackExchange -o artifacts -c Release
-- cmd: dotnet pack src/Hangfire.Tags.SQLite -o artifacts -c Release
+- cmd: IF DEFINED HFPass dotnet pack /p:ContinuousIntegrationBuild=true -c ReleasePro -o artifacts Hangfire.Tags.sln
+- cmd: IF NOT DEFINED HFPass dotnet pack /p:ContinuousIntegrationBuild=true -c Release -o artifacts Hangfire.Tags.sln
 
 test_script:
-- cmd: dotnet test tests/Hangfire.Tags.Tests/Hangfire.Tags.Tests.csproj
-- cmd: dotnet test tests/Hangfire.Tags.PostgreSql.Tests/Hangfire.Tags.PostgreSql.Tests.csproj
-- cmd: dotnet test tests/Hangfire.Tags.MySql.Tests/Hangfire.Tags.MySql.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.Tests/FaceIT.Hangfire.Tags.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.PostgreSql.Tests/FaceIT.Hangfire.Tags.PostgreSql.Tests.csproj
+- cmd: dotnet test tests/FaceIT.Hangfire.Tags.MySql.Tests/FaceIT.Hangfire.Tags.MySql.Tests.csproj
 
 artifacts:
-- path: 'artifacts/**/*.nupkg'
+- path: 'artifacts/**/*.*nupkg'
 
 deploy:
 - provider: NuGet
   api_key:
     secure: y2ZAk4YAxwtybM9UoFQR3asz+EH5xfZX6nWgIvrqQ3tn1vRx8V6Pr2TPgubIfKGN
-  skip_symbols: true
+  skip_symbols: false
   on:
     branch: 
     - master
-    - redis-expire
