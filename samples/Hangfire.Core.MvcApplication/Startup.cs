@@ -18,14 +18,16 @@ using Hangfire.Core.MvcApplication.Jobs;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
 using Hangfire.Mongo.Migration.Strategies.Backup;
-using Hangfire.SQLite;
-using Hangfire.Tags.SQLite;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using Hangfire.States;
 using Hangfire.Storage;
+using Hangfire.Storage.SQLite;
 using Hangfire.Tags.Mongo;
+using Hangfire.Tags.SQLite;
+using Microsoft.Data.Sqlite;
 using MongoDB.Driver;
+using SQLite;
 
 namespace Hangfire.Core.MvcApplication
 {
