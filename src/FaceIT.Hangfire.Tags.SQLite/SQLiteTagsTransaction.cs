@@ -18,7 +18,7 @@ namespace Hangfire.Tags.SQLite
         {
             if (transaction.GetType().Name != "SQLiteWriteOnlyTransaction")
                 throw new ArgumentException("The transaction is not an SQLite transaction", nameof(transaction));
-            //SQLiteWriteOnlyTransaction
+
             _options = options;
             _transaction = transaction;
 
@@ -49,8 +49,7 @@ namespace Hangfire.Tags.SQLite
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            var query = $@"
-update [Set] set ExpireAt = ? where [Key] = ? and [Value] = ?";
+            var query = "update [Set] set ExpireAt = ? where [Key] = ? and [Value] = ?";
 
             //AcquireSetLock(key);
             QueueCommand(connection =>
@@ -61,8 +60,7 @@ update [Set] set ExpireAt = ? where [Key] = ? and [Value] = ?";
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            string query = $@"
-update [Set] set ExpireAt = null where [Key] = ? and [Value] = ?";
+            var query = "update [Set] set ExpireAt = null where [Key] = ? and [Value] = ?";
 
             //AcquireSetLock(key);
             QueueCommand(connection =>

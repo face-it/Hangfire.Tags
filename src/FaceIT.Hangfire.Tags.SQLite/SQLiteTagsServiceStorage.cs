@@ -35,7 +35,7 @@ namespace Hangfire.Tags.SQLite
             return new SQLiteTagsTransaction(_options, transaction);
         }
 
-        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)
+        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag = null, string setKey = "tags")
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
@@ -67,7 +67,7 @@ namespace Hangfire.Tags.SQLite
             });
         }
 
-        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey)
+        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey = "tags")
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
@@ -103,7 +103,7 @@ namespace Hangfire.Tags.SQLite
             return monitoringApi.UseConnection(connection =>
             {
                 var jobsSql =
-                    $@"with cte as 
+                    @"with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from [Job] j";
@@ -157,7 +157,7 @@ LIMIT {maxTags};";
         private int GetJobCount(SQLiteConnection connection, string[] tags, string stateName)
         {
             var jobsSql =
-                $@"with cte as
+                @"with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from [Job] j";
@@ -184,7 +184,7 @@ left join [State] s on j.StateId = s.Id;";
             Func<SQLiteJob, Job, SafeDictionary<string, string>, TDto> selector)
         {
             var jobsSql =
-                $@"with cte as
+                @"with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
   from [Job] j";
