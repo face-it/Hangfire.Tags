@@ -1,1 +1,0 @@
-Redis storage support for Hangfire Tags, using the Hangfire.Redis.StackExchange library (extension for Hangfire).

@@ -1,5 +1,7 @@
 using Hangfire.Redis.StackExchange;
 using Hangfire.Tags.Dashboard;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Hangfire.Tags.Redis.StackExchange
 {
@@ -18,18 +20,23 @@ namespace Hangfire.Tags.Redis.StackExchange
         /// <returns></returns>
         public static IGlobalConfiguration UseTagsWithRedis(this IGlobalConfiguration configuration, TagsOptions options = null, RedisStorageOptions redisOptions = null, JobStorage jobStorage = null)
         {
-            options = options ?? new TagsOptions();
-            redisOptions = redisOptions ?? new RedisStorageOptions();
-
+            options ??= new TagsOptions();
+            redisOptions ??= new RedisStorageOptions();
+            
             var storage = new RedisTagsServiceStorage(redisOptions);
 
-            JobStorage.Current.Register(options, storage); // Required when UI requests information about tags
+            var config = configuration.UseTags(options).UseFilter(new RedisStateFilter(storage));
 
-            var tagsStorage = new RedisTagsStorage((RedisStorage)(jobStorage ?? JobStorage.Current), storage, redisOptions);
-            configuration.UseStorage(tagsStorage);
-            tagsStorage.Register(options, storage); // Required when backend requests information about tags
+            return config;
+        }
+
+        public static IGlobalConfiguration UseTagsWithRedis(this IGlobalConfiguration configuration, IServiceProvider serviceProvider)
+        {
+            var options = serviceProvider.GetService<TagsOptions>();
+            var storage = serviceProvider.GetService<RedisTagsServiceStorage>();
 
             var config = configuration.UseTags(options).UseFilter(new RedisStateFilter(storage));
+
             return config;
         }
     }
