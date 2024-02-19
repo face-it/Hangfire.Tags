@@ -25,6 +25,8 @@ namespace Hangfire.Tags.Redis.StackExchange
             
             var storage = new RedisTagsServiceStorage(redisOptions);
 
+            JobStorage.Current.Register(options, storage);
+
             var config = configuration.UseTags(options).UseFilter(new RedisStateFilter(storage));
 
             return config;
