@@ -1,4 +1,4 @@
-﻿using Hangfire.SQLite;
+﻿using Hangfire.Storage.SQLite;
 using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.SQLite
