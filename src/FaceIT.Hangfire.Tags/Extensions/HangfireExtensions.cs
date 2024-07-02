@@ -35,6 +35,33 @@ namespace Hangfire.Tags
         }
 
         /// <summary>
+        /// Removes the tags from the job with the specified id.
+        /// </summary>
+        /// <param name="jobid">The job identifier</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job identifier</returns>
+        public static string RemoveTags(this string jobid, IEnumerable<string> tags)
+        {
+            return jobid.RemoveTags(tags.ToArray());
+        }
+
+        /// <summary>
+        /// Removes the tags from the job with the specified id.
+        /// </summary>
+        /// <param name="jobid">The job identifier</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job identifier</returns>
+        public static string RemoveTags(this string jobid, params string[] tags)
+        {
+            using (var storage = new TagsStorage(JobStorage.Current))
+            {
+                storage.RemoveTags(jobid, tags);
+            }
+
+            return jobid;
+        }
+
+        /// <summary>
         /// Retrieves the tags of the job with the specified id.
         /// </summary>
         /// <param name="jobid">The job identifier</param>
@@ -59,6 +86,17 @@ namespace Hangfire.Tags
         }
 
         /// <summary>
+        /// Removes the tags from the job with the specified context.
+        /// </summary>
+        /// <param name="context">The job context</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job context</returns>
+        public static PerformContext RemoveTags(this PerformContext context, IEnumerable<string> tags)
+        {
+            return context.RemoveTags(tags.ToArray());
+        }
+
+        /// <summary>
         /// Adds the tags to the job with the specified context.
         /// </summary>
         /// <param name="context">The job context</param>
@@ -67,6 +105,18 @@ namespace Hangfire.Tags
         public static PerformContext AddTags(this PerformContext context, params string[] tags)
         {
             context.BackgroundJob.Id.AddTags(tags);
+            return context;
+        }
+
+        /// <summary>
+        /// Removes the tags from the job with the specified context.
+        /// </summary>
+        /// <param name="context">The job context</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job context</returns>
+        public static PerformContext RemoveTags(this PerformContext context, params string[] tags)
+        {
+            context.BackgroundJob.Id.RemoveTags(tags);
             return context;
         }
 
@@ -83,6 +133,18 @@ namespace Hangfire.Tags
         }
 
         /// <summary>
+        /// Removes the tags from the job with the specified context.
+        /// </summary>
+        /// <param name="context">The job context</param>
+        /// <param name="jobStorage">An instance of a job storage, only required if it differs from JobStorage.Current</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job context</returns>
+        public static PerformContext RemoveTags(this PerformContext context, JobStorage jobStorage, IEnumerable<string> tags)
+        {
+            return context.RemoveTags(jobStorage, tags.ToArray());
+        }
+
+        /// <summary>
         /// Adds the tags to the job with the specified context.
         /// </summary>
         /// <param name="context">The job context</param>
@@ -94,6 +156,23 @@ namespace Hangfire.Tags
             using (var storage = new TagsStorage(jobStorage ?? JobStorage.Current))
             {
                 storage.AddTags(context.BackgroundJob.Id, tags);
+            }
+
+            return context;
+        }
+
+        /// <summary>
+        /// Removes the tags from the job with the specified context.
+        /// </summary>
+        /// <param name="context">The job context</param>
+        /// <param name="jobStorage">An instance of a job storage, only required if it differs from JobStorage.Current</param>
+        /// <param name="tags">One or more tags</param>
+        /// <returns>The job context</returns>
+        public static PerformContext RemoveTags(this PerformContext context, JobStorage jobStorage, params string[] tags)
+        {
+            using (var storage = new TagsStorage(jobStorage ?? JobStorage.Current))
+            {
+                storage.RemoveTags(context.BackgroundJob.Id, tags);
             }
 
             return context;

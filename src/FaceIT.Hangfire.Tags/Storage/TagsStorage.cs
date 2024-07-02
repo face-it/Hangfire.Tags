@@ -90,19 +90,7 @@ namespace Hangfire.Tags.Storage
 
         public void AddTag(string jobid, string tag)
         {
-            using (var tran = Connection.CreateWriteTransaction())
-            {
-                if (!(tran is JobStorageTransaction))
-                    throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
-
-                var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
-                var score = DateTime.Now.Ticks;
-
-                tran.AddToSet("tags", cleanTag, score);
-                tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
-                tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
-                tran.Commit();
-            }
+            AddTags(jobid, new[] {tag});
         }
 
         public void AddTags(string jobid, IEnumerable<string> tags)
@@ -125,24 +113,30 @@ namespace Hangfire.Tags.Storage
             }
         }
 
-        public void Removetag(string jobid, string tag)
+        public void RemoveTag(string jobid, string tag)
+        {
+            RemoveTags(jobid, new[] { tag });
+        }
+
+        public void RemoveTags(string jobid, IEnumerable<string> tags)
         {
             using (var tran = Connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
-
-                tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
-                tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
-
-                if (Connection.GetSetCount(cleanTag.GetSetKey()) == 0)
+                foreach (var tag in tags)
                 {
-                    // Remove the tag, it's no longer in use
-                    tran.RemoveFromSet("tags", cleanTag);
-                }
+                    var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
 
+                    tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
+                    tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
+
+                    if (Connection.GetSetCount(cleanTag.GetSetKey()) == 0)
+                    {
+                        tran.RemoveFromSet("tags", cleanTag); // Use a set, because it merges by default, where a list only adds
+                    }
+                }
                 tran.Commit();
             }
         }

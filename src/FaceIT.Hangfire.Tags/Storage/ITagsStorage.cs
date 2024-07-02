@@ -48,7 +48,9 @@ namespace Hangfire.Tags.Storage
         /// </summary>
         /// <param name="id">The job id</param>
         /// <param name="tag">The tag to remove</param>
-        void Removetag(string id, string tag);
+        void RemoveTag(string id, string tag);
+        
+        void RemoveTags(string id, IEnumerable<string> tags);
 
         /// <summary>
         /// Expire data for tags
