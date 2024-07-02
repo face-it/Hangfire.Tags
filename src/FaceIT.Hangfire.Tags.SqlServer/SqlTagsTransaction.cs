@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Hangfire.SqlServer;
@@ -9,6 +8,17 @@ using Hangfire.Tags.Storage;
 
 namespace Hangfire.Tags.SqlServer
 {
+    public class SqlCommandBatchParameter
+    {
+        public string ParameterName { get; }
+
+        public DbType DbType { get; }
+
+        public object Value { get; }
+
+        public SqlCommandBatchParameter(string parameterName, DbType dbType, object value) => (ParameterName, DbType, Value) = (parameterName, dbType, value);
+    }
+
     internal class SqlTagsTransaction : ITagsTransaction
     {
         private readonly SqlServerStorageOptions _options;
@@ -16,7 +26,6 @@ namespace Hangfire.Tags.SqlServer
 
         private static Type _type;
         private static MethodInfo _acquireSetLock;
-        private static MethodInfo _queueCommand;
         private static Type _sqlCommandBatchParameter;
         private static ConstructorInfo _sqlCommandBatchParameterCtor;
         private static PropertyInfo _sqlCommandBatchParameterValue;
@@ -37,7 +46,6 @@ namespace Hangfire.Tags.SqlServer
             if (_type != transaction.GetType())
             {
                 _acquireSetLock = null;
-                _queueCommand = null;
                 _addCommand = null;
 
                 _type = transaction.GetType();
@@ -50,16 +58,15 @@ namespace Hangfire.Tags.SqlServer
             if (_acquireSetLock == null)
                 throw new ArgumentException("The function AcquireSetLock cannot be found.");
 
-            if (_queueCommand == null)
-                _queueCommand = transaction.GetType().GetTypeInfo().GetMethod(nameof(QueueCommand),
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (_queueCommand == null && _addCommand == null)
+            if (_addCommand == null)
             {
                 _addCommand = transaction.GetType().GetTypeInfo().GetMethod(nameof(AddCommand),
-                    BindingFlags.NonPublic | BindingFlags.Instance);
+                    BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                 _addCommand = _addCommand?.MakeGenericMethod(typeof(string));
             }
+
+            if (_addCommand == null)
+                throw new ArgumentException("The functions QueueCommand and AddCommand cannot be found.");
 
             if (_sqlCommandBatchParameter == null)
             {
@@ -68,9 +75,6 @@ namespace Hangfire.Tags.SqlServer
                     _sqlCommandBatchParameter.GetConstructor(new Type[] {typeof(string), typeof(DbType), typeof(int?)});
                 _sqlCommandBatchParameterValue = _sqlCommandBatchParameter.GetProperty("Value");
             }
-
-            if (_queueCommand == null && _addCommand == null)
-                throw new ArgumentException("The functions QueueCommand and AddCommand cannot be found.");
         }
 
         private void AcquireSetLock(string key)
@@ -79,12 +83,7 @@ namespace Hangfire.Tags.SqlServer
             _acquireSetLock.Invoke(_transaction, parameters);
         }
 
-        private void QueueCommand(string commandText, params SqlParameter[] parameters)
-        {
-            _queueCommand.Invoke(_transaction, new object[] { commandText, parameters });
-        }
-
-        private void AddCommand(string commandText, string key, params SqlParameter[] parameters)
+        private void AddCommand(string commandText, string key, params SqlCommandBatchParameter[] parameters)
         {
             var batchParams = Array.CreateInstance(_sqlCommandBatchParameter, parameters.Length);
             for (var i = 0; i < parameters.Length; i++)
@@ -107,22 +106,11 @@ namespace Hangfire.Tags.SqlServer
 update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key and [Value] = @value";
 
             AcquireSetLock(key);
-            if (_queueCommand == null)
-            {
-                AddCommand(query,
-                    key,
-                    new SqlParameter("@key", key),
-                    new SqlParameter("@value", value),
-                    new SqlParameter("@expireAt", DateTime.UtcNow.Add(expireIn)));
-            }
-            else
-            {
-                QueueCommand(query,
-                    new SqlParameter("@key", key),
-                    new SqlParameter("@value", value),
-                    new SqlParameter("@expireAt", DateTime.UtcNow.Add(expireIn)));
-            }
-
+            AddCommand(query,
+                key,
+                new SqlCommandBatchParameter("@key", DbType.String, key),
+                new SqlCommandBatchParameter("@value", DbType.String, value),
+                new SqlCommandBatchParameter("@expireAt", DbType.DateTime, DateTime.UtcNow.Add(expireIn)));
         }
 
         public void PersistSetValue(string key, string value)
@@ -133,19 +121,10 @@ update [{_options.SchemaName}].[Set] set ExpireAt = @expireAt where [Key] = @key
 update [{_options.SchemaName}].[Set] set ExpireAt = null where [Key] = @key and [Value] = @value";
 
             AcquireSetLock(key);
-            if (_queueCommand == null)
-            {
-                AddCommand(query,
+            AddCommand(query,
                 key,
-                new SqlParameter("@key", key),
-                new SqlParameter("@value", value));
-            }
-            else
-            {
-                QueueCommand(query,
-                    new SqlParameter("@key", key),
-                    new SqlParameter("@value", value));
-            }
+                new SqlCommandBatchParameter("@key", DbType.String, key),
+                new SqlCommandBatchParameter("@value", DbType.String, value));
         }
     }
 }

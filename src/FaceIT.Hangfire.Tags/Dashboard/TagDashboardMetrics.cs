@@ -5,7 +5,7 @@ namespace Hangfire.Tags.Dashboard
 {
     internal static class TagDashboardMetrics
     {
-        public readonly static DashboardMetric TagsCount = new DashboardMetric("tags:count", razorPage =>
+        public static readonly DashboardMetric TagsCount = new DashboardMetric("tags:count", razorPage =>
             {
                 long count;
                 using (var tagStorage = new TagsStorage(razorPage.Storage))

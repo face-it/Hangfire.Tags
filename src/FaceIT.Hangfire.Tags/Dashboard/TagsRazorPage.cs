@@ -8,8 +8,6 @@ namespace Hangfire.Tags.Dashboard
 
         private TagDashboardContext TagContext => _tagContext ?? (_tagContext = Context.ToTagDashboardContext());
 
-        public TagsOptions Options => TagContext.Options;
-
-
+        protected TagsOptions Options => TagContext.Options;
     }
 }

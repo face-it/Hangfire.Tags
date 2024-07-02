@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using Hangfire.Common;
-using Hangfire.Dashboard;
 using Hangfire.Heartbeat;
 using Hangfire.MySql; //used with MySql Sample
 using Hangfire.PostgreSql; //used with postgreSql Sample
@@ -13,20 +11,37 @@ using Hangfire.Tags.PostgreSql; //used with postgreSql Sample
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
 using Hangfire.Core.MvcApplication.Jobs;
-using Hangfire.SQLite;
-using Hangfire.Tags.SQLite;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using Hangfire.States;
 using Hangfire.Storage;
+using Hangfire.Storage.SQLite;
+using Hangfire.Tags.Mongo;
+using Hangfire.Tags.SQLite;
+using Microsoft.Data.Sqlite;
+using MongoDB.Driver;
+using SQLite;
 
 namespace Hangfire.Core.MvcApplication
 {
+    internal enum Storage
+    {
+        SqlServer,
+        MySql,
+        PostgreSql,
+        RedisStack,
+        RedisPro,
+        Mongo,
+        Sqlite
+    }
+
     public class ProlongExpirationTimeAttribute : JobFilterAttribute, IApplyStateFilter
     {
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
@@ -46,11 +61,13 @@ namespace Hangfire.Core.MvcApplication
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var storage = Configuration.GetValue<Storage>("Storage");
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -58,78 +75,111 @@ namespace Hangfire.Core.MvcApplication
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddHangfireServer();
             services.AddHangfire(config =>
             {
-                //SqlServer Sample
-                config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+                var tagOptions = new TagsOptions
                 {
-                    JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
-                    QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                });
-                var options = new TagsOptions
-                {
-                    TagsListStyle = TagsListStyle.Dropdown
+                    TagsListStyle = TagsListStyle.Dropdown,
+                    Clean = Clean.None
                 };
-                config.UseTagsWithSql(options);
-                //end SqlServer Sample
+                
+                switch (storage)
+                {
+                    case Storage.SqlServer:
+                    {
+                        //SqlServer Sample
+                        config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"),
+                            new SqlServerStorageOptions
+                            {
+                                JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
+                                SlidingInvisibilityTimeout =
+                                    TimeSpan.FromMinutes(5), // To enable Sliding invisibility fetching
+                                CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // To enable command pipelining
+                                QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                            });
+                        config.UseTagsWithSql(tagOptions);
+                        //end SqlServer Sample
+                        break;
+                    }
+                    case Storage.MySql:
+                    {
+                        //MySql Sample
+                        var mySqlOptions = new MySqlStorageOptions
+                        {
+                            TransactionIsolationLevel = IsolationLevel.ReadCommitted,
+                            QueuePollInterval = TimeSpan.FromSeconds(15),
+                            JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
+                            CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                            PrepareSchemaIfNecessary = true,
+                            DashboardJobListLimit = 50000,
+                            TransactionTimeout = TimeSpan.FromMinutes(1),
+                            TablesPrefix = "hangfire"
+                        };
+                        config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"),
+                            mySqlOptions));
+                        config.UseTagsWithMySql(tagOptions, mySqlOptions);
+                        //end MySql Sample
+                        break;
+                    }
+                    case Storage.PostgreSql:
+                    {
+                        //postgreSql Sample
+                        config.UsePostgreSqlStorage(Configuration.GetConnectionString("PostgreSqlConnection"), new PostgreSqlStorageOptions
+                        {
+                            JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
+                            QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
+                        });
+                        config.UseTagsWithPostgreSql(tagOptions);
+                        //end postgreSql Sample
+                        break;
+                    }
+                    case Storage.RedisStack:
+                    {
+                        //redis sample
+                        var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
+                        Tags.Redis.StackExchange.GlobalConfigurationExtensions.UseTagsWithRedis(
+                            Redis.StackExchange.RedisStorageExtensions.UseRedisStorage(config, redis),
+                            tagOptions
+                        );
+                        break;
+                    }
+                    case Storage.RedisPro:
+                        // redis pro sample
+                        Tags.Pro.Redis.GlobalConfigurationExtensions.UseTagsWithRedis(
+                            config.UseRedisStorage(Configuration.GetConnectionString("RedisConnection")), 
+                            tagOptions
+                        );
+                        break;
+                    case Storage.Sqlite:
+                        config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection"))
+                            .UseTagsWithSQLite(tagOptions);
+                        break;
+                    case Storage.Mongo:
+                    {
+                        // mongo sample
+                        var mongoUrlBuilder = new MongoUrlBuilder(Configuration.GetConnectionString("MongoConnection"));
+                        var mongoClient = new MongoClient(mongoUrlBuilder.ToMongoUrl());
 
-                //MySql Sample
-                // var mySqlOptions = new MySqlStorageOptions
-                // {
-                //     TransactionIsolationLevel = IsolationLevel.ReadCommitted,
-                //     QueuePollInterval = TimeSpan.FromSeconds(15),
-                //     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                //     CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                //     PrepareSchemaIfNecessary = true,
-                //     DashboardJobListLimit = 50000,
-                //     TransactionTimeout = TimeSpan.FromMinutes(1),
-                //     TablesPrefix = "hangfire"
-                // };
-                // config.UseStorage(new MySqlStorage(Configuration.GetConnectionString("MySqlConnection"), mySqlOptions));
-                // var options = new TagsOptions
-                // {
-                //     TagsListStyle = TagsListStyle.Dropdown
-                // };
-                // config.UseTagsWithMySql(options,mySqlOptions);
-                //end MySql Sample
+                        var mongoStorageOptions = new MongoStorageOptions
+                        {
+                            MigrationOptions = new MongoMigrationOptions
+                            {
+                                MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                                BackupStrategy = new CollectionMongoBackupStrategy()
+                            },
+                            Prefix = "hangfire.mongo",
+                            CheckConnection = true
+                        };
+                        config.UseMongoStorage(mongoClient, mongoUrlBuilder.DatabaseName, mongoStorageOptions)
+                            .UseTagsWithMongo(tagOptions, mongoStorageOptions);
+                        break;
+                    }
+                }
 
-                //postgreSql Sample
-                // config.UsePostgreSqlStorage(Configuration.GetConnectionString("PostgreSqlConnection"), new PostgreSqlStorageOptions
-                // {
-                //     JobExpirationCheckInterval = TimeSpan.FromSeconds(15),
-                //     QueuePollInterval = TimeSpan.FromTicks(1) // To reduce processing delays to minimum
-                // });
-                // var options = new TagsOptions
-                // {
-                //     TagsListStyle = TagsListStyle.Dropdown
-                // };
-                // config.UseTagsWithPostgreSql(options);
-                //end postgreSql Sample
-
-                //redis sample
-                // var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
-                // Tags.Redis.StackExchange.GlobalConfigurationExtensions.UseTagsWithRedis(
-                //     Hangfire.RedisStorageExtensions.UseRedisStorage(config, redis),
-                //     new TagsOptions {TagsListStyle = TagsListStyle.Dropdown}
-                // );
-
-                // redis pro sample
-                // Tags.Pro.Redis.GlobalConfigurationExtensions.UseTagsWithRedis(
-                //     Hangfire.RedisStorageGlobalConfigurationExtensions.UseRedisStorage(config, Configuration.GetConnectionString("RedisConnection")), 
-                //     new TagsOptions {TagsListStyle = TagsListStyle.Dropdown}
-                // );
-
-                // config.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection")).UseTagsWithSQLite(
-                //     new TagsOptions
-                //     {
-                //         TagsListStyle = TagsListStyle.Dropdown
-                //     });
-
-                //config.UseNLogLogProvider();
                 config.UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5));
             });
+            services.AddHangfireServer();
 
             services.AddMvc();
         }
@@ -146,7 +196,6 @@ namespace Hangfire.Core.MvcApplication
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseHangfireServer();
             app.UseHangfireDashboard();
 
             app.UseStaticFiles();
@@ -157,9 +206,10 @@ namespace Hangfire.Core.MvcApplication
 
             var recurringJobs = new RecurringJobManager();
 
-            RecurringJob.AddOrUpdate<Tasks>(x => x.SuccessTask(null, null), Cron.Minutely);
+            RecurringJob.AddOrUpdate<Tasks>("Success Task", x => x.SuccessTask(null, null), Cron.Minutely);
             //            RecurringJob.AddOrUpdate<Tasks>(x => x.FailedTask(null, null), "*/2 * * * *");
-            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *", TimeZoneInfo.Local);
+            recurringJobs.AddOrUpdate("Failed Task", Job.FromExpression<Tasks>(x => x.FailedTask(null)), "*/2 * * * *",
+                new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             BackgroundJob.Enqueue<BaseJob>(x => x.Run());
             BackgroundJob.Enqueue<DerivedJob>(x => x.Run());

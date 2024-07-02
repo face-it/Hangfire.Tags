@@ -12,7 +12,7 @@ namespace Hangfire.Tags.Dashboard
 {
     public class TagsDispatcher : IDashboardDispatcher
     {
-        internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver()
         };

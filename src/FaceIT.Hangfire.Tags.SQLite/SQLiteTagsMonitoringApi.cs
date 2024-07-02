@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Data.Common;
 using System.Reflection;
 using Hangfire.Storage;
+using Hangfire.Storage.SQLite;
+
+using SQLite;
 
 namespace Hangfire.Tags.SQLite
 {
@@ -36,10 +38,10 @@ namespace Hangfire.Tags.SQLite
                 throw new ArgumentException("The function UseConnection cannot be found.");
         }
 
-        public T UseConnection<T>(Func<DbConnection, T> action, bool isWriteLock = false)
+        public T UseConnection<T>(Func<HangfireDbContext, T> action)
         {
             var method = _useConnection.MakeGenericMethod(typeof(T));
-            return (T) method.Invoke(_monitoringApi, new object[] {action, isWriteLock});
+            return (T) method.Invoke(_monitoringApi, new object[] {action});
         }
     }
 }

@@ -20,7 +20,7 @@ $(function() {
                 tags.append("<span class=\"label label-info\"><a href=\"../../tags/search/" + tag + "\">" + tag + "</a></span>");
             });
         });
-    };
+    }
 
     $(".tags a").tagcloud();
 });

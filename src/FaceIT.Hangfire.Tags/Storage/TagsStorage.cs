@@ -11,6 +11,7 @@ namespace Hangfire.Tags.Storage
     internal class TagsStorage : ITagsStorage, ITagsMonitoringApi
     {
         private readonly JobStorage _jobStorage;
+        private readonly TagsOptions _options;
 
         public TagsStorage(JobStorage jobStorage)
         {
@@ -21,7 +22,9 @@ namespace Hangfire.Tags.Storage
             if (!(connection is JobStorageConnection jobStorageConnection))
                 throw new NotSupportedException("Storage connection must implement JobStorageConnection");
 
-            ServiceStorage = jobStorage.FindRegistration().Item2;
+            var registration = jobStorage.FindRegistration();
+            _options = registration.Item1;
+            ServiceStorage = registration.Item2;
             Connection = jobStorageConnection;
         }
 
@@ -36,7 +39,7 @@ namespace Hangfire.Tags.Storage
 
         public long GetTagsCount()
         {
-            return Connection.GetSetCount("tags");
+            return ServiceStorage?.GetTagCount(_jobStorage) ?? Connection.GetSetCount("tags");
         }
 
         public long GetJobCount(string[] tags, string stateName = null)
@@ -72,12 +75,12 @@ namespace Hangfire.Tags.Storage
 
         public string[] GetTags(string jobid)
         {
-            return Connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
+            return ServiceStorage?.GetTags(_jobStorage, jobid) ?? Connection.GetAllItemsFromSet(jobid.GetSetKey()).ToArray();
         }
 
         public string[] GetAllTags()
         {
-            return Connection.GetAllItemsFromSet("tags").ToArray();
+            return Connection.GetAllItemsFromSet(IdExtensions.SetKey).ToArray();
         }
 
         public void InitTags(string jobid)
@@ -87,21 +90,7 @@ namespace Hangfire.Tags.Storage
 
         public void AddTag(string jobid, string tag)
         {
-            using (var tran = Connection.CreateWriteTransaction())
-            {
-                if (!(tran is JobStorageTransaction))
-                    throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
-
-                var options = _jobStorage.FindRegistration().Item1;
-
-                var cleanTag = tag.Clean(options?.MaxTagLength);
-                var score = DateTime.Now.Ticks;
-
-                tran.AddToSet("tags", cleanTag, score);
-                tran.AddToSet(jobid.GetSetKey(), cleanTag, score);
-                tran.AddToSet(cleanTag.GetSetKey(), jobid, score);
-                tran.Commit();
-            }
+            AddTags(jobid, new[] {tag});
         }
 
         public void AddTags(string jobid, IEnumerable<string> tags)
@@ -111,11 +100,9 @@ namespace Hangfire.Tags.Storage
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var options = _jobStorage.FindRegistration().Item1;
-
                 foreach (var tag in tags)
                 {
-                    var cleanTag = tag.Clean(options?.MaxTagLength);
+                    var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
                     var score = DateTime.Now.Ticks;
 
                     tran.AddToSet("tags", cleanTag, score); // Use a set, because it merges by default, where a list only adds
@@ -126,25 +113,30 @@ namespace Hangfire.Tags.Storage
             }
         }
 
-        public void Removetag(string jobid, string tag)
+        public void RemoveTag(string jobid, string tag)
+        {
+            RemoveTags(jobid, new[] { tag });
+        }
+
+        public void RemoveTags(string jobid, IEnumerable<string> tags)
         {
             using (var tran = Connection.CreateWriteTransaction())
             {
                 if (!(tran is JobStorageTransaction))
                     throw new NotSupportedException(" Storage transactions must implement JobStorageTransaction");
 
-                var options = _jobStorage.FindRegistration().Item1;
-                var cleanTag = tag.Clean(options?.MaxTagLength);
-
-                tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
-                tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
-
-                if (Connection.GetSetCount(cleanTag.GetSetKey()) == 0)
+                foreach (var tag in tags)
                 {
-                    // Remove the tag, it's no longer in use
-                    tran.RemoveFromSet("tags", cleanTag);
-                }
+                    var cleanTag = tag.Clean(_options?.Clean ?? Clean.Default, _options?.MaxTagLength);
 
+                    tran.RemoveFromSet(jobid.GetSetKey(), cleanTag);
+                    tran.RemoveFromSet(cleanTag.GetSetKey(), jobid);
+
+                    if (Connection.GetSetCount(cleanTag.GetSetKey()) == 0)
+                    {
+                        tran.RemoveFromSet("tags", cleanTag); // Use a set, because it merges by default, where a list only adds
+                    }
+                }
                 tran.Commit();
             }
         }

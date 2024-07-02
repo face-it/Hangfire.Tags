@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using Dapper;
 using Hangfire.Common;
-using Hangfire.SQLite;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.Dashboard.Monitoring;
 using Hangfire.Tags.Storage;
-
-#if NETSTANDARD
-using Microsoft.Data.Sqlite;
-#else
-using System.Data.SQLite;
-#endif
+using SQLite;
+using Hangfire.Storage.SQLite;
 
 namespace Hangfire.Tags.SQLite
 {
@@ -42,66 +35,66 @@ namespace Hangfire.Tags.SQLite
             return new SQLiteTagsTransaction(_options, transaction);
         }
 
-        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag, string setKey)
+        public override IEnumerable<TagDto> SearchWeightedTags(JobStorage jobStorage, string tag = null, string setKey = "tags")
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
-                RegisterRegex(connection);
+                if (string.IsNullOrEmpty(tag))
+                {
+                    var sql = @"select count(*) as Amount from [Set] s 
+                                where s.Key like ? || ':%' AND NOT s.Key GLOB ? || ':[0-9]*'";
 
-                var keyClause = string.IsNullOrEmpty(tag)
-                    ? "REGEXP '(' || @setKey || ':[^0-9]|' || @setKey || ':?[0-9][^0-9])'"
-                    : "like @setKey || ':%' || @tag || '%'";
+                    var total = connection.Database.ExecuteScalar<int>(sql, setKey, setKey);
 
-                var sql =
-                    $@"select count(*) as Amount from [{_options.SchemaName}.Set] s where s.Key {keyClause}";
-                var total = connection.ExecuteScalar<int>(sql, new { setKey, tag });
+                    sql = $@"select SUBSTR([Key], {setKey.Length + 2}) AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / ? * 100, 0) AS SIGNED) as [Percentage] 
+                             from [Set] s where s.Key like ? || ':%' AND NOT s.Key GLOB ? || ':[0-9]*' group by s.Key";
 
-                sql =
-                    $@"select SUBSTR([Key], {setKey.Length + 2}) AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / @total * 100, 0) AS SIGNED) as [Percentage] 
-from [{_options.SchemaName}.Set] s where s.Key {keyClause} group by s.Key";
+                    return connection.Database.Query<TagDto>(sql, total, setKey, setKey);
+                }
+                else
+                {
+                    var sql = @"select count(*) as Amount from [Set] s 
+                                where s.Key like ? || ':%' || ? || '%'";
 
-                return connection.Query<TagDto>(
-                    sql,
-                    new { setKey, tag, total });
+                    var total = connection.Database.ExecuteScalar<int>(sql, setKey, tag);
+
+                    sql = $@"select SUBSTR([Key], {setKey.Length + 2}) AS [Tag], COUNT(*) AS [Amount], CAST(ROUND(count(*) * 1.0 / ? * 100, 0) AS SIGNED) as [Percentage] 
+                             from [Set] s where s.Key like ? || ':%' || ? || '%' group by s.Key";
+
+                    return connection.Database.Query<TagDto>(sql, total, setKey, tag);
+                }
             });
         }
 
-        private void RegisterRegex(DbConnection connection)
-        {
-            var sqlFunction = new RegExSQLiteFunction();
-#if NETSTANDARD
-            ((SqliteConnection)connection).CreateFunction<string, string, bool>("REGEXP",
-                (pattern, input) => sqlFunction.IsMatch(pattern, input));
-#else
-                var attr = new SQLiteFunctionAttribute("REGEXP", 2, FunctionType.Scalar);
-                ((SQLiteConnection) connection).BindFunction(attr, sqlFunction);
-#endif
-        }
-
-        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey)
+        public override IEnumerable<string> SearchRelatedTags(JobStorage jobStorage, string tag, string setKey = "tags")
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
-                var keyClause = string.IsNullOrEmpty(tag)
-                    ? "REGEXP '(' || @setKey || ':[^0-9]|' || @setkey || ':?[0-9][^0-9])'"
-                    : "like @setKey || ':%' || @tag || '%'";
+                if (string.IsNullOrEmpty(tag))
+                {
+                    var sql =
+                        $@"select distinct SUBSTR(sr.[Key], {setKey.Length + 2}) from [Set] s INNER JOIN [Set] sr ON s.[Value]=sr.[Value] AND s.[Key] <> sr.[Key]
+                        where s.Key like ? || ':%' AND NOT s.Key GLOB ? || ':[0-9]*'";
 
-                var sql =
-                    $@"select distinct SUBSTR(sr.[Key], {setKey.Length + 2}) from [{_options.SchemaName}.Set] s INNER JOIN [{_options.SchemaName}.Set] sr ON s.[Value]=sr.[Value] AND s.[Key] <> sr.[Key]
-                        where s.[Key] {keyClause}";
+                    return connection.Database.QueryScalars<string>(sql, setKey, setKey);
+                }
+                else
+                {
+                    var sql =
+                        $@"select distinct SUBSTR(sr.[Key], {setKey.Length + 2}) from [Set] s INNER JOIN [Set] sr ON s.[Value]=sr.[Value] AND s.[Key] <> sr.[Key]
+                        where s.Key like ? || ':%' || ? || '%'";
 
-                return connection.Query<string>(
-                    sql,
-                    new {setKey, tag});
+                    return connection.Database.QueryScalars<string>(sql, setKey, tag);
+                }
             });
         }
 
         public override int GetJobCount(JobStorage jobStorage, string[] tags, string stateName = null)
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
-            return monitoringApi.UseConnection(connection => GetJobCount(connection, tags, stateName));
+            return monitoringApi.UseConnection(connection => GetJobCount(connection.Database, tags, stateName));
         }
 
         public override IDictionary<string, int> GetJobStateCount(JobStorage jobStorage, string[] tags, int maxTags = 50)
@@ -109,33 +102,27 @@ from [{_options.SchemaName}.Set] s where s.Key {keyClause} group by s.Key";
             var monitoringApi = GetMonitoringApi(jobStorage);
             return monitoringApi.UseConnection(connection =>
             {
-                var parameters = new Dictionary<string, object>();
-
                 var jobsSql =
-                    $@"with cte as 
+                    @"with cte as 
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from [{_options.SchemaName}.Job] j";
+  from [Job] j";
 
                 for (var i = 0; i < tags.Length; i++)
                 {
-                    parameters["tag" + i] = tags[i];
-                    jobsSql +=
-                        $"  inner join [{_options.SchemaName}.Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key]=@tag{i}";
+                    jobsSql += $"  inner join [Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key] = ?";
                 }
 
                 jobsSql +=
                     $@")
 select j.StateName AS [Key], count(*) AS [Value]
-from [{_options.SchemaName}.Job] j 
+from [Job] j 
 inner join cte on cte.Id = j.Id 
-inner join [{_options.SchemaName}.State] s on j.StateId = s.Id
+inner join [State] s on j.StateId = s.Id
 group by j.StateName order by count(*) desc
 LIMIT {maxTags};";
 
-                return connection.Query<KeyValuePair<string, int>>(
-                        jobsSql,
-                        parameters)
+                return connection.Database.Query<KeyValuePair<string, int>>(jobsSql, tags)
                     .ToDictionary(d => d.Key, d => d.Value);
             });
         }
@@ -143,7 +130,7 @@ LIMIT {maxTags};";
         public override JobList<MatchingJobDto> GetMatchingJobs(JobStorage jobStorage, string[] tags, int from, int count, string stateName = null)
         {
             var monitoringApi = GetMonitoringApi(jobStorage);
-            return monitoringApi.UseConnection(connection => GetJobs(connection, from, count, tags, stateName,
+            return monitoringApi.UseConnection(connection => GetJobs(connection.Database, from, count, tags, stateName,
                 (sqlJob, job, stateData) =>
                     new MatchingJobDto
                     {
@@ -167,77 +154,58 @@ LIMIT {maxTags};";
             return GetNullableStateDate(stateData, stateName) ?? DateTime.MinValue;
         }
 
-        private int GetJobCount(DbConnection connection, string[] tags, string stateName)
+        private int GetJobCount(SQLiteConnection connection, string[] tags, string stateName)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                {"stateName", stateName}
-            };
-
             var jobsSql =
-                $@"with cte as
+                @"with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from [{_options.SchemaName}.Job] j";
+  from [Job] j";
 
             for (var i = 0; i < tags.Length; i++)
             {
-                parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join [{_options.SchemaName}.Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key]=@tag{i}";
+                jobsSql += $"  inner join [Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key] = ?";
             }
 
             jobsSql +=
                 $@"
-  where (@stateName IS NULL OR LENGTH(@stateName)=0 OR j.StateName=@stateName)
+  where ('{stateName}' IS NULL OR LENGTH('{stateName}')=0 OR j.StateName='{stateName}')
 )
 select count(*)
-from [{_options.SchemaName}.Job] j
+from [Job] j
 inner join cte on cte.Id = j.Id 
-left join [{_options.SchemaName}.State] s on j.StateId = s.Id;";
+left join [State] s on j.StateId = s.Id;";
 
-            return connection.ExecuteScalar<int>(
-                jobsSql,
-                parameters);
+            return connection.ExecuteScalar<int>(jobsSql, tags);
         }
 
         private JobList<TDto> GetJobs<TDto>(
-            DbConnection connection, int from, int count, string[] tags, string stateName,
+            SQLiteConnection connection, int from, int count, string[] tags, string stateName,
             Func<SQLiteJob, Job, SafeDictionary<string, string>, TDto> selector)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "start", from + 1 },
-                { "end", from + count },
-                { "stateName", stateName }
-            };
-
             var jobsSql =
-                $@"with cte as
+                @"with cte as
 (
   select j.Id, row_number() over (order by j.Id desc) as row_num
-  from [{_options.SchemaName}.Job] j";
+  from [Job] j";
 
             for (var i = 0; i < tags.Length; i++)
             {
-                parameters["tag" + i] = tags[i];
-                jobsSql += $"  inner join [{_options.SchemaName}.Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key]=@tag{i}";
+                jobsSql += $"  inner join [Set] s{i} on j.Id=s{i}.[Value] and s{i}.[Key] = ?";
             }
 
             jobsSql +=
                 $@"
-  where (@stateName IS NULL OR LENGTH(@stateName) = 0 OR j.StateName=@stateName)
+  where ('{stateName}' IS NULL OR LENGTH('{stateName}') = 0 OR j.StateName='{stateName}')
 )
 select j.*, s.Reason as StateReason, s.Data as StateData
-from [{_options.SchemaName}.Job] j
+from [Job] j
 inner join cte on cte.Id = j.Id 
-left join [{_options.SchemaName}.State] s on j.StateId = s.Id
-where cte.row_num between @start and @end 
+left join [State] s on j.StateId = s.Id
+where cte.row_num between {from + 1} and {from + count} 
 order by j.Id desc;";
 
-            var jobs = connection.Query<SQLiteJob>(
-                    jobsSql,
-                    parameters)
-                .ToList();
+            var jobs = connection.Query<SQLiteJob>(jobsSql, tags) .ToList();
 
             return DeserializeJobs(jobs, selector);
         }

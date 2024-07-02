@@ -1,4 +1,4 @@
-﻿using Hangfire.SQLite;
+﻿using Hangfire.Storage.SQLite;
 using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.SQLite
@@ -19,6 +19,9 @@ namespace Hangfire.Tags.SQLite
         public static IGlobalConfiguration UseTagsWithSQLite(this IGlobalConfiguration configuration, TagsOptions options = null, SQLiteStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
+            if (options.MaxTagLength == null || options.MaxTagLength > 150)
+                options.MaxTagLength = 150; // The maximum length in the Hangfire.Set table of the [Key] column
+            
             sqlOptions = sqlOptions ?? new SQLiteStorageOptions();
 
             var storage = new SQLiteTagsServiceStorage(sqlOptions);

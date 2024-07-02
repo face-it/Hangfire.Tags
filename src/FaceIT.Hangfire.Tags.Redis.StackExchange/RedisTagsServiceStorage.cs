@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hangfire.Annotations;
 using Hangfire.Common;
-using Hangfire.Redis;
+using Hangfire.Redis.StackExchange;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Hangfire.Tags.Dashboard.Monitoring;

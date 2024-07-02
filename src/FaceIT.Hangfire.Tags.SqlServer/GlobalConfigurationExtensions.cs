@@ -1,4 +1,4 @@
-﻿using Hangfire.SqlServer;
+using Hangfire.SqlServer;
 using Hangfire.Tags.Dashboard;
 
 namespace Hangfire.Tags.SqlServer
@@ -20,6 +20,9 @@ namespace Hangfire.Tags.SqlServer
             TagsOptions options = null, SqlServerStorageOptions sqlOptions = null, JobStorage jobStorage = null)
         {
             options = options ?? new TagsOptions();
+            if (options.MaxTagLength == null || options.MaxTagLength > 150)
+                options.MaxTagLength = 150; // The maximum length in the Hangfire.Set table of the [Key] column
+
             sqlOptions = sqlOptions ?? new SqlServerStorageOptions();
 
             var storage = new SqlTagsServiceStorage(sqlOptions);

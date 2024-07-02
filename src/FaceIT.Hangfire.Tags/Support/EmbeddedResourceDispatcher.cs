@@ -1,26 +1,39 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire.Dashboard;
 
 namespace Hangfire.Tags.Support
 {
+    internal class Resource
+    {
+        public Resource(string resourceName, bool hasDarkMode)
+        {
+            ResourceName = resourceName;
+            HasDarkMode = hasDarkMode;
+        }
+
+        public string ResourceName { get; }
+        public bool HasDarkMode { get; }
+    }
+
     /// <summary>
     /// Alternative to built-in EmbeddedResourceDispatcher, which (for some reasons) is not public.
     /// </summary>
     internal class EmbeddedResourceDispatcher : IDashboardDispatcher
     {
         private readonly Assembly _assembly;
-        private readonly string _resourceName;
+        private readonly Resource[] _resources;
         private readonly string _contentType;
 
-        public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, string contentType = null)
+        public EmbeddedResourceDispatcher(Assembly assembly, Resource[] resources, string contentType = null)
         {
-            if (string.IsNullOrEmpty(resourceName))
-                throw new ArgumentNullException(nameof(resourceName));
+            if (resources == null || resources.Length == 0)
+                throw new ArgumentNullException(nameof(resources));
 
             _assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
-            _resourceName = resourceName;
+            _resources = resources;
             _contentType = contentType;
         }
 
@@ -42,17 +55,23 @@ namespace Hangfire.Tags.Support
                 }
             }
 
-            return WriteResourceAsync(context.Response, _assembly, _resourceName);
+            var resourceNames = _resources.Select(r =>
+                r.HasDarkMode ? string.Format(r.ResourceName, context.Options.DarkModeEnabled ? "dark" : "light") : r.ResourceName).ToArray();
+
+            return WriteResourceAsync(context.Response, _assembly, resourceNames);
         }
 
-        private static async Task WriteResourceAsync(DashboardResponse response, Assembly assembly, string resourceName)
+        private static async Task WriteResourceAsync(DashboardResponse response, Assembly assembly, string[] resourceNames)
         {
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            foreach (var resourceName in resourceNames)
             {
-                if (stream == null)
-                    throw new ArgumentException($@"Resource '{resourceName}' not found in assembly {assembly}.");
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null)
+                        throw new ArgumentException($@"Resource '{resourceName}' not found in assembly {assembly}.");
 
-                await stream.CopyToAsync(response.Body);
+                    await stream.CopyToAsync(response.Body);
+                }
             }
         }
     }

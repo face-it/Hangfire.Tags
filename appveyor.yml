@@ -9,6 +9,7 @@ environment:
 branches:
   only:
   - master
+  - hangfire_182
 
 pull_requests:
   do_not_increment_build_number: true
@@ -41,8 +42,9 @@ artifacts:
 deploy:
 - provider: NuGet
   api_key:
-    secure: y2ZAk4YAxwtybM9UoFQR3asz+EH5xfZX6nWgIvrqQ3tn1vRx8V6Pr2TPgubIfKGN
+    secure: Sv/gzOW796jlrE9VF/b/Lv0zKSCe2H3eXS1aFyl48p9jYrARL7S9Nlr5wioZ0kF5
   skip_symbols: false
   on:
     branch: 
     - master
+    - hangfire_182

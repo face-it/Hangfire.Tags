@@ -1,0 +1,7 @@
+.tags, .js-state-list, .related-tags {
+    border-bottom-color: #eee;
+}
+
+.tags > .label:hover {
+    background-color: #def;
+}

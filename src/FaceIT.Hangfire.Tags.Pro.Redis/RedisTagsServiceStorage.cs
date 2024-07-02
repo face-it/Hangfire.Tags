@@ -159,7 +159,7 @@ namespace Hangfire.Tags.Pro.Redis
 
             return monitoringApi.GetJobsWithProperties(jobIds.Where(j => Guid.TryParse(j, out var _)).ToList(), new[] {"State", "CreatedAt"},
                 new[] {"EnqueuedAt", "FailedAt", "ScheduledAt", "SucceededAt", "DeletedAt"},
-                (method, job, state) =>
+                (method, invocationData, jobLoadException, job, state) =>
                 {
                     var redisJob = new RedisJob
                     {

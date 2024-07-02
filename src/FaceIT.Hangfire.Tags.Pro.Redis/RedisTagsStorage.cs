@@ -30,7 +30,7 @@ namespace Hangfire.Tags.Pro.Redis
         {
             return _redisStorage.GetConnection();
         }
-
+        
         public override IEnumerable<IServerComponent> GetComponents()
         {
             // Reset JobStorage to the original storage, the ExpiredTagsWatcher has been initialized after this method finishes.

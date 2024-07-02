@@ -7,7 +7,7 @@
 
 Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to search and group different jobs. 
 
-![sidemenu](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Sidemenu.png)
+![sidemenu](https://raw.githubusercontent.com/face-it/Hangfire.Tags/hangfire_182/Sidemenu-dark.png)
 ![dashboard](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Dashboard.png)
 
 ## Contributers
@@ -24,6 +24,7 @@ Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to 
 - **Filtering**: allows filtering of tags based on tags and states, this makes it easy to requeue failed jobs with a certain tag.
 - **Searching**: allows you to search for tags
 - **Storages**: has an storage for SQL Server, MySql, PostgreSql and initial Redis support
+- **Dark and light mode**: supports the new dark and light mode support of Hangfire
 
 ## Setup
 
@@ -82,9 +83,10 @@ As usual, you may provide additional options for `UseTags()` method.
 
 Here's what you can configure:
 
-- **BackgroundColor** - default background color for the tags
-- **TextColor** - default text color of the tags
-- **Tags interface** - you can specify an autocomplete tags search (Yong Liu).
+- **TagColor**/**DarkTagColor** - default background color for the tags
+- **TextColor**/**TextColor** - default text color of the tags
+- **Tags interface** - you can specify an autocomplete tags search (Yong Liu)
+- **MaxLength** - the maximum length of the tags, automatically set to 100 for SQL Server
 
 **NOTE**: After you initially add Hangfire.Tags (or change the options above) you may need to clear browser cache, as generated CSS/JS can be cached by browser.
 
