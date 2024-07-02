@@ -1,14 +1,14 @@
 # Hangfire.Tags
 
-[![Build status](https://ci.appveyor.com/api/projects/status/hqrtav24894dtjcp/branch/master?svg=true)](https://ci.appveyor.com/project/faceit/hangfire-tags/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/hqrtav24894dtjcp/branch/main?svg=true)](https://ci.appveyor.com/project/faceit/hangfire-tags/branch/main)
 [![NuGet](https://img.shields.io/nuget/v/FaceIT.Hangfire.Tags.svg)](https://www.nuget.org/packages/FaceIT.Hangfire.Tags/)
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=HYKKSJL8B7XE4&currency_code=EUR&source=url)
 
 Inspired by the lack of searching and grouping, Hangfire.Tags provides a way to search and group different jobs. 
 
-![sidemenu](https://raw.githubusercontent.com/face-it/Hangfire.Tags/hangfire_182/Sidemenu-dark.png)
-![dashboard](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Dashboard.png)
+![sidemenu](https://raw.githubusercontent.com/face-it/Hangfire.Tags/main/Sidemenu-dark.png)
+![dashboard](https://raw.githubusercontent.com/face-it/Hangfire.Tags/main/Dashboard.png)
 
 ## Contributers
 
@@ -137,7 +137,7 @@ config.UseTagsWithSql(options);
 ```
 
 The result will look like this:
-![tagsearch](https://raw.githubusercontent.com/face-it/Hangfire.Tags/master/Tagsearch.png)
+![tagsearch](https://raw.githubusercontent.com/face-it/Hangfire.Tags/main/Tagsearch.png)
 
 ## License
 
