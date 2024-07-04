@@ -60,8 +60,7 @@ from [{_options.SchemaName}].[Set] s where s.[Key] like @setKey + ':%' + @tag + 
             return monitoringApi.UseConnection(connection =>
             {
                 var sql =
-                    $@"select distinct STUFF(sr.[Key], 1, {setKey.Length + 1}, '') from [{_options.SchemaName}].[Set] s INNER JOIN [{_options.SchemaName}].[Set] sr ON s.[Value]=sr.[Value] AND s.[Key] <> sr.[Key]
-                        where s.[Key] like @setKey + ':%' + @tag + '%'";
+                    $"select distinct sv.[Value] from [{_options.SchemaName}].[Set] sv INNER JOIN [{_options.SchemaName}].[Set] s ON sv.Value <> @tag AND s.[Key] LIKE @setKey + ':%' + @tag + '%' AND sv.[Key] = @setKey + ':' + s.[Value]";
 
                 return connection.Query<string>(
                     sql,
