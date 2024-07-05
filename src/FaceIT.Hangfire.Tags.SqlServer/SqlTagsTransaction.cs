@@ -77,11 +77,15 @@ namespace Hangfire.Tags.SqlServer
             }
         }
 
-        private void AcquireSetLock(string key)
-        {
-            object[] parameters = _acquireSetLock.GetParameters().Length > 0 ? new object[] { key } : null;
-            _acquireSetLock.Invoke(_transaction, parameters);
-        }
+     private void AcquireSetLock(string key)
+{
+    // Check if the method _acquireSetLock has parameters and create an array with the key if so.
+    object[] parameters = _acquireSetLock.GetParameters().Length > 0 ? new object[] { key } : null;
+
+    // Invoke the _acquireSetLock method on the _transaction object with the parameters.
+    _acquireSetLock.Invoke(_transaction, parameters);
+}
+
 
         private void AddCommand(string commandText, string key, params SqlCommandBatchParameter[] parameters)
         {
