@@ -106,7 +106,7 @@ Now you can add a tag:
 ```c#
 public void TaskMethod(PerformContext context)
 {
-    context.AddTag("Hello, world!");
+    context.AddTags("Hello, world!");
 }
 ```
 
