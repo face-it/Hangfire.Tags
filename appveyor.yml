@@ -47,3 +47,4 @@ deploy:
   on:
     branch: 
     - main
+    - feature/issue-97
