@@ -9,6 +9,7 @@ environment:
 branches:
   only:
   - main
+  - feature/issue-97
 
 pull_requests:
   do_not_increment_build_number: true
