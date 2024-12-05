@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire" Version="1.8.2" />
+    <PackageReference Include="Hangfire" Version="1.8.15" />
     <PackageReference Include="Hangfire.Heartbeat" Version="0.5.1" />
     <PackageReference Include="Hangfire.Mongo" Version="1.9.6" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />

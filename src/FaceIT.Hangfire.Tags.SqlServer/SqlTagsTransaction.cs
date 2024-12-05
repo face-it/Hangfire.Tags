@@ -1,7 +1,8 @@
 using System;
 using System.Data;
-using System.Linq;
+using System.Data.Common;
 using System.Reflection;
+using Dapper;
 using Hangfire.SqlServer;
 using Hangfire.Storage;
 using Hangfire.Tags.Storage;
@@ -26,9 +27,6 @@ namespace Hangfire.Tags.SqlServer
 
         private static Type _type;
         private static MethodInfo _acquireSetLock;
-        private static Type _sqlCommandBatchParameter;
-        private static ConstructorInfo _sqlCommandBatchParameterCtor;
-        private static PropertyInfo _sqlCommandBatchParameterValue;
 
         private static MethodInfo _addCommand;
 
@@ -67,14 +65,6 @@ namespace Hangfire.Tags.SqlServer
 
             if (_addCommand == null)
                 throw new ArgumentException("The functions QueueCommand and AddCommand cannot be found.");
-
-            if (_sqlCommandBatchParameter == null)
-            {
-                _sqlCommandBatchParameter = Type.GetType("Hangfire.SqlServer.SqlCommandBatchParameter, Hangfire.SqlServer");
-                _sqlCommandBatchParameterCtor =
-                    _sqlCommandBatchParameter.GetConstructor(new Type[] {typeof(string), typeof(DbType), typeof(int?)});
-                _sqlCommandBatchParameterValue = _sqlCommandBatchParameter.GetProperty("Value");
-            }
         }
 
         private void AcquireSetLock(string key)
@@ -85,17 +75,15 @@ namespace Hangfire.Tags.SqlServer
 
         private void AddCommand(string commandText, string key, params SqlCommandBatchParameter[] parameters)
         {
-            var batchParams = Array.CreateInstance(_sqlCommandBatchParameter, parameters.Length);
-            for (var i = 0; i < parameters.Length; i++)
+            DbCommand Command(DbConnection connection)
             {
-                var p = parameters[i];
-                var param = _sqlCommandBatchParameterCtor.Invoke(new object[] { p.ParameterName, p.DbType, null });
-                _sqlCommandBatchParameterValue.SetValue(param, p.Value);
-                batchParams.SetValue(param, i);
+                var cmd = connection.Create(commandText);
+                foreach (var sqlParameter in parameters) cmd.AddParameter(sqlParameter.ParameterName, sqlParameter.Value, sqlParameter.DbType);
+                return cmd;
             }
 
             var setCommands = _transaction.GetType().GetTypeInfo().GetField("_setCommands", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_transaction);
-            _addCommand.Invoke(_transaction, new object[] { setCommands, key, commandText, batchParams });
+            _addCommand.Invoke(_transaction, new[] {setCommands, key, (Func<DbConnection, DbCommand>) Command});
         }
 
         public void ExpireSetValue(string key, string value, TimeSpan expireIn)
