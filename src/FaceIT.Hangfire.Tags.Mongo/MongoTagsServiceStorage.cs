@@ -66,7 +66,7 @@ namespace Hangfire.Tags.Mongo
             var mainQuery = monitoringApi.DbContext.Database.GetCollection<BsonDocument>($"{_options.Prefix}.jobGraph").Aggregate()
                 .Match(filterBson).As<SetDto>();
             
-            var total = mainQuery.Count().Single().Count;
+            var total = mainQuery.Count().SingleOrDefault()?.Count ?? 0;
             var grp = mainQuery.Group(x => x.Value,
                 x => new TagDto
                 {
@@ -166,7 +166,7 @@ namespace Hangfire.Tags.Mongo
         private int GetJobCount(HangfireDbContext context, string[] tags, string stateName)
         {
             var qry = CreateBaseQuery(context, tags, stateName);
-            return (int) qry.Count().Single().Count;
+            return (int) (qry.Count().SingleOrDefault()?.Count ?? 0);
         }
 
         private JobList<TDto> GetJobs<TDto>(
@@ -322,7 +322,7 @@ namespace Hangfire.Tags.Mongo
             var mainQuery = monitoringApi.DbContext.Database.GetCollection<BsonDocument>($"{_options.Prefix}.jobGraph").Aggregate()
                 .Match(filterBson).As<SetDto>();
             
-            return mainQuery.Count().Single().Count;
+            return mainQuery.Count().SingleOrDefault()?.Count ?? 0;
         }
 
         public override string[] GetTags(JobStorage jobStorage, string jobId)
